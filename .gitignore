@@ -1,0 +1,12 @@
+# Ignore Python virtual environment
+Backend/venv/
+
+# Ignore Node.js modules
+client/node_modules/
+
+# Ignore Python bytecode
+*.pyc
+__pycache__/
+
+# Ignore environment files
+*.env
