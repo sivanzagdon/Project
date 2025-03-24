@@ -17,44 +17,41 @@ const Loading: React.FC<LoadingProps> = ({ message = '' }) => {
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    zIndex: 9999,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
   content: {
-    backgroundColor: '#FFF',
-    borderRadius: '10px',
+    backgroundColor: '#ffffff',
     padding: '20px',
+    borderRadius: '12px',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.15)',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
     alignItems: 'center',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
   spinner: {
     width: '50px',
     height: '50px',
     border: '4px solid #ddd',
-    borderTop: '4px solid #1E90FF',
+    borderTop: '4px solid #007bff',
     borderRadius: '50%',
     animation: 'spin 1s linear infinite',
   },
   message: {
-    marginTop: '15px',
-    color: '#333',
+    marginTop: '12px',
     fontSize: '16px',
-    fontWeight: 'bold',
+    color: '#333',
+    fontWeight: 500,
     textAlign: 'center',
   },
 }
 
-// הוספת האנימציה עבור הספינר
 const styleTag = document.createElement('style')
 styleTag.textContent = `
   @keyframes spin {

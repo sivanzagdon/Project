@@ -5,11 +5,13 @@ import { RootState } from '../../redux/store'
 import { login } from '../../redux/slices/userSlice'
 import Loading from '../../components/Loading'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const LoginScreen: React.FC = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
-  const [empId, setEmpId] = useState<string>('') // empId נשמר כמחרוזת
+  const [empId, setEmpId] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -25,7 +27,6 @@ const LoginScreen: React.FC = () => {
       return
     }
 
-    // המרת empId למספר
     const empIdNumber = parseInt(empId, 10)
     if (isNaN(empIdNumber)) {
       alert('Employee ID must be a valid number.')
@@ -41,7 +42,7 @@ const LoginScreen: React.FC = () => {
       )
 
       dispatch(login(response))
-
+      navigate('/home')
       alert('You have successfully logged in.')
     } catch (error: any) {
       alert('Login Failed: ' + error.message)
@@ -54,7 +55,8 @@ const LoginScreen: React.FC = () => {
     <div style={styles.container}>
       <img src="/logo.png" alt="Logo" style={styles.logo} />
 
-      <h1 style={styles.title}>Welcome Back</h1>
+      <h1 style={styles.title}>ColmaNalyze</h1>
+      <h2 style={styles.title}>Smarter Insights For Talent Retention</h2>
 
       <input
         type="text"
@@ -97,10 +99,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     marginBottom: '30px',
   },
   title: {
-    fontSize: '28px',
+    fontSize: '30px',
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: '20px',
+    marginBottom: '21px',
   },
   input: {
     width: '80%',
