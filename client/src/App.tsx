@@ -1,16 +1,24 @@
-import { useEffect } from 'react'
-import { Provider } from 'react-redux'
+import React, { useEffect } from 'react'
+import { Provider, useSelector } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
-import { store, persistor } from './redux/store'
+import { store, persistor, RootState } from './redux/store'
 import Loading from './components/Loading'
 import LoginScreen from './Screens/LoginScreen/LoginScreen'
-import React from 'react'
+import HomeScreen from './Screens/HomeScreen/HomeScreen'
+import Sidebar from './components/Sidebar'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom'
+import NewTicketForm from './Screens/newTicketForm/newTicketForm'
 
 const App: React.FC = () => {
   useEffect(() => {
     const logPersistedStorage = () => {
       try {
-        const storedData = localStorage.getItem('persist:root') // קריאה מה-localStorage
+        const storedData = localStorage.getItem('persist:root')
         if (storedData) {
           console.log('Persisted Storage Data:', JSON.parse(storedData))
         } else {
@@ -24,10 +32,40 @@ const App: React.FC = () => {
     logPersistedStorage()
   }, [])
 
+  const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn)
+
   return (
     <Provider store={store}>
       <PersistGate loading={<Loading />} persistor={persistor}>
-        <LoginScreen />
+        <Router>
+          <div style={{ display: 'flex' }}>
+            {isLoggedIn && <Sidebar />} {/* הצגת Sidebar רק למשתמשים מחוברים */}
+            <div
+              style={{
+                marginLeft: isLoggedIn ? '200px' : '0',
+                flex: 1,
+                padding: '20px',
+              }}
+            >
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    isLoggedIn ? (
+                      <Navigate to="/home" />
+                    ) : (
+                      <Navigate to="/login" />
+                    )
+                  }
+                />
+                <Route path="/login" element={<LoginScreen />} />
+                <Route path="/home" element={<HomeScreen />} />
+                <Route path="/" element={<HomeScreen />} />
+                <Route path="/new-ticket" element={<NewTicketForm />} />
+              </Routes>
+            </div>
+          </div>
+        </Router>
       </PersistGate>
     </Provider>
   )

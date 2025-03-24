@@ -12,12 +12,11 @@ import {
 import storage from 'redux-persist/lib/storage' // localStorage / AsyncStorage
 import rootReducer from './slices/index'
 
-// הגדרת הקונפיגורציה של Redux Persist
 const persistConfig = {
-  key: 'root', // מפתח שמייצג את האחסון
-  version: 1, // גרסה
-  storage, // אחסון ב-localStorage או ב-AsyncStorage
-  whitelist: ['user'], // רשימה של reducers שברצונך לשמור
+  key: 'root',
+  version: 1,
+  storage,
+  whitelist: ['user'],
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -33,7 +32,6 @@ export const store = configureStore({
     }),
 })
 
-// יצירת persistor כדי לאחסן את המידע בצורה נכונה
 export const persistor = persistStore(store)
 
 export type RootState = ReturnType<typeof store.getState>

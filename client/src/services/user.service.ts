@@ -16,11 +16,11 @@ export class UserService {
 
     try {
       const response = await post('/login', data)
-      console.log('Response received:', response.data) // הדפס את התשובה מהשרת
+      console.log('Response received:', response.data)
       return response.data as LoginResponse
     } catch (error: any) {
       const status = error?.response?.status
-      console.error('Error occurred:', error) // הדפס את השגיאה
+      console.error('Error occurred:', error)
       let serverMessage = 'An unknown error occurred.'
 
       switch (status) {
