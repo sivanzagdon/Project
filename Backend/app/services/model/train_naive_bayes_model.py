@@ -1,15 +1,15 @@
 import pandas as pd
 import joblib
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
 from sklearn.utils import shuffle
 from dotenv import load_dotenv
 import os
 from datetime import datetime
-from app.db import get_collection 
+from app.db import get_collection
 
 load_dotenv()
 DATABASE_NAME = os.getenv("DATABASE_NAME")
-MODEL_PATH = "app/services/overdue_model.pkl"
+MODEL_PATH = "app/services/overdue_naive_bayes_model.pkl"
 
 def fetch_data_from_mongo():
     print("📡 Fetching data from MongoDB...")
@@ -19,11 +19,10 @@ def fetch_data_from_mongo():
         return pd.DataFrame()
     data = list(collection.find())
     print(f"✅ Retrieved {len(data)} records.")
-    return pd.DataFrame(data)
+    return pd.DataFrame(data)  # ✅ תיקון כאן
 
 def preprocess(df):
     print("🧼 Preprocessing data...")
-
     df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
     df["Hour"] = df["Created on"].dt.hour
     df["Weekday"] = df["Created on"].dt.weekday
@@ -35,7 +34,7 @@ def preprocess(df):
     before_drop = len(df)
     df = df.dropna(subset=features + ["is_overdue"])
     after_drop = len(df)
-    print(f"📁 Dropped {before_drop - after_drop} rows with missing values. Remaining: {after_drop}")
+    print(f"📁 Dropped {before_drop - after_drop} rows. Remaining: {after_drop}")
 
     X = pd.get_dummies(df[features])
     y = df["is_overdue"]
@@ -53,28 +52,13 @@ def train_model():
     df = shuffle(df, random_state=42).reset_index(drop=True)
     X, y = preprocess(df)
 
-    print("🌲 Training Random Forest model with balanced class weights...")
-    model = RandomForestClassifier(random_state=42, class_weight='balanced')
+    print("🌲 Training Naive Bayes model...")
+    model = GaussianNB()
     model.fit(X, y)
     print("✅ Model training complete.")
 
     joblib.dump((model, X.columns), MODEL_PATH)
     print(f"💾 Model saved to: {MODEL_PATH}")
 
-def predict_is_overdue(new_data: dict):
-    try:
-        model, columns = joblib.load(MODEL_PATH)
-    except FileNotFoundError:
-        return {"error": "Model not trained yet."}
-
-    df = pd.DataFrame([new_data])
-    df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
-    df["Hour"] = df["Created on"].dt.hour
-    df["Weekday"] = df["Created on"].dt.weekday
-
-    features = ["MainCategory", "SubCategory", "Building", "Site", "Hour", "Weekday"]
-    df = pd.get_dummies(df[features])
-    df = df.reindex(columns=columns, fill_value=0)
-
-    prediction = model.predict(df)[0]
-    return int(prediction)
+if __name__ == "__main__":  # ✅ תיקון כאן
+    train_model()
