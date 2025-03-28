@@ -50,23 +50,30 @@ const NewTicketForm: React.FC = () => {
             onChange={setMainCategory}
             options={[
               { value: '', label: 'Select category' },
-              {
-                value: 'F. Building and Infrastructure',
-                label: 'F. Building and Infrastructure',
-              },
+              { value: 'A. Cleaning', label: 'A. Cleaning' },
+              { value: 'B. Climate', label: 'B. Climate' },
               {
                 value: 'C. Office & Kitchen & Printer Corner',
                 label: 'C. Office & Kitchen & Printer Corner',
               },
               { value: 'D. Water & Plumbing', label: 'D. Water & Plumbing' },
               {
-                value: 'I. MIMO & Member Requests',
-                label: 'I. MIMO & Member Requests',
-              },
-              {
                 value: 'E. Electrical, IT & A/V Equipment',
                 label: 'E. Electrical, IT & A/V Equipment',
               },
+              {
+                value: 'F. Building and Infrastructure',
+                label: 'F. Building and Infrastructure',
+              },
+              { value: 'G. Safety & Security', label: 'G. Safety & Security' },
+              { value: 'H. Events', label: 'H. Events' },
+              {
+                value: 'I. MIMO & Member Requests',
+                label: 'I. MIMO & Member Requests',
+              },
+              { value: 'J. Maintenance', label: 'J. Maintenance' },
+              { value: 'K. Top Priority', label: 'K. Top Priority' },
+              { value: 'M. Community', label: 'M. Community' },
             ]}
           />
 
@@ -76,22 +83,80 @@ const NewTicketForm: React.FC = () => {
             onChange={setSubCategory}
             options={[
               { value: '', label: 'Select subcategory' },
+              { value: 'AC Issue', label: 'AC Issue' },
+              { value: 'Add shelf/hook', label: 'Add shelf/hook' },
+              { value: 'Air quality issue', label: 'Air quality issue' },
+              { value: 'Bathroom maintenance', label: 'Bathroom maintenance' },
+              { value: 'Broken glass', label: 'Broken glass' },
+              { value: 'Broken/Loose socket', label: 'Broken/Loose socket' },
+              { value: 'Cleaning required', label: 'Cleaning required' },
+              { value: 'Construction noise', label: 'Construction noise' },
+              { value: 'Curtains issue', label: 'Curtains issue' },
+              { value: 'Damaged wall/ceiling', label: 'Damaged wall/ceiling' },
               {
-                value: 'Window does not close/open',
-                label: 'Window does not close/open',
+                value: 'Door not closing/opening',
+                label: 'Door not closing/opening',
+              },
+              { value: 'Electricity shutdown', label: 'Electricity shutdown' },
+              {
+                value: 'Equipment not working',
+                label: 'Equipment not working',
               },
               {
-                value: 'Replacing stock Printing paper/Coffee/Milk etc',
-                label: 'Replacing stock Printing paper/Coffee/Milk etc',
+                value: 'Extra furniture needed',
+                label: 'Extra furniture needed',
               },
+              { value: 'Fire alarm issue', label: 'Fire alarm issue' },
+              { value: 'Flooring issue', label: 'Flooring issue' },
               {
                 value: 'Furniture is broken/dirty',
                 label: 'Furniture is broken/dirty',
               },
+              { value: 'Glass cleaning', label: 'Glass cleaning' },
+              { value: 'Handyman request', label: 'Handyman request' },
+              { value: 'HVAC Issue', label: 'HVAC Issue' },
+              { value: 'Internet not working', label: 'Internet not working' },
+              {
+                value: 'Kitchen appliance issue',
+                label: 'Kitchen appliance issue',
+              },
+              { value: 'Lack of supplies', label: 'Lack of supplies' },
               { value: 'Leakage', label: 'Leakage' },
-              { value: 'Painting request', label: 'Painting request' },
+              { value: 'Lights not working', label: 'Lights not working' },
+              { value: 'Maintenance noise', label: 'Maintenance noise' },
+              { value: 'Mirror issue', label: 'Mirror issue' },
+              { value: 'New member setup', label: 'New member setup' },
               { value: 'No/Slow Internet', label: 'No/Slow Internet' },
+              { value: 'Office too cold/hot', label: 'Office too cold/hot' },
+              { value: 'Other', label: 'Other' },
+              { value: 'Paint scratches', label: 'Paint scratches' },
+              { value: 'Painting request', label: 'Painting request' },
+              {
+                value: 'Projector/Screen issue',
+                label: 'Projector/Screen issue',
+              },
+              { value: 'Remove items', label: 'Remove items' },
               { value: 'Repairs', label: 'Repairs' },
+              { value: 'Replace lights', label: 'Replace lights' },
+              {
+                value: 'Replacing stock Printing paper/Coffee/Milk etc',
+                label: 'Replacing stock Printing paper/Coffee/Milk etc',
+              },
+              { value: 'Sink clog', label: 'Sink clog' },
+              { value: 'Storage issue', label: 'Storage issue' },
+              { value: 'Table damaged', label: 'Table damaged' },
+              { value: 'Temperature issue', label: 'Temperature issue' },
+              { value: 'Toilet not working', label: 'Toilet not working' },
+              { value: 'TV not working', label: 'TV not working' },
+              { value: 'Wall needs fixing', label: 'Wall needs fixing' },
+              { value: 'Water cooler issue', label: 'Water cooler issue' },
+              { value: 'Water leak', label: 'Water leak' },
+              { value: 'Window cracked', label: 'Window cracked' },
+              {
+                value: 'Window does not close/open',
+                label: 'Window does not close/open',
+              },
+              { value: 'Wires exposed', label: 'Wires exposed' },
             ]}
           />
 
@@ -101,6 +166,8 @@ const NewTicketForm: React.FC = () => {
             onChange={setBuilding}
             options={[
               { value: '', label: 'Select building' },
+              { value: 'A1', label: 'A1' },
+              { value: 'A2', label: 'A2' },
               { value: 'B1', label: 'B1' },
               { value: 'B2', label: 'B2' },
               { value: 'C1', label: 'C1' },
