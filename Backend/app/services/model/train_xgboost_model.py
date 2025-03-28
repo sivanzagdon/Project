@@ -12,6 +12,15 @@ import os
 load_dotenv()
 DATABASE_NAME = os.getenv("DATABASE_NAME")
 MODEL_PATH = "app/services/overdue_xgboost_model.pkl"
+ENCODER_DIR = "app/services/encoders"
+os.makedirs(ENCODER_DIR, exist_ok=True)
+
+ENCODER_PATHS = {
+    "MainCategory": os.path.join(ENCODER_DIR, "MainCategory_encoder.pkl"),
+    "SubCategory": os.path.join(ENCODER_DIR, "SubCategory_encoder.pkl"),
+    "Building": os.path.join(ENCODER_DIR, "Building_encoder.pkl"),
+    "Site": os.path.join(ENCODER_DIR, "Site_encoder.pkl")
+}
 
 def fetch_data_from_mongo():
     collection = get_collection(DATABASE_NAME, "service_requests")
@@ -42,6 +51,7 @@ def preprocess(df):
     for col in ["MainCategory", "SubCategory", "Building", "Site"]:
         le = LabelEncoder()
         X[col] = le.fit_transform(X[col].astype(str))
+        joblib.dump(le, ENCODER_PATHS[col])
 
     return X, y
 
@@ -64,7 +74,6 @@ def train_xgboost_model():
         X, y, test_size=0.2, stratify=y, random_state=42
     )
 
-    # Calculate scale_pos_weight if class imbalance exists
     pos_weight = (y_train == 0).sum() / (y_train == 1).sum()
 
     model = XGBClassifier(

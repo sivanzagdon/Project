@@ -1,8 +1,10 @@
 from datetime import datetime
-from app.db import get_collection 
+from app.db import get_collection
+from app.services.prediction_service import predict_combined_risk
+
+
 
 def calculate_sla(main_category: str, sub_category: str) -> int:
-    
     if main_category == "Electricity":
         return 4
     elif main_category == "Plumbing":
@@ -10,30 +12,25 @@ def calculate_sla(main_category: str, sub_category: str) -> int:
     else:
         return 8
 
-def predict_risk(data: dict) -> float:
-    # To change
-    return 0.85
-
 def create_new_service_request(data: dict) -> dict:
     collection = get_collection("DS_PROJECT", "newRequests")
 
-    sla_time = calculate_sla(data["mainCategory"], data["subCategory"])
-    risk_score = predict_risk(data)
+    sla_time = calculate_sla(data["MainCategory"], data["SubCategory"])
+    risk_score = predict_combined_risk(data)
 
     document = {
         "Type": "Service request",
         "Created on": datetime.now().strftime("%m/%d/%Y %I:%M:%S %p"),
         "Request status": "Open",
-        "MainCategory": data["mainCategory"],
-        "SubCategory": data["subCategory"],
-        "Building": data["building"],
-        "Site": data["site"],
-        "Request description": data["description"],
+        "MainCategory": data["MainCategory"],
+        "SubCategory": data["SubCategory"],
+        "Building": data["Building"],
+        "Site": data["Site"],
+        "Request description": data["Description"],
         "SLA (hours)": sla_time,
         "Risk score": risk_score,
     }
 
-    # שדות שניתן להוסיף בעתיד (למשל בהשלמה ידנית או ב-Cron Job)
     if "Resolved date" in data:
         document["Resolved date"] = data["Resolved date"]
     if "Response time (hours)" in data:
@@ -52,4 +49,3 @@ def create_new_service_request(data: dict) -> dict:
         "recommendations": ["Assign additional technician", "Prioritize in queue"],
         "request_id": str(insert_result.inserted_id)
     }
-
