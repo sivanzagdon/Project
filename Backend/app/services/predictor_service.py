@@ -1,80 +1,80 @@
-import pandas as pd
-import joblib
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.utils import shuffle
-from dotenv import load_dotenv
-import os
-from datetime import datetime
-from app.db import get_collection 
+# import joblib
+# import pandas as pd
+# from datetime import datetime
+# from sklearn.preprocessing import LabelEncoder
+# from app.db import get_collection
 
-load_dotenv()
-DATABASE_NAME = os.getenv("DATABASE_NAME")
-MODEL_PATH = "app/services/overdue_model.pkl"
 
-def fetch_data_from_mongo():
-    print("📡 Fetching data from MongoDB...")
-    collection = get_collection(DATABASE_NAME, "service_requests")
-    if collection is None:
-        print("❌ Failed to connect to collection.")
-        return pd.DataFrame()
-    data = list(collection.find())
-    print(f"✅ Retrieved {len(data)} records.")
-    return pd.DataFrame(data)
+# RF_MODEL_PATH = "app/services/model/overdue_random_forest_model.pkl"
+# XGB_MODEL_PATH = "app/services/model/overdue_xgboost_model.pkl"
+# NB_MODEL_PATH = "app/services/model/overdue_naive_bayes_model.pkl"
 
-def preprocess(df):
-    print("🧼 Preprocessing data...")
 
-    df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
-    df["Hour"] = df["Created on"].dt.hour
-    df["Weekday"] = df["Created on"].dt.weekday
+# MODEL_WEIGHTS = {
+#     "rf": 0.83,
+#     "xgb": 0.60,
+#     "nb": 0.50,
+# }
 
-    print("\n📊 Class distribution:")
-    print(df["is_overdue"].value_counts())
 
-    features = ["MainCategory", "SubCategory", "Building", "Site", "Hour", "Weekday"]
-    before_drop = len(df)
-    df = df.dropna(subset=features + ["is_overdue"])
-    after_drop = len(df)
-    print(f"📁 Dropped {before_drop - after_drop} rows with missing values. Remaining: {after_drop}")
 
-    X = pd.get_dummies(df[features])
-    y = df["is_overdue"]
+# def preprocess_input(data: dict, expected_columns: list[str]) -> pd.DataFrame:
+#     df = pd.DataFrame([data])
+#     df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
+#     df["Hour"] = df["Created on"].dt.hour
+#     df["Weekday"] = df["Created on"].dt.weekday
+#     df["Month"] = df["Created on"].dt.month
+#     df["DayOfMonth"] = df["Created on"].dt.day
+#     df["Is weekend"] = df["Weekday"].isin([5, 6]).astype(int)
+#     df["RequestLength"] = df["Request description"].apply(lambda x: len(str(x)))
 
-    print(f"🧮 Feature matrix shape: {X.shape}, Target shape: {y.shape}")
-    return X, y
+#     features = [
+#         "MainCategory", "SubCategory", "Building", "Site",
+#         "Hour", "Weekday", "Month", "DayOfMonth", "Is weekend", "RequestLength"
+#     ]
 
-def train_model():
-    print("🚀 Starting training process...")
-    df = fetch_data_from_mongo()
-    if df.empty:
-        print("🛑 No data found. Aborting training.")
-        return
+#     df = df[features].copy()
+#     for col in ["MainCategory", "SubCategory", "Building", "Site"]:
+#         le = LabelEncoder()
+#         df[col] = le.fit_transform(df[col].astype(str))
 
-    df = shuffle(df, random_state=42).reset_index(drop=True)
-    X, y = preprocess(df)
+#     return df.reindex(columns=expected_columns, fill_value=0)
 
-    print("🌲 Training Random Forest model with balanced class weights...")
-    model = RandomForestClassifier(random_state=42, class_weight='balanced')
-    model.fit(X, y)
-    print("✅ Model training complete.")
 
-    joblib.dump((model, X.columns), MODEL_PATH)
-    print(f"💾 Model saved to: {MODEL_PATH}")
+# def predict_combined_risk(new_data: dict) -> float:
+#     votes = []
 
-def predict_is_overdue(new_data: dict):
-    try:
-        model, columns = joblib.load(MODEL_PATH)
-    except FileNotFoundError:
-        return {"error": "Model not trained yet."}
+#     # Random Forest
+#     try:
+#         rf_model, rf_cols = joblib.load(RF_MODEL_PATH)
+#         X_rf = preprocess_input(new_data, list(rf_cols))
+#         pred_rf = rf_model.predict(X_rf)[0]
+#         votes.append(pred_rf * MODEL_WEIGHTS["rf"])
+#     except Exception as e:
+#         print("RF model error:", e)
 
-    df = pd.DataFrame([new_data])
-    df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
-    df["Hour"] = df["Created on"].dt.hour
-    df["Weekday"] = df["Created on"].dt.weekday
+#     # XGBoost
+#     try:
+#         xgb_model, xgb_cols = joblib.load(XGB_MODEL_PATH)
+#         X_xgb = preprocess_input(new_data, list(xgb_cols))
+#         pred_xgb = xgb_model.predict(X_xgb)[0]
+#         votes.append(pred_xgb * MODEL_WEIGHTS["xgb"])
+#     except Exception as e:
+#         print("XGB model error:", e)
 
-    features = ["MainCategory", "SubCategory", "Building", "Site", "Hour", "Weekday"]
-    df = pd.get_dummies(df[features])
-    df = df.reindex(columns=columns, fill_value=0)
+#     # Naive Bayes
+#     try:
+#         nb_model, nb_cols = joblib.load(NB_MODEL_PATH)
+#         X_nb = preprocess_input(new_data, list(nb_cols))
+#         pred_nb = nb_model.predict(X_nb)[0]
+#         votes.append(pred_nb * MODEL_WEIGHTS["nb"])
+#     except Exception as e:
+#         print("NB model error:", e)
 
-    prediction = model.predict(df)[0]
-    return int(prediction)
+#     # אם אף מודל לא הצליח להחזיר
+#     if not votes:
+#         return -1  # או אולי לזרוק שגיאה
+
+    
+#     combined_score = sum(votes) / sum([MODEL_WEIGHTS[k] for k in MODEL_WEIGHTS if votes])
+#     return round(combined_score, 2)

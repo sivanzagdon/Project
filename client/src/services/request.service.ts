@@ -1,11 +1,11 @@
 import { post } from './axios.service'
 
 interface TicketData {
-  mainCategory: string
-  subCategory: string
-  building: string
-  site: string
-  description: string
+  MainCategory: string
+  SubCategory: string
+  Building: string
+  Site: string
+  Description: string
 }
 
 export interface TicketResponse {
@@ -20,6 +20,7 @@ export class RequestService {
   createTicket = async (ticketData: TicketData): Promise<TicketResponse> => {
     const response = await post('/api/tickets', ticketData)
     console.log('Adding a new service request received:', response.data)
+    console.log(ticketData)
     return response.data as TicketResponse
   }
 }

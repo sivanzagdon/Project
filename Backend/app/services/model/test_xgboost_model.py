@@ -12,6 +12,16 @@ from sklearn.utils import shuffle
 load_dotenv()
 DATABASE_NAME = os.getenv("DATABASE_NAME")
 MODEL_PATH = "app/services/overdue_xgboost_model.pkl"
+ENCODER_DIR = "app/services/encoders"
+
+ENCODER_PATHS = {
+    "MainCategory": os.path.join(ENCODER_DIR, "MainCategory_encoder.pkl"),
+    "SubCategory": os.path.join(ENCODER_DIR, "SubCategory_encoder.pkl"),
+    "Building": os.path.join(ENCODER_DIR, "Building_encoder.pkl"),
+    "Site": os.path.join(ENCODER_DIR, "Site_encoder.pkl")
+}
+
+CATEGORICAL_COLS = ["MainCategory", "SubCategory", "Building", "Site"]
 
 def fetch_data_from_mongo():
     print("📡 Fetching and preprocessing data...")
@@ -25,22 +35,31 @@ def preprocess(df):
     df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
     df["Hour"] = df["Created on"].dt.hour
     df["Weekday"] = df["Created on"].dt.weekday
+    df["Month"] = df["Created on"].dt.month
+    df["DayOfMonth"] = df["Created on"].dt.day
+    df["Is weekend"] = df["Weekday"].isin([5, 6]).astype(int)
+    df["RequestLength"] = df["Request description"].apply(lambda x: len(str(x)))
 
-    features = ["MainCategory", "SubCategory", "Building", "Site", "Hour", "Weekday"]
-    df = df.dropna(subset=features + ["is_overdue"])
+    for col in CATEGORICAL_COLS:
+        df[col] = df[col].fillna("Unknown")
 
-    print("📊 Class distribution:")
-    print(df["is_overdue"].value_counts())
+    df = df.dropna(subset=["Created on", "is_overdue"])
 
-    X = pd.get_dummies(df[features].copy())
+    for col in CATEGORICAL_COLS:
+        le = joblib.load(ENCODER_PATHS[col])
+        df[col] = le.transform(df[col].astype(str))
+
+    features = [
+        "MainCategory", "SubCategory", "Building", "Site",
+        "Hour", "Weekday", "Month", "DayOfMonth", "Is weekend", "RequestLength"
+    ]
+    X = df[features]
     y = df["is_overdue"]
+
     return X, y
 
-def print_confusion_matrix(cm, labels):
-    print("\n🧩 Confusion Matrix:")
-    print(f"{'':<12}{labels[0]:<8}{labels[1]:<8}")
-    print(f"{labels[0]:<12}{cm[0][0]:<8}{cm[0][1]:<8}")
-    print(f"{labels[1]:<12}{cm[1][0]:<8}{cm[1][1]:<8}")
+def align_columns(X, model_columns):
+    return X.reindex(columns=model_columns, fill_value=0)
 
 def evaluate_model():
     df = fetch_data_from_mongo()
@@ -66,7 +85,10 @@ def evaluate_model():
     print(f"\n🎯 Accuracy on test set: \033[1m{acc:.4f}\033[0m")
 
     cm = confusion_matrix(y_test, y_pred)
-    print_confusion_matrix(cm, labels=["Not Overdue", "Overdue"])
+    print("\n🧩 Confusion Matrix:")
+    print(f"{'':<12}{'Not Overdue':<8}{'Overdue':<8}")
+    print(f"{'Not Overdue':<12}{cm[0][0]:<8}{cm[0][1]:<8}")
+    print(f"{'Overdue':<12}{cm[1][0]:<8}{cm[1][1]:<8}")
 
     print("\n📋 Classification Report:")
     print(classification_report(y_test, y_pred, target_names=["Not Overdue", "Overdue"]))

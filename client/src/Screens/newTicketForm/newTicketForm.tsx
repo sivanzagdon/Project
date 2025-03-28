@@ -3,11 +3,11 @@ import { TicketResponse, requestService } from '../../services/request.service'
 import Loading from '../../components/Loading'
 
 const NewTicketForm: React.FC = () => {
-  const [mainCategory, setMainCategory] = useState('')
-  const [subCategory, setSubCategory] = useState('')
-  const [building, setBuilding] = useState('')
-  const [site, setSite] = useState('')
-  const [description, setDescription] = useState('')
+  const [MainCategory, setMainCategory] = useState('')
+  const [SubCategory, setSubCategory] = useState('')
+  const [Building, setBuilding] = useState('')
+  const [Site, setSite] = useState('')
+  const [Description, setDescription] = useState('')
   const [sla, setSla] = useState('')
   const [prediction, setPrediction] = useState<number | null>(null)
   const [recommendations, setRecommendations] = useState<string[]>([])
@@ -19,11 +19,11 @@ const NewTicketForm: React.FC = () => {
 
     try {
       const response: TicketResponse = await requestService.createTicket({
-        mainCategory,
-        subCategory,
-        building,
-        site,
-        description,
+        MainCategory,
+        SubCategory,
+        Building,
+        Site,
+        Description,
       })
 
       const { sla_time, risk_score, recommendations } = response
@@ -46,35 +46,63 @@ const NewTicketForm: React.FC = () => {
         <form onSubmit={handleSubmit} style={styles.form}>
           <SelectInput
             label="Main Category"
-            value={mainCategory}
+            value={MainCategory}
             onChange={setMainCategory}
             options={[
               { value: '', label: 'Select category' },
-              { value: 'Cleaning', label: 'Cleaning' },
-              { value: 'Electricity', label: 'Electricity' },
-              { value: 'Plumbing', label: 'Plumbing' },
+              {
+                value: 'F. Building and Infrastructure',
+                label: 'F. Building and Infrastructure',
+              },
+              {
+                value: 'C. Office & Kitchen & Printer Corner',
+                label: 'C. Office & Kitchen & Printer Corner',
+              },
+              { value: 'D. Water & Plumbing', label: 'D. Water & Plumbing' },
+              {
+                value: 'I. MIMO & Member Requests',
+                label: 'I. MIMO & Member Requests',
+              },
+              {
+                value: 'E. Electrical, IT & A/V Equipment',
+                label: 'E. Electrical, IT & A/V Equipment',
+              },
             ]}
           />
 
           <SelectInput
             label="Subcategory"
-            value={subCategory}
+            value={SubCategory}
             onChange={setSubCategory}
             options={[
               { value: '', label: 'Select subcategory' },
-              { value: 'Lights', label: 'Lights' },
-              { value: 'Leaks', label: 'Leaks' },
-              { value: 'BrokenDevice', label: 'Broken device' },
+              {
+                value: 'Window does not close/open',
+                label: 'Window does not close/open',
+              },
+              {
+                value: 'Replacing stock Printing paper/Coffee/Milk etc',
+                label: 'Replacing stock Printing paper/Coffee/Milk etc',
+              },
+              {
+                value: 'Furniture is broken/dirty',
+                label: 'Furniture is broken/dirty',
+              },
+              { value: 'Leakage', label: 'Leakage' },
+              { value: 'Painting request', label: 'Painting request' },
+              { value: 'No/Slow Internet', label: 'No/Slow Internet' },
+              { value: 'Repairs', label: 'Repairs' },
             ]}
           />
 
           <SelectInput
             label="Building"
-            value={building}
+            value={Building}
             onChange={setBuilding}
             options={[
               { value: '', label: 'Select building' },
               { value: 'B1', label: 'B1' },
+              { value: 'B2', label: 'B2' },
               { value: 'C1', label: 'C1' },
               { value: 'C2', label: 'C2' },
             ]}
@@ -82,7 +110,7 @@ const NewTicketForm: React.FC = () => {
 
           <SelectInput
             label="Site"
-            value={site}
+            value={Site}
             onChange={setSite}
             options={[
               { value: '', label: 'Select site' },
@@ -95,7 +123,7 @@ const NewTicketForm: React.FC = () => {
           <div style={styles.inputGroup}>
             <label style={styles.label}>Request Description</label>
             <textarea
-              value={description}
+              value={Description}
               onChange={(e) => setDescription(e.target.value)}
               style={styles.textarea}
               placeholder="Describe the issue"
@@ -203,7 +231,7 @@ const styles: Record<string, React.CSSProperties> = {
   label: {
     marginBottom: '6px',
     fontWeight: 500,
-    color: '#2f2f2f', // כמו הטקסט ב-sidebar
+    color: '#2f2f2f',
   },
   input: {
     padding: '10px',
@@ -233,7 +261,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   resultBox: {
     marginTop: '30px',
-    backgroundColor: '#2f2f2f', // כהה כמו sidebar
+    backgroundColor: '#2f2f2f',
     padding: '16px',
     borderRadius: '10px',
     color: '#fff',

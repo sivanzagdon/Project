@@ -8,7 +8,17 @@ import os
 
 load_dotenv()
 DATABASE_NAME = os.getenv("DATABASE_NAME")
-MODEL_PATH = "app/services/overdue_model.pkl"
+MODEL_PATH = "app/services/overdue_random_forest_model.pkl"
+ENCODER_DIR = "app/services/encoders"
+
+ENCODER_PATHS = {
+    "MainCategory": os.path.join(ENCODER_DIR, "MainCategory_encoder.pkl"),
+    "SubCategory": os.path.join(ENCODER_DIR, "SubCategory_encoder.pkl"),
+    "Building": os.path.join(ENCODER_DIR, "Building_encoder.pkl"),
+    "Site": os.path.join(ENCODER_DIR, "Site_encoder.pkl")
+}
+
+CATEGORICAL_COLS = ["MainCategory", "SubCategory", "Building", "Site"]
 
 def fetch_data():
     collection = get_collection(DATABASE_NAME, "service_requests")
@@ -20,20 +30,23 @@ def preprocess_for_prediction(df):
     df["Hour"] = df["Created on"].dt.hour
     df["Weekday"] = df["Created on"].dt.weekday
 
-    for col in ["MainCategory", "SubCategory", "Building", "Site"]:
+    for col in CATEGORICAL_COLS:
         df[col] = df[col].fillna("Unknown")
 
     df = df.dropna(subset=["Created on", "is_overdue"])
 
+    for col in CATEGORICAL_COLS:
+        le = joblib.load(ENCODER_PATHS[col])
+        df[col] = le.transform(df[col].astype(str))
+
     features = ["MainCategory", "SubCategory", "Building", "Site", "Hour", "Weekday"]
-    X = pd.get_dummies(df[features])
+    X = df[features]
     y = df["is_overdue"]
 
     return X, y
 
 def align_columns(X, model_columns):
-    X = X.reindex(columns=model_columns, fill_value=0)
-    return X
+    return X.reindex(columns=model_columns, fill_value=0)
 
 def test_model():
     print("Loading model...")

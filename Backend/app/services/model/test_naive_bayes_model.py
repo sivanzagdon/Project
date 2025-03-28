@@ -10,6 +10,8 @@ import os
 load_dotenv()
 DATABASE_NAME = os.getenv("DATABASE_NAME")
 MODEL_PATH = "app/services/overdue_naive_bayes_model.pkl"
+ENCODER_DIR = "app/services/encoders"
+CATEGORICAL_COLS = ["MainCategory", "SubCategory", "Building", "Site"]
 
 def fetch_data():
     collection = get_collection(DATABASE_NAME, "service_requests")
@@ -21,26 +23,28 @@ def preprocess_for_prediction(df):
     df["Hour"] = df["Created on"].dt.hour
     df["Weekday"] = df["Created on"].dt.weekday
 
-    for col in ["MainCategory", "SubCategory", "Building", "Site"]:
+    for col in CATEGORICAL_COLS:
         df[col] = df[col].fillna("Unknown")
 
     df = df.dropna(subset=["Created on", "is_overdue"])
 
+    for col in CATEGORICAL_COLS:
+        encoder_path = os.path.join(ENCODER_DIR, f"{col}_encoder.pkl")
+        le = joblib.load(encoder_path)
+        df[col] = le.transform(df[col].astype(str))
+
     features = ["MainCategory", "SubCategory", "Building", "Site", "Hour", "Weekday"]
-    X = pd.get_dummies(df[features])
+    X = df[features]
     y = df["is_overdue"]
 
     return X, y
 
 def align_columns(X, model_columns):
-    X = X.reindex(columns=model_columns, fill_value=0)
-    return X
+    return X.reindex(columns=model_columns, fill_value=0)
 
 def test_model():
     print("Loading model...")
-
-
-    model = GaussianNB()
+    model, model_columns = joblib.load(MODEL_PATH)
 
     print("Fetching and preprocessing data...")
     df = fetch_data()
@@ -49,13 +53,7 @@ def test_model():
     test_df = df.iloc[:test_size].copy()
 
     X_test, y_test = preprocess_for_prediction(test_df)
-
-    print("Training the Naive Bayes model...")
-    model.fit(X_test, y_test)
-
-    # Save the trained model and columns for later use
-    model_columns = X_test.columns.tolist()
-    joblib.dump((model, model_columns), MODEL_PATH)
+    X_test = align_columns(X_test, model_columns)
 
     print("Predicting...")
     y_pred = model.predict(X_test)
