@@ -12,20 +12,29 @@ const NewTicketForm: React.FC = () => {
   const [prediction, setPrediction] = useState<number | null>(null)
   const [recommendations, setRecommendations] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [expectedTime, setExpectedTime] = useState<number | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
-    try {
-      const response: TicketResponse = await requestService.createTicket({
-        MainCategory,
-        SubCategory,
-        Building,
-        Site,
-        Description,
-      })
+    const ticketData = {
+      MainCategory,
+      SubCategory,
+      Building,
+      Site,
+      Description,
+    }
 
+    try {
+      const expected = await requestService.predictExpectedResponseTime(
+        ticketData
+      )
+      setExpectedTime(expected)
+
+      const response: TicketResponse = await requestService.createTicket(
+        ticketData
+      )
       const { sla_time, risk_score, recommendations } = response
 
       setSla(`${sla_time} Hours`)
@@ -83,80 +92,252 @@ const NewTicketForm: React.FC = () => {
             onChange={setSubCategory}
             options={[
               { value: '', label: 'Select subcategory' },
-              { value: 'AC Issue', label: 'AC Issue' },
-              { value: 'Add shelf/hook', label: 'Add shelf/hook' },
-              { value: 'Air quality issue', label: 'Air quality issue' },
-              { value: 'Bathroom maintenance', label: 'Bathroom maintenance' },
-              { value: 'Broken glass', label: 'Broken glass' },
-              { value: 'Broken/Loose socket', label: 'Broken/Loose socket' },
-              { value: 'Cleaning required', label: 'Cleaning required' },
-              { value: 'Construction noise', label: 'Construction noise' },
-              { value: 'Curtains issue', label: 'Curtains issue' },
-              { value: 'Damaged wall/ceiling', label: 'Damaged wall/ceiling' },
               {
-                value: 'Door not closing/opening',
-                label: 'Door not closing/opening',
-              },
-              { value: 'Electricity shutdown', label: 'Electricity shutdown' },
-              {
-                value: 'Equipment not working',
-                label: 'Equipment not working',
+                value: 'Access App is not working',
+                label: 'Access App is not working',
               },
               {
-                value: 'Extra furniture needed',
-                label: 'Extra furniture needed',
+                value: 'Access Card/Tag/Key does not work',
+                label: 'Access Card/Tag/Key does not work',
               },
-              { value: 'Fire alarm issue', label: 'Fire alarm issue' },
-              { value: 'Flooring issue', label: 'Flooring issue' },
+              { value: 'Accounting requests', label: 'Accounting requests' },
+              { value: 'Add/Remove Furniture', label: 'Add/Remove Furniture' },
+              {
+                value:
+                  'Appliance is broken Dishwasher/Coffee Machine/Fridge etc.',
+                label:
+                  'Appliance is broken Dishwasher/Coffee Machine/Fridge etc.',
+              },
+              {
+                value: 'Arrange Community Event',
+                label: 'Arrange Community Event',
+              },
+              { value: 'Arrange Host Event', label: 'Arrange Host Event' },
+              {
+                value: 'Audio Visual equipment does not work',
+                label: 'Audio Visual equipment does not work',
+              },
+              {
+                value: 'Bad smell from air conditioner',
+                label: 'Bad smell from air conditioner',
+              },
+              {
+                value: 'Blinds are not working/Caged',
+                label: 'Blinds are not working/Caged',
+              },
+              {
+                value: 'Blinds are not working/damaged',
+                label: 'Blinds are not working/damaged',
+              },
+              { value: 'Booking event spaces', label: 'Booking event spaces' },
+              { value: 'CCTV', label: 'CCTV' },
+              { value: 'Catering', label: 'Catering' },
+              { value: 'Clean gutters', label: 'Clean gutters' },
+              {
+                value: 'Cleaning needed in Event Space',
+                label: 'Cleaning needed in Event Space',
+              },
+              {
+                value: 'Cleaning needed in Lounge',
+                label: 'Cleaning needed in Lounge',
+              },
+              {
+                value: 'Cleaning needed in Meeting Room',
+                label: 'Cleaning needed in Meeting Room',
+              },
+              {
+                value: 'Cleaning needed in Office',
+                label: 'Cleaning needed in Office',
+              },
+              {
+                value: 'Cleaning needed in another Area',
+                label: 'Cleaning needed in another Area',
+              },
+              {
+                value: 'Clear up Community Event',
+                label: 'Clear up Community Event',
+              },
+              { value: 'Clear up Host Event', label: 'Clear up Host Event' },
+              { value: 'Clogged Toilet/Sink', label: 'Clogged Toilet/Sink' },
+              {
+                value: 'Cold/Carbonized Water tap does not work',
+                label: 'Cold/Carbonized Water tap does not work',
+              },
+              {
+                value: 'Connect with sales team',
+                label: 'Connect with sales team',
+              },
+              {
+                value: 'Create/Duplicate Access Cards/Tags/keys',
+                label: 'Create/Duplicate Access Cards/Tags/keys',
+              },
+              { value: 'Deep Cleaning', label: 'Deep Cleaning' },
+              {
+                value: 'Different Access System',
+                label: 'Different Access System',
+              },
+              {
+                value: 'Door does not close/open',
+                label: 'Door does not close/open',
+              },
+              {
+                value: 'Electricity socket does not work',
+                label: 'Electricity socket does not work',
+              },
+              {
+                value: 'Elevator does not work',
+                label: 'Elevator does not work',
+              },
+              { value: 'Emergency Lighting', label: 'Emergency Lighting' },
+              {
+                value: 'Extra cleaning post Community Event',
+                label: 'Extra cleaning post Community Event',
+              },
+              {
+                value: 'Extra cleaning post Host Event',
+                label: 'Extra cleaning post Host Event',
+              },
+              {
+                value: 'Faulty air conditioner',
+                label: 'Faulty air conditioner',
+              },
+              { value: 'Fire Alarm System', label: 'Fire Alarm System' },
+              {
+                value: 'Fire safety equipment broken/missing',
+                label: 'Fire safety equipment broken/missing',
+              },
+              { value: 'Floor is Caged', label: 'Floor is Caged' },
+              { value: 'Floor is damaged', label: 'Floor is damaged' },
               {
                 value: 'Furniture is broken/dirty',
                 label: 'Furniture is broken/dirty',
               },
-              { value: 'Glass cleaning', label: 'Glass cleaning' },
-              { value: 'Handyman request', label: 'Handyman request' },
-              { value: 'HVAC Issue', label: 'HVAC Issue' },
-              { value: 'Internet not working', label: 'Internet not working' },
               {
-                value: 'Kitchen appliance issue',
-                label: 'Kitchen appliance issue',
+                value: 'Garden/Terrace plants & weeds',
+                label: 'Garden/Terrace plants & weeds',
               },
-              { value: 'Lack of supplies', label: 'Lack of supplies' },
+              { value: 'General Power outage', label: 'General Power outage' },
+              { value: 'Graffiti removal', label: 'Graffiti removal' },
+              { value: 'Guests', label: 'Guests' },
+              {
+                value: 'Gym access (Applicable to certain sites only)',
+                label: 'Gym access (Applicable to certain sites only)',
+              },
+              {
+                value: 'Heating does not work',
+                label: 'Heating does not work',
+              },
+              { value: 'IT Setup', label: 'IT Setup' },
+              { value: 'Installation', label: 'Installation' },
+              {
+                value: 'Intercom does not work',
+                label: 'Intercom does not work',
+              },
+              {
+                value: 'Internet port does not work',
+                label: 'Internet port does not work',
+              },
+              {
+                value: 'Kitchen cabinets are broken',
+                label: 'Kitchen cabinets are broken',
+              },
               { value: 'Leakage', label: 'Leakage' },
-              { value: 'Lights not working', label: 'Lights not working' },
-              { value: 'Maintenance noise', label: 'Maintenance noise' },
-              { value: 'Mirror issue', label: 'Mirror issue' },
-              { value: 'New member setup', label: 'New member setup' },
+              {
+                value: 'Leaking air conditioner',
+                label: 'Leaking air conditioner',
+              },
+              { value: 'Light does not work', label: 'Light does not work' },
+              {
+                value: 'Lighting Strike Prevention System',
+                label: 'Lighting Strike Prevention System',
+              },
+              { value: 'Local Power outage', label: 'Local Power outage' },
+              {
+                value: 'Lock battery needs replacing',
+                label: 'Lock battery needs replacing',
+              },
+              {
+                value: 'Lock/Access Point does not work',
+                label: 'Lock/Access Point does not work',
+              },
+              { value: 'Logo request', label: 'Logo request' },
+              {
+                value: 'Lost Access Card/Tag/Key',
+                label: 'Lost Access Card/Tag/Key',
+              },
+              { value: 'Lost card / Lost key', label: 'Lost card / Lost key' },
+              {
+                value: 'Marketing Screen does not work',
+                label: 'Marketing Screen does not work',
+              },
+              {
+                value: 'Member modification (add/remove)',
+                label: 'Member modification (add/remove)',
+              },
+              {
+                value: 'Mindspace App does not work',
+                label: 'Mindspace App does not work',
+              },
+              { value: 'Mindspace events', label: 'Mindspace events' },
+              { value: 'No (hot) water', label: 'No (hot) water' },
+              { value: 'No Power', label: 'No Power' },
               { value: 'No/Slow Internet', label: 'No/Slow Internet' },
-              { value: 'Office too cold/hot', label: 'Office too cold/hot' },
-              { value: 'Other', label: 'Other' },
-              { value: 'Paint scratches', label: 'Paint scratches' },
+              { value: 'No/Slow WiFi', label: 'No/Slow WiFi' },
+              {
+                value: 'Noisy air conditioner',
+                label: 'Noisy air conditioner',
+              },
+              { value: 'Open locker', label: 'Open locker' },
+              { value: 'Packages & Mail', label: 'Packages & Mail' },
+              { value: 'Painting', label: 'Painting' },
               { value: 'Painting request', label: 'Painting request' },
+              { value: 'Paintwork is Caged', label: 'Paintwork is Caged' },
+              { value: 'Paintwork is damaged', label: 'Paintwork is damaged' },
               {
-                value: 'Projector/Screen issue',
-                label: 'Projector/Screen issue',
+                value: 'Parking issues (Applicable to certain sites only)',
+                label: 'Parking issues (Applicable to certain sites only)',
               },
-              { value: 'Remove items', label: 'Remove items' },
+              { value: 'Pest control', label: 'Pest control' },
+              {
+                value: 'Power/AV cables missing',
+                label: 'Power/AV cables missing',
+              },
+              {
+                value: 'Printer does not work',
+                label: 'Printer does not work',
+              },
+              {
+                value:
+                  'Questions reg. Membership (e.g. accessing other locations)',
+                label:
+                  'Questions reg. Membership (e.g. accessing other locations)',
+              },
               { value: 'Repairs', label: 'Repairs' },
-              { value: 'Replace lights', label: 'Replace lights' },
               {
-                value: 'Replacing stock Printing paper/Coffee/Milk etc',
-                label: 'Replacing stock Printing paper/Coffee/Milk etc',
+                value: 'Replacing stock Printing paper/Coffee/Milk etc.',
+                label: 'Replacing stock Printing paper/Coffee/Milk etc.',
               },
-              { value: 'Sink clog', label: 'Sink clog' },
-              { value: 'Storage issue', label: 'Storage issue' },
-              { value: 'Table damaged', label: 'Table damaged' },
-              { value: 'Temperature issue', label: 'Temperature issue' },
-              { value: 'Toilet not working', label: 'Toilet not working' },
-              { value: 'TV not working', label: 'TV not working' },
-              { value: 'Wall needs fixing', label: 'Wall needs fixing' },
-              { value: 'Water cooler issue', label: 'Water cooler issue' },
-              { value: 'Water leak', label: 'Water leak' },
-              { value: 'Window cracked', label: 'Window cracked' },
+              {
+                value: 'Request for a personal meeting',
+                label: 'Request for a personal meeting',
+              },
+              { value: 'Restroom', label: 'Restroom' },
+              { value: 'Roof', label: 'Roof' },
+              { value: 'Signage', label: 'Signage' },
+              {
+                value: 'Ventilation does not work',
+                label: 'Ventilation does not work',
+              },
+              { value: 'Very urgent fix', label: 'Very urgent fix' },
+              { value: 'Water pressure low', label: 'Water pressure low' },
               {
                 value: 'Window does not close/open',
                 label: 'Window does not close/open',
               },
-              { value: 'Wires exposed', label: 'Wires exposed' },
+              {
+                value: 'Window/Door glass is broken',
+                label: 'Window/Door glass is broken',
+              },
             ]}
           />
 
@@ -226,6 +407,12 @@ const NewTicketForm: React.FC = () => {
               </>
             )}
             {/* {isLoading && <Loading />} */}
+            {expectedTime !== null && (
+              <p style={styles.resultText}>
+                <strong>Expected response time:</strong>{' '}
+                {expectedTime.toFixed(2)} hours
+              </p>
+            )}
           </div>
         )}
         {isLoading && <Loading />}
