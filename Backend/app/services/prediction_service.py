@@ -1,5 +1,3 @@
-
-
 import os
 import joblib
 import pandas as pd
@@ -12,28 +10,34 @@ ENCODER_DIR = os.path.join(BASE_DIR, "encoders")
 MODEL_PATHS = {
     "random_forest": os.path.join(BASE_DIR, "overdue_random_forest_model.pkl"),
     "xgboost": os.path.join(BASE_DIR, "overdue_xgboost_model.pkl"),
-    "naive_bayes": os.path.join(BASE_DIR, "overdue_naive_bayes_model.pkl"),
-    "adaboost": os.path.join(BASE_DIR, "overdue_adaboost_model.pkl")
+    "catboost": os.path.join(BASE_DIR, "overdue_catboost_model.pkl")
 }
 
 MODEL_WEIGHTS = {
     "random_forest": 0.83,
-    "xgboost": 0.60,
-    "naive_bayes": 0.50,
-    "adaboost": 0.60
+    "xgboost": 0.77,
+    "catboost": 0.78
 }
 
 FEATURE_COLUMNS = {
     "random_forest": ['MainCategory', 'SubCategory', 'Building', 'Site', 'Hour', 'Weekday'],
     "xgboost": ['MainCategory', 'SubCategory', 'Building', 'Site', 'Hour', 'Weekday', 'Month', 'DayOfMonth', 'Is weekend', 'RequestLength'],
-    "naive_bayes": ['MainCategory', 'SubCategory', 'Building', 'Site', 'Hour', 'Weekday'],
-    "adaboost": ['MainCategory', 'SubCategory', 'Building', 'Site', 'Hour', 'Weekday', 'Month', 'DayOfMonth', 'Is weekend', 'RequestLength']
+    "catboost": ['MainCategory', 'SubCategory', 'Building', 'Site', 'Hour', 'Weekday', 'Month', 'DayOfMonth', 'Is weekend', 'RequestLength', 'IsUrgent']
 }
 
 CATEGORICAL_COLS = ["MainCategory", "SubCategory", "Building", "Site"]
 
+# Load models into memory once
+LOADED_MODELS = {}
+for name, path in MODEL_PATHS.items():
+    try:
+        LOADED_MODELS[name] = joblib.load(path)
+        print(f"Model '{name}' loaded into memory.")
+    except Exception as e:
+        print(f"Error loading model '{name}': {e}")
+
 def preprocess_input(data: dict, model_name: str) -> pd.DataFrame:
-    print("\U0001f9f9 Preprocessing input data...")
+    print("Preprocessing input data...")
     df = pd.DataFrame([data])
 
     df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
@@ -43,26 +47,22 @@ def preprocess_input(data: dict, model_name: str) -> pd.DataFrame:
     df["DayOfMonth"] = df["Created on"].dt.day
     df["Is weekend"] = df["Weekday"].isin([5, 6]).astype(int)
     df["RequestLength"] = df["Description"].apply(lambda x: len(str(x)))
+    df["IsUrgent"] = df["Description"].str.contains("(?i)דחוף|מיידי|אסון|תקלה|קריטי", na=False).astype(int)
 
-    # Fill NAs for safety
     for col in CATEGORICAL_COLS:
         df[col] = df[col].fillna("Unknown")
-
-    for col in CATEGORICAL_COLS:
         encoder_path = os.path.join(ENCODER_DIR, f"{col}_encoder.pkl")
         le = joblib.load(encoder_path)
         df[col] = df[col].apply(lambda val: val if val in le.classes_ else "Unknown")
-
         if "Unknown" not in le.classes_:
             le.classes_ = np.append(le.classes_, "Unknown")
-
         df[col] = le.transform(df[col].astype(str))
 
     features = FEATURE_COLUMNS[model_name]
     X = df[features].copy()
     X = X.reindex(columns=features, fill_value=0)
 
-    print("\U0001f9ee Data after preprocessing:")
+    print("Data after preprocessing:")
     print(X.head())
     return X
 
@@ -71,16 +71,15 @@ def predict_combined_risk(data: dict) -> float:
     total_weight = 0
     weighted_sum = 0
 
-    for name, path in MODEL_PATHS.items():
+    for name in MODEL_PATHS:
         try:
-            print(f"\U0001f501 Attempting to load model: {name} from path: {path}")
-            model, features = joblib.load(path)
-            print(f"✅ {name} model loaded successfully")
+            model, features = LOADED_MODELS[name]
+            print(f"Using preloaded model: {name}")
             X = preprocess_input(data, name)
 
-            print(f"⚙️ Running prediction with {name} model...")
+            print(f"Running prediction with {name} model...")
             pred = int(model.predict(X)[0])
-            print(f"\U0001f4ca {name} model prediction: {pred}")
+            print(f"{name} model prediction: {pred}")
 
             weighted_sum += pred * MODEL_WEIGHTS[name]
             total_weight += MODEL_WEIGHTS[name]
@@ -89,13 +88,13 @@ def predict_combined_risk(data: dict) -> float:
             print(f"Total weight: {total_weight}")
 
         except Exception as e:
-            print(f"⚠️ Failed to load or predict with {name}: {e}")
+            print(f"Failed to use model '{name}': {e}")
 
     if total_weight > 0:
         final_score = round((weighted_sum / total_weight), 2)
-        print(f"\U0001f522 Combined risk score calculated: {final_score}")
+        print(f"Combined risk score calculated: {final_score}")
     else:
         final_score = 0.5
-        print("⚠️ No models returned valid predictions. Defaulting to 0.5")
+        print("No models returned valid predictions. Defaulting to 0.5")
 
     return final_score
