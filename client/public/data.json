@@ -1,0 +1,116 @@
+{
+  "I. MIMO & Member Requests": [
+    "Painting request",
+    "Painting",
+    "Add/Remove Furniture",
+    "Deep Cleaning",
+    "Installation",
+    "Different Access System",
+    "Open locker",
+    "Repairs",
+    "Create/Duplicate Access Cards/Tags/keys",
+    "IT Setup"
+  ],
+  "E. Electrical, IT & A/V Equipment": [
+    "Light does not work",
+    "Mindspace App does not work",
+    "No Power",
+    "No/Slow WiFi",
+    "Printer does not work",
+    "Local Power outage",
+    "Electricity socket does not work",
+    "Internet port does not work",
+    "Marketing Screen does not work",
+    "Audio Visual equipment does not work",
+    "General Power outage",
+    "Power/AV cables missing",
+    "No/Slow Internet"
+  ],
+  "B. Climate": [
+    "Bad smell from air conditioner",
+    "Heating does not work",
+    "Faulty air conditioner",
+    "Ventilation does not work",
+    "Leaking air conditioner",
+    "Noisy air conditioner"
+  ],
+  "F. Building and Infrastructure": [
+    "Blinds are not working/Caged",
+    "Floor is damaged",
+    "Paintwork is Caged",
+    "Window does not close/open",
+    "Paintwork is damaged",
+    "Door does not close/open",
+    "Elevator does not work",
+    "Blinds are not working/damaged",
+    "Floor is Caged",
+    "Garden/Terrace plants & weeds",
+    "Window/Door glass is broken",
+    "Pest control"
+  ],
+  "A. Cleaning": [
+    "Cleaning needed in Lounge",
+    "Cleaning needed in Meeting Room",
+    "Cleaning needed in another Area",
+    "Cleaning needed in Event Space",
+    "Cleaning needed in Office"
+  ],
+  "M. Community": [
+    "Connect with sales team",
+    "Booking event spaces",
+    "Gym access (Applicable to certain sites only)",
+    "Mindspace events",
+    "Request for a personal meeting",
+    "Logo request",
+    "Parking issues (Applicable to certain sites only)",
+    "Catering",
+    "Questions reg. Membership (e.g. accessing other locations)",
+    "Accounting requests",
+    "Packages & Mail",
+    "Lost card / Lost key",
+    "Guests",
+    "Member modification (add/remove)"
+  ],
+  "C. Office & Kitchen & Printer Corner": [
+    "Furniture is broken/dirty",
+    "Kitchen cabinets are broken",
+    "Replacing stock Printing paper/Coffee/Milk etc.",
+    "Appliance is broken Dishwasher/Coffee Machine/Fridge etc.",
+    "Cold/Carbonized Water tap does not work"
+  ],
+  "J. Maintenance": [
+    "Graffiti removal",
+    "Restroom",
+    "Clean gutters",
+    "CCTV",
+    "Signage",
+    "Roof",
+    "Emergency Lighting",
+    "Fire Alarm System",
+    "Lighting Strike Prevention System"
+  ],
+  "D. Water & Plumbing": [
+    "No (hot) water",
+    "Clogged Toilet/Sink",
+    "Leakage",
+    "Water pressure low"
+  ],
+  "H. Events": [
+    "Arrange Host Event",
+    "Arrange Community Event",
+    "Extra cleaning post Community Event",
+    "Clear up Host Event",
+    "Extra cleaning post Host Event",
+    "Clear up Community Event"
+  ],
+  "G. Safety & Security": [
+    "Fire safety equipment broken/missing",
+    "Intercom does not work",
+    "Lost Access Card/Tag/Key",
+    "Access App is not working",
+    "Lock battery needs replacing",
+    "Lock/Access Point does not work",
+    "Access Card/Tag/Key does not work"
+  ],
+  "K. Top Priority": ["Very urgent fix"]
+}

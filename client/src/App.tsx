@@ -13,6 +13,7 @@ import {
   Navigate,
 } from 'react-router-dom'
 import NewTicketForm from './Screens/newTicketForm/newTicketForm'
+import DashboardPage from './Screens/DashboardScreen/DashboardScreen'
 
 const App: React.FC = () => {
   useEffect(() => {
@@ -62,6 +63,7 @@ const App: React.FC = () => {
                 <Route path="/home" element={<HomeScreen />} />
                 <Route path="/" element={<HomeScreen />} />
                 <Route path="/new-ticket" element={<NewTicketForm />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
               </Routes>
             </div>
           </div>

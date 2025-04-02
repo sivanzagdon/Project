@@ -1,21 +1,43 @@
 from datetime import datetime
 from app.db import get_collection
 from app.services.prediction_service import predict_combined_risk
+import json
 
 
+def load_sla_data():
+    try:
+        print("Attempting to load SLA data from JSON file...")
+        with open("data/sla_data.json", "r", encoding="utf-8") as file:
+            data = json.load(file)
+            print("SLA data loaded successfully.")
+            return data
+    except Exception as e:
+        print(f"Error loading SLA data: {e}")
+        return {}
 
-def calculate_sla(main_category: str, sub_category: str) -> int:
-    if main_category == "Electricity":
-        return 4
-    elif main_category == "Plumbing":
-        return 6
-    else:
-        return 8
+# הפונקציה המחודשת
+def calculate_sla(sub_category: str) -> int:
+    print(f"Calculating SLA for sub-category: '{sub_category}'")
+    
+    sla_data = load_sla_data()
+    
+    if not sla_data:
+        print("No SLA data available or failed to load data.")
+        return -1
+ 
+
+    if sub_category in sla_data:
+        print(f"Found SLA for '{sub_category}': {sla_data[sub_category]} hours")
+        return sla_data[sub_category]
+    
+    print(f"Sub-category '{sub_category}' not found in SLA data.")
+    return -1  
+
 
 def create_new_service_request(data: dict) -> dict:
     collection = get_collection("DS_PROJECT", "newRequests")
 
-    sla_time = calculate_sla(data["MainCategory"], data["SubCategory"])
+    sla_time = calculate_sla(data["SubCategory"])
     risk_score = predict_combined_risk(data)
 
     document = {

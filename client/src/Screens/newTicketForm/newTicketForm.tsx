@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { TicketResponse, requestService } from '../../services/request.service'
 import Loading from '../../components/Loading'
+import './NewTicketForm.css'
+import RiskReveal from '../../components/RiskReveal'
 
 const NewTicketForm: React.FC = () => {
   const [MainCategory, setMainCategory] = useState('')
@@ -13,9 +15,44 @@ const NewTicketForm: React.FC = () => {
   const [recommendations, setRecommendations] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [expectedTime, setExpectedTime] = useState<number | null>(null)
+  const [categoriesData, setCategoriesData] = useState<any>({})
+  const [subCategoriesOptions, setSubCategoriesOptions] = useState<
+    { value: string; label: string }[]
+  >([])
+
+  // Fetch categories from the JSON file located in public folder
+  useEffect(() => {
+    fetch('/data.json')
+      .then((response) => response.json())
+      .then((data) => setCategoriesData(data))
+      .catch((error) => console.error('Error loading categories data:', error))
+  }, [])
+
+  // Update subcategories options when main category changes
+  useEffect(() => {
+    if (MainCategory && categoriesData[MainCategory]) {
+      const subCategories = categoriesData[MainCategory].map(
+        (subCat: string) => ({
+          value: subCat,
+          label: subCat,
+        })
+      )
+      setSubCategoriesOptions(subCategories)
+
+      if (subCategories.length === 0) {
+        setSubCategory('')
+      }
+    }
+  }, [MainCategory, categoriesData])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!MainCategory || !SubCategory) {
+      alert('Please select both a main category and a subcategory.')
+      return
+    }
+
     setIsLoading(true)
 
     const ticketData = {
@@ -45,6 +82,12 @@ const NewTicketForm: React.FC = () => {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const getRiskLevel = (score: number): string => {
+    if (score < 0.4) return 'Low Risk'
+    if (score < 0.7) return 'Medium Risk'
+    return 'High Risk'
   }
 
   return (
@@ -90,255 +133,7 @@ const NewTicketForm: React.FC = () => {
             label="Subcategory"
             value={SubCategory}
             onChange={setSubCategory}
-            options={[
-              { value: '', label: 'Select subcategory' },
-              {
-                value: 'Access App is not working',
-                label: 'Access App is not working',
-              },
-              {
-                value: 'Access Card/Tag/Key does not work',
-                label: 'Access Card/Tag/Key does not work',
-              },
-              { value: 'Accounting requests', label: 'Accounting requests' },
-              { value: 'Add/Remove Furniture', label: 'Add/Remove Furniture' },
-              {
-                value:
-                  'Appliance is broken Dishwasher/Coffee Machine/Fridge etc.',
-                label:
-                  'Appliance is broken Dishwasher/Coffee Machine/Fridge etc.',
-              },
-              {
-                value: 'Arrange Community Event',
-                label: 'Arrange Community Event',
-              },
-              { value: 'Arrange Host Event', label: 'Arrange Host Event' },
-              {
-                value: 'Audio Visual equipment does not work',
-                label: 'Audio Visual equipment does not work',
-              },
-              {
-                value: 'Bad smell from air conditioner',
-                label: 'Bad smell from air conditioner',
-              },
-              {
-                value: 'Blinds are not working/Caged',
-                label: 'Blinds are not working/Caged',
-              },
-              {
-                value: 'Blinds are not working/damaged',
-                label: 'Blinds are not working/damaged',
-              },
-              { value: 'Booking event spaces', label: 'Booking event spaces' },
-              { value: 'CCTV', label: 'CCTV' },
-              { value: 'Catering', label: 'Catering' },
-              { value: 'Clean gutters', label: 'Clean gutters' },
-              {
-                value: 'Cleaning needed in Event Space',
-                label: 'Cleaning needed in Event Space',
-              },
-              {
-                value: 'Cleaning needed in Lounge',
-                label: 'Cleaning needed in Lounge',
-              },
-              {
-                value: 'Cleaning needed in Meeting Room',
-                label: 'Cleaning needed in Meeting Room',
-              },
-              {
-                value: 'Cleaning needed in Office',
-                label: 'Cleaning needed in Office',
-              },
-              {
-                value: 'Cleaning needed in another Area',
-                label: 'Cleaning needed in another Area',
-              },
-              {
-                value: 'Clear up Community Event',
-                label: 'Clear up Community Event',
-              },
-              { value: 'Clear up Host Event', label: 'Clear up Host Event' },
-              { value: 'Clogged Toilet/Sink', label: 'Clogged Toilet/Sink' },
-              {
-                value: 'Cold/Carbonized Water tap does not work',
-                label: 'Cold/Carbonized Water tap does not work',
-              },
-              {
-                value: 'Connect with sales team',
-                label: 'Connect with sales team',
-              },
-              {
-                value: 'Create/Duplicate Access Cards/Tags/keys',
-                label: 'Create/Duplicate Access Cards/Tags/keys',
-              },
-              { value: 'Deep Cleaning', label: 'Deep Cleaning' },
-              {
-                value: 'Different Access System',
-                label: 'Different Access System',
-              },
-              {
-                value: 'Door does not close/open',
-                label: 'Door does not close/open',
-              },
-              {
-                value: 'Electricity socket does not work',
-                label: 'Electricity socket does not work',
-              },
-              {
-                value: 'Elevator does not work',
-                label: 'Elevator does not work',
-              },
-              { value: 'Emergency Lighting', label: 'Emergency Lighting' },
-              {
-                value: 'Extra cleaning post Community Event',
-                label: 'Extra cleaning post Community Event',
-              },
-              {
-                value: 'Extra cleaning post Host Event',
-                label: 'Extra cleaning post Host Event',
-              },
-              {
-                value: 'Faulty air conditioner',
-                label: 'Faulty air conditioner',
-              },
-              { value: 'Fire Alarm System', label: 'Fire Alarm System' },
-              {
-                value: 'Fire safety equipment broken/missing',
-                label: 'Fire safety equipment broken/missing',
-              },
-              { value: 'Floor is Caged', label: 'Floor is Caged' },
-              { value: 'Floor is damaged', label: 'Floor is damaged' },
-              {
-                value: 'Furniture is broken/dirty',
-                label: 'Furniture is broken/dirty',
-              },
-              {
-                value: 'Garden/Terrace plants & weeds',
-                label: 'Garden/Terrace plants & weeds',
-              },
-              { value: 'General Power outage', label: 'General Power outage' },
-              { value: 'Graffiti removal', label: 'Graffiti removal' },
-              { value: 'Guests', label: 'Guests' },
-              {
-                value: 'Gym access (Applicable to certain sites only)',
-                label: 'Gym access (Applicable to certain sites only)',
-              },
-              {
-                value: 'Heating does not work',
-                label: 'Heating does not work',
-              },
-              { value: 'IT Setup', label: 'IT Setup' },
-              { value: 'Installation', label: 'Installation' },
-              {
-                value: 'Intercom does not work',
-                label: 'Intercom does not work',
-              },
-              {
-                value: 'Internet port does not work',
-                label: 'Internet port does not work',
-              },
-              {
-                value: 'Kitchen cabinets are broken',
-                label: 'Kitchen cabinets are broken',
-              },
-              { value: 'Leakage', label: 'Leakage' },
-              {
-                value: 'Leaking air conditioner',
-                label: 'Leaking air conditioner',
-              },
-              { value: 'Light does not work', label: 'Light does not work' },
-              {
-                value: 'Lighting Strike Prevention System',
-                label: 'Lighting Strike Prevention System',
-              },
-              { value: 'Local Power outage', label: 'Local Power outage' },
-              {
-                value: 'Lock battery needs replacing',
-                label: 'Lock battery needs replacing',
-              },
-              {
-                value: 'Lock/Access Point does not work',
-                label: 'Lock/Access Point does not work',
-              },
-              { value: 'Logo request', label: 'Logo request' },
-              {
-                value: 'Lost Access Card/Tag/Key',
-                label: 'Lost Access Card/Tag/Key',
-              },
-              { value: 'Lost card / Lost key', label: 'Lost card / Lost key' },
-              {
-                value: 'Marketing Screen does not work',
-                label: 'Marketing Screen does not work',
-              },
-              {
-                value: 'Member modification (add/remove)',
-                label: 'Member modification (add/remove)',
-              },
-              {
-                value: 'Mindspace App does not work',
-                label: 'Mindspace App does not work',
-              },
-              { value: 'Mindspace events', label: 'Mindspace events' },
-              { value: 'No (hot) water', label: 'No (hot) water' },
-              { value: 'No Power', label: 'No Power' },
-              { value: 'No/Slow Internet', label: 'No/Slow Internet' },
-              { value: 'No/Slow WiFi', label: 'No/Slow WiFi' },
-              {
-                value: 'Noisy air conditioner',
-                label: 'Noisy air conditioner',
-              },
-              { value: 'Open locker', label: 'Open locker' },
-              { value: 'Packages & Mail', label: 'Packages & Mail' },
-              { value: 'Painting', label: 'Painting' },
-              { value: 'Painting request', label: 'Painting request' },
-              { value: 'Paintwork is Caged', label: 'Paintwork is Caged' },
-              { value: 'Paintwork is damaged', label: 'Paintwork is damaged' },
-              {
-                value: 'Parking issues (Applicable to certain sites only)',
-                label: 'Parking issues (Applicable to certain sites only)',
-              },
-              { value: 'Pest control', label: 'Pest control' },
-              {
-                value: 'Power/AV cables missing',
-                label: 'Power/AV cables missing',
-              },
-              {
-                value: 'Printer does not work',
-                label: 'Printer does not work',
-              },
-              {
-                value:
-                  'Questions reg. Membership (e.g. accessing other locations)',
-                label:
-                  'Questions reg. Membership (e.g. accessing other locations)',
-              },
-              { value: 'Repairs', label: 'Repairs' },
-              {
-                value: 'Replacing stock Printing paper/Coffee/Milk etc.',
-                label: 'Replacing stock Printing paper/Coffee/Milk etc.',
-              },
-              {
-                value: 'Request for a personal meeting',
-                label: 'Request for a personal meeting',
-              },
-              { value: 'Restroom', label: 'Restroom' },
-              { value: 'Roof', label: 'Roof' },
-              { value: 'Signage', label: 'Signage' },
-              {
-                value: 'Ventilation does not work',
-                label: 'Ventilation does not work',
-              },
-              { value: 'Very urgent fix', label: 'Very urgent fix' },
-              { value: 'Water pressure low', label: 'Water pressure low' },
-              {
-                value: 'Window does not close/open',
-                label: 'Window does not close/open',
-              },
-              {
-                value: 'Window/Door glass is broken',
-                label: 'Window/Door glass is broken',
-              },
-            ]}
+            options={subCategoriesOptions}
           />
 
           <SelectInput
@@ -393,10 +188,17 @@ const NewTicketForm: React.FC = () => {
             )}
 
             {prediction !== null && (
-              <>
-                <p style={styles.riskText}>
-                  {Math.round(prediction * 100)}% Risk of Breach
-                </p>
+              <div style={styles.riskContainer}>
+                <RiskReveal
+                  riskLevel={getRiskLevel(prediction)}
+                  color={
+                    prediction < 0.4
+                      ? 'green'
+                      : prediction < 0.7
+                      ? 'orange'
+                      : 'red'
+                  }
+                />
                 {recommendations.length > 0 && (
                   <ul style={styles.recommendationList}>
                     {recommendations.map((rec, idx) => (
@@ -404,9 +206,9 @@ const NewTicketForm: React.FC = () => {
                     ))}
                   </ul>
                 )}
-              </>
+              </div>
             )}
-            {/* {isLoading && <Loading />} */}
+
             {expectedTime !== null && (
               <p style={styles.resultText}>
                 <strong>Expected response time:</strong>{' '}
@@ -523,11 +325,6 @@ const styles: Record<string, React.CSSProperties> = {
   resultText: {
     fontSize: '16px',
     marginBottom: '8px',
-  },
-  riskText: {
-    fontSize: '18px',
-    fontWeight: 600,
-    color: '#ff6b6b',
   },
   recommendationList: {
     paddingRight: '20px',

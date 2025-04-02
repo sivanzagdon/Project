@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { store } from '../redux/store'
 
-const BASE_URL = 'http://127.0.0.1:5000'
+export const BASE_URL = 'http://127.0.0.1:5000'
 
 axios.defaults.withCredentials = false
 
@@ -9,7 +9,7 @@ const instance = axios.create({
   baseURL: BASE_URL,
   timeout: 30000,
   headers: {
-    'Content-Type': 'application/json', // עדכון ל-JSON
+    'Content-Type': 'application/json',
     Accept: 'application/json',
   },
 })

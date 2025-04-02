@@ -53,10 +53,7 @@ const LoginScreen: React.FC = () => {
 
   return (
     <div style={styles.container}>
-      <img src="/logo.png" alt="Logo" style={styles.logo} />
-
-      <h1 style={styles.title}>ColmaNalyze</h1>
-      <h2 style={styles.title}>Smarter Insights For Talent Retention</h2>
+      <img src="/logo.svg" alt="Logo" style={styles.logo} />
 
       <input
         type="text"
@@ -91,12 +88,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: 'center',
     alignItems: 'center',
     height: '100vh',
-    backgroundColor: '#F0F4F8',
+    backgroundColor: 'white',
   },
   logo: {
-    width: '150px',
-    height: '150px',
-    marginBottom: '30px',
+    width: '1000px',
+    height: '600px',
+    marginBottom: '10px',
   },
   title: {
     fontSize: '30px',
@@ -105,7 +102,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     marginBottom: '21px',
   },
   input: {
-    width: '80%',
+    width: '45%',
     padding: '15px',
     margin: '10px 0',
     backgroundColor: '#F7F7F7',
