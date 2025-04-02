@@ -16,7 +16,7 @@ export default function MainLayout() {
         indicatorColor="primary"
       >
         <Tab label="DASHBOARD" value="dashboard" />
-        <Tab label="NEW_REQUEST" value="new_request" />
+        <Tab label="NEW REQUEST" value="new_request" />
       </Tabs>
 
       <div style={{ marginTop: '2rem' }}>

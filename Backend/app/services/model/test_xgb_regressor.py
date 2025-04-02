@@ -3,8 +3,7 @@ import joblib
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split  # Import for splitting the data
 from dotenv import load_dotenv
 from app.db import get_collection
 import warnings
@@ -12,7 +11,6 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=UserWarning)
 warnings.simplefilter(action='ignore', category=pd.errors.SettingWithCopyWarning)
-
 
 load_dotenv()
 DATABASE_NAME = os.getenv("DATABASE_NAME")
@@ -36,7 +34,6 @@ def preprocess(df):
     df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
     df = df.dropna(subset=["Created on"])
 
-    # df["Response time (hours)"] = df["Response time (hours)"].astype(str).str.replace(",", "")
     df["DurationHours"] = pd.to_numeric(df["Response time (hours)"], errors="coerce")
 
     df["Hour"] = df["Created on"].dt.hour
@@ -67,6 +64,7 @@ def evaluate_model():
     df = df.sample(frac=1, random_state=42).reset_index(drop=True)
     X, y = preprocess(df)
 
+    # Split the data into 80% training and 20% test
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     print("⚙️ Making predictions...")

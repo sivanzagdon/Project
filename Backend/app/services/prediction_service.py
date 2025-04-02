@@ -14,9 +14,9 @@ MODEL_PATHS = {
 }
 
 MODEL_WEIGHTS = {
-    "random_forest": 0.83,
-    "xgboost": 0.77,
-    "catboost": 0.78
+    "random_forest": 0.348,
+    "xgboost": 0.324,
+    "catboost": 0.328
 }
 
 FEATURE_COLUMNS = {
