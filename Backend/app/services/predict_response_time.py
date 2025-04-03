@@ -2,13 +2,13 @@ import os
 import joblib
 import pandas as pd
 from datetime import datetime
-from sklearn.preprocessing import LabelEncoder
 from dotenv import load_dotenv
 import lightgbm as lgb  # Import LightGBM
 
+# Load environment variables
 load_dotenv()
 
-MODEL_PATH = "app/services/lightgbm_duration_model.pkl"  # Update to LightGBM model path
+MODEL_PATH = "app/services/lightgbm_duration_model.pkl"  # LightGBM model path
 ENCODER_DIR = "app/services/encoders_duration"
 
 ENCODER_PATHS = {
@@ -21,13 +21,13 @@ ENCODER_PATHS = {
 
 FEATURE_COLUMNS = [
     "MainCategory", "SubCategory", "Building", "Site",
-    "Hour", "Weekday", "Month", "DayOfMonth", "Is weekend", "RequestLength", "TimeOfDay"
+    "Hour", "Weekday", "Month", "DayOfMonth", "Is weekend", "RequestLength", "TimeOfDay", "Hour_Weekday"
 ]
 
 def preprocess_input(data: dict) -> pd.DataFrame:
     df = pd.DataFrame([data])
 
-    # המרת התאריך לפורמט מתאים
+    # Converting date into correct format
     df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
     df["Hour"] = df["Created on"].dt.hour
     df["Weekday"] = df["Created on"].dt.weekday
@@ -36,19 +36,21 @@ def preprocess_input(data: dict) -> pd.DataFrame:
     df["Is weekend"] = df["Weekday"].isin([5, 6]).astype(int)
     df["RequestLength"] = df["Description"].apply(lambda x: len(str(x)))
 
-    # הוספת שדה TimeOfDay
+    # Adding TimeOfDay field
     df['TimeOfDay'] = df['Hour'].apply(lambda x: 'Morning' if 6 <= x < 12 else ('Afternoon' if 12 <= x < 18 else 'Evening'))
 
-    # Label encoding
+    # Ordinal encoding for categorical columns
     for col in ["MainCategory", "SubCategory", "Building", "Site", "TimeOfDay"]:
         encoder = joblib.load(ENCODER_PATHS[col])
         df[col] = encoder.transform(df[col].astype(str))
 
-    # ביצוע reindex עם FEATURE_COLUMNS - ודא שכל התכונות כאן
+    # Adding interaction features like Hour_Weekday
+    df["Hour_Weekday"] = df["Hour"] * df["Weekday"]
+
+    # Reindex with FEATURE_COLUMNS to make sure all features are present
     df = df.reindex(columns=FEATURE_COLUMNS, fill_value=0)
 
     return df
-
 
 def predict_response_time(new_request: dict) -> float:
     try:
@@ -58,14 +60,12 @@ def predict_response_time(new_request: dict) -> float:
         print(f"❌ Failed to load model: {e}")
         return -1
 
+    # Preprocess the input data
     df = preprocess_input(new_request)
     
-    # Reindex based on FEATURE_COLUMNS
-    df = df.reindex(columns=FEATURE_COLUMNS, fill_value=0)  # Use FEATURE_COLUMNS instead of model.feature_name()
-
+    # Make prediction using the trained model
     predicted_duration = model.predict(df)[0]  # Predict response time
     return float(round(predicted_duration, 2))
-
 
 # Example usage
 if __name__ == "__main__":
@@ -79,3 +79,4 @@ if __name__ == "__main__":
     }
     predicted_hours = predict_response_time(test_request)
     print(f"⏳ Predicted response time: {predicted_hours} hours")
+

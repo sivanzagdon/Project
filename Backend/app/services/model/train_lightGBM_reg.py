@@ -1,13 +1,15 @@
 import os
 import joblib
 import pandas as pd
+import numpy as np
 from datetime import datetime
-from sklearn.utils import shuffle
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split, GridSearchCV  # Import GridSearchCV
+from sklearn.model_selection import train_test_split, RandomizedSearchCV, KFold
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import lightgbm as lgb  # Importing LightGBM
 from app.db import get_collection
 from dotenv import load_dotenv
+from sklearn.utils import shuffle
+
 import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -37,6 +39,15 @@ def fetch_data_from_mongo():
     print(f"✅ Retrieved {len(data)} records.")
     return pd.DataFrame(data)
 
+def target_encode(X, y, columns):
+    """Apply target encoding to categorical columns."""
+    for col in columns:
+        # חישוב ממוצע של היעד (DurationHours) עבור כל קטגוריה
+        mean_encoded = X.groupby(col).apply(lambda x: y.loc[x.index].mean())
+        # החלפת הערכים בקטגוריות עם הממוצע שנמצא
+        X[col] = X[col].map(mean_encoded)
+    return X
+
 def preprocess(df):
     print("🧼 Preprocessing data...")
 
@@ -61,29 +72,24 @@ def preprocess(df):
     df["Is weekend"] = df["Weekday"].isin([5, 6]).astype(int)  # 5=שבת, 6=ראשון
     df["IS_WEEKEND"] = df["Is weekend"]  # תוודא שהשדה יקרא IS_WEEKEND
 
+    # יצירת תכונות אינטראקציה (כמו שעה ויום בשבוע)
+    df["Hour_Weekday"] = df["Hour"] * df["Weekday"]
+
     # יצירת תכונות חדשות עבור ה-preprocessing
     features = [
         "MainCategory", "SubCategory", "Building", "Site",
-        "Hour", "Weekday", "Month", "DayOfMonth", "IS_WEEKEND", "RequestLength", "TimeOfDay"
+        "Hour", "Weekday", "Month", "DayOfMonth", "IS_WEEKEND", "RequestLength", "TimeOfDay", "Hour_Weekday"
     ]
 
-    # מנקה שורות עם ערכים חסרים
     df = df.dropna(subset=features + ["DurationHours"])
     X = df[features].copy()
     y = df["DurationHours"]
 
-    # קידוד משתנים קטגוריאליים בעזרת LabelEncoder
-    for col in ["MainCategory", "SubCategory", "Building", "Site", "TimeOfDay"]:
-        le = LabelEncoder()
-        X[col] = le.fit_transform(X[col].astype(str))
-        joblib.dump(le, os.path.join(ENCODER_DIR, f"{col}_encoder.pkl"))  # שומר את הקובץ לפי שם העמודה
-        print(f"🔠 After Label Encoding for {col}:")
-        print(X[col].head())
+    # Target Encoding עבור משתנים קטגוריאליים
+    X = target_encode(X, y, columns=["MainCategory", "SubCategory", "Building", "Site", "TimeOfDay"])
 
     print(f"🧮 Feature matrix shape: {X.shape}, Target shape: {y.shape}")
     return X, y
-
-
 
 def train_model():
     print("🚀 Starting training process...")
@@ -98,28 +104,33 @@ def train_model():
     # Split the data into 80% training and 20% test
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    print("🌳 Training LightGBM Regressor model with GridSearchCV...")
+    print("🌳 Training LightGBM Regressor model with RandomizedSearchCV and Cross-Validation...")
+
     # Define parameter grid for LightGBM
-    param_grid = {
-        'num_leaves': [31, 50, 100],
-        'max_depth': [-1, 10, 20],
+    param_dist = {
+        'num_leaves': np.arange(20, 150, 10),
+        'max_depth': [-1, 5, 10, 20],
         'learning_rate': [0.01, 0.05, 0.1],
-        'n_estimators': [100, 200, 300],
-        'subsample': [0.7, 0.8, 0.9]
+        'n_estimators': [100, 200, 300, 500],
+        'subsample': [0.7, 0.8, 0.9],
+        'min_child_samples': [10, 20, 50],
+        'lambda_l1': [0, 0.1, 0.5, 1],
+        'lambda_l2': [0, 0.1, 0.5, 1]
     }
 
     # Initialize LightGBM Regressor
     lgbm = lgb.LGBMRegressor(random_state=42)
 
-    # Initialize GridSearchCV
-    grid_search = GridSearchCV(estimator=lgbm, param_grid=param_grid, cv=3, n_jobs=-1, verbose=2)
+    # Initialize RandomizedSearchCV with KFold cross-validation
+    random_search = RandomizedSearchCV(lgbm, param_dist, n_iter=10, cv=KFold(n_splits=5, shuffle=True, random_state=42),
+                                       n_jobs=-1, verbose=2, random_state=42)
 
     # Fit the model
-    grid_search.fit(X_train, y_train)
+    random_search.fit(X_train, y_train)
 
     # Get the best parameters and model
-    best_lgbm_model = grid_search.best_estimator_
-    print(f"Best parameters found: {grid_search.best_params_}")
+    best_lgbm_model = random_search.best_estimator_
+    print(f"Best parameters found: {random_search.best_params_}")
 
     # Train the best model
     best_lgbm_model.fit(X_train, y_train)
@@ -130,3 +141,4 @@ def train_model():
 
 if __name__ == "__main__":
     train_model()
+   

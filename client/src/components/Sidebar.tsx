@@ -1,15 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { logout } from '../redux/slices/userSlice' // ודא שייבאת את פונקציית ה-logout מ-Redux
+import { logout } from '../redux/slices/userSlice'
 
 const Sidebar: React.FC = () => {
-  const dispatch = useDispatch() // מאפשר לבצע פעולות Redux
+  const dispatch = useDispatch()
 
   const handleLogout = () => {
-    dispatch(logout()) // מבצע את פעולת ה-logout ב-Redux
-    localStorage.removeItem('persist:root') // מנקה את ה-persisted state
-    window.location.href = '/login' // ניתוב מחדש לדף התחברות
+    dispatch(logout())
+    localStorage.removeItem('persist:root')
+    window.location.href = '/login'
   }
 
   return (
@@ -22,8 +22,8 @@ const Sidebar: React.FC = () => {
           </Link>
         </li>
         <li>
-          <Link to="/profile" style={styles.link}>
-            Profile
+          <Link to="/open-requests" style={styles.link}>
+            Open Requests
           </Link>
         </li>
         <li>

@@ -1,4 +1,4 @@
-import { post } from './axios.service'
+import { post, get } from './axios.service'
 
 interface TicketData {
   MainCategory: string
@@ -14,6 +14,17 @@ export interface TicketResponse {
   risk_score: number
   recommendations: string[]
   request_id: string
+}
+
+export interface OpenRequest {
+  id: string
+  'Created on': string
+  'Request status': string
+  MainCategory: string
+  SubCategory: string
+  Building: string
+  Site: string
+  'Request description': string
 }
 
 export class RequestService {
@@ -38,6 +49,17 @@ export class RequestService {
     } catch (error) {
       console.error('Failed to predict expected response time:', error)
       return -1
+    }
+  }
+
+  getOpenRequests = async (): Promise<OpenRequest[]> => {
+    try {
+      const response = await get('/api/open-requests')
+      console.log('Open requests:', response.data)
+      return response.data as OpenRequest[]
+    } catch (error) {
+      console.error('Failed to fetch open requests:', error)
+      return []
     }
   }
 }

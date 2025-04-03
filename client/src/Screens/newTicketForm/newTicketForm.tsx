@@ -137,6 +137,18 @@ const NewTicketForm: React.FC = () => {
           />
 
           <SelectInput
+            label="Site"
+            value={Site}
+            onChange={setSite}
+            options={[
+              { value: '', label: 'Select site' },
+              { value: 'A', label: 'A' },
+              { value: 'B', label: 'B' },
+              { value: 'C', label: 'C' },
+            ]}
+          />
+
+          <SelectInput
             label="Building"
             value={Building}
             onChange={setBuilding}
@@ -148,18 +160,6 @@ const NewTicketForm: React.FC = () => {
               { value: 'B2', label: 'B2' },
               { value: 'C1', label: 'C1' },
               { value: 'C2', label: 'C2' },
-            ]}
-          />
-
-          <SelectInput
-            label="Site"
-            value={Site}
-            onChange={setSite}
-            options={[
-              { value: '', label: 'Select site' },
-              { value: 'A', label: 'A' },
-              { value: 'B', label: 'B' },
-              { value: 'C', label: 'C' },
             ]}
           />
 
