@@ -14,6 +14,7 @@ import {
 } from 'react-router-dom'
 import NewTicketForm from './Screens/newTicketForm/newTicketForm'
 import DashboardPage from './Screens/DashboardScreen/DashboardScreen'
+import OpenRequests from './Screens/OpenRequestsScreen/OpenRequestsScreen'
 
 const App: React.FC = () => {
   useEffect(() => {
@@ -64,6 +65,7 @@ const App: React.FC = () => {
                 <Route path="/" element={<HomeScreen />} />
                 <Route path="/new-ticket" element={<NewTicketForm />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/open-requests" element={<OpenRequests />} />
               </Routes>
             </div>
           </div>

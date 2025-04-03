@@ -16,9 +16,21 @@ export interface WeekdayData {
 }
 
 export interface DashboardInterface {
-  main_category: CategoryData[]
-  sub_category: SubCategoryData[]
-  by_weekday: WeekdayData[]
+  A: {
+    main_category: CategoryData[]
+    sub_category: SubCategoryData[]
+    by_weekday: WeekdayData[]
+  }
+  B: {
+    main_category: CategoryData[]
+    sub_category: SubCategoryData[]
+    by_weekday: WeekdayData[]
+  }
+  C: {
+    main_category: CategoryData[]
+    sub_category: SubCategoryData[]
+    by_weekday: WeekdayData[]
+  }
 }
 
 interface DashboardState {
