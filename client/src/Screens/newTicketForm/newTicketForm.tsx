@@ -255,7 +255,6 @@ const SelectInput: React.FC<SelectInputProps> = ({
 
 const styles: Record<string, React.CSSProperties> = {
   page: {
-    backgroundColor: '#f4f4f4',
     minHeight: '100vh',
     padding: '40px 20px',
   },

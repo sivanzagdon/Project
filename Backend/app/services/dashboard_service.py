@@ -8,6 +8,7 @@ load_dotenv()
 dashboard_bp = Blueprint("dashboard", __name__)
 DATABASE_NAME = os.getenv("DATABASE_NAME")    
 
+###########################################################################################
 def get_dashboard_data():
     collection = get_collection(DATABASE_NAME, "service_requests")
     if collection is None:
@@ -16,38 +17,51 @@ def get_dashboard_data():
     data = list(collection.find({}))
     df = pd.DataFrame(data)
 
+    # Ensure datetime format
+    df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
+    df = df.dropna(subset=["Created on"])
+
+    df["Year"] = df["Created on"].dt.year
+    df["Weekday"] = df["Created on"].dt.day_name()
+
     result = {}
 
-    # Filter data by Site (A, B, C)
     for site in ['A', 'B', 'C']:
         site_data = df[df['Site'] == site]
         site_result = {}
 
-        # MainCategory
-        main_counts = site_data["MainCategory"].value_counts().to_dict()
-        site_result["main_category"] = [{"category": k, "count": int(v)} for k, v in main_counts.items()]
+        for year in site_data["Year"].unique():
+            year_data = site_data[site_data["Year"] == year]
+            year_result = {}
 
-        # SubCategory
-        sub_counts = site_data["SubCategory"].value_counts().to_dict()
-        site_result["sub_category"] = [{"subcategory": k, "count": int(v)} for k, v in sub_counts.items()]
+            # MainCategory breakdown
+            main_counts = year_data["MainCategory"].value_counts().to_dict()
+            year_result["main_category"] = [{"category": k, "count": int(v)} for k, v in main_counts.items()]
 
-        # Weekday
-        site_data["Created on"] = pd.to_datetime(site_data["Created on"], errors="coerce")
-        site_data = site_data.dropna(subset=["Created on"])
-        site_data["Weekday"] = site_data["Created on"].dt.day_name()
-        weekday_counts = site_data["Weekday"].value_counts().reindex(
-            ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-            fill_value=0
-        ).to_dict()
-        site_result["by_weekday"] = [{"weekday": k, "count": int(v)} for k, v in weekday_counts.items()]
+            # SubCategory breakdown
+            sub_counts = year_data["SubCategory"].value_counts().to_dict()
+            year_result["sub_category"] = [{"subcategory": k, "count": int(v)} for k, v in sub_counts.items()]
 
-        
+            # Weekday breakdown
+            weekday_counts = (
+                year_data["Weekday"]
+                .value_counts()
+                .reindex(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], fill_value=0)
+                .to_dict()
+            )
+            year_result["by_weekday"] = [{"weekday": k, "count": int(v)} for k, v in weekday_counts.items()]
+
+            # Assign year result to site_result
+            site_result[str(year)] = year_result
+
+        # Assign site result to final result
         result[site] = site_result
 
     return jsonify(result)
 
 
 
+####################################################################################################
 def get_time_data():
     collection = get_collection(DATABASE_NAME, "service_requests")
     if collection is None:

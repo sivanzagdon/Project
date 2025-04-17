@@ -77,10 +77,8 @@ export const createCombinedData = (siteData: any, setCombinedRateData: any) => {
     C: [],
   }
 
-  // עבור כל אתר: A, B, C
   for (const site in siteData) {
     if (site === 'A' || site === 'B' || site === 'C') {
-      // ודא שהמפתח הוא A, B, או C
       const siteSpecificData = siteData[site]
       if (!siteSpecificData) continue
 

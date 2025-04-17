@@ -1,20 +1,8 @@
+// DashboardPage.tsx
 import React, { useEffect, useState } from 'react'
-import { Select, MenuItem, FormControl, InputLabel } from '@mui/material'
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  LineChart,
-  Line,
-  Legend,
-} from 'recharts'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../redux/store'
 import {
-  CombinedRateData,
   setDashboardData,
   setTimeData,
 } from '../../redux/slices/dashboardSlice'
@@ -24,12 +12,13 @@ import {
   calculateOpeningAndClosingRates,
   createCombinedData,
 } from './dashboardUtils'
+import SiteSelector from '../../components/charts/SiteSelector'
+import YearSelector from '../../components/charts/YearSelector'
 
-export interface TimeDataList {
-  A: CombinedRateData[]
-  B: CombinedRateData[]
-  C: CombinedRateData[]
-}
+import SubCategoryChart from '../../components/charts/SubCategoryChart'
+import MainCategoryChart from '../../components/charts/MainCategoryChart'
+import RequestsByWeekdayChart from '../../components/charts/RequestsByWeekdayChart'
+import OpeningClosingChart from '../../components/charts/OpeningClosingChart'
 
 const dashboardService = new DashboardService()
 
@@ -40,52 +29,38 @@ const DashboardPage: React.FC = () => {
   const lastFetching = useSelector(
     (state: RootState) => state.dashboard.lastFetched
   )
+
   const [selectedBuilding, setSelectedBuilding] = useState<'A' | 'B' | 'C'>('A')
+  const [selectedYear, setSelectedYear] = useState(2024)
   const [calculatedTimeData, setCalculatedTimeData] = useState<any>(null)
-  const [combinedRateData, setCombinedRateData] = useState<TimeDataList>({
+  const [combinedRateData, setCombinedRateData] = useState({
     A: [],
     B: [],
     C: [],
   })
 
-  // First useEffect to handle dashboard data loading
   useEffect(() => {
-    // Load dashboard data if it doesn't exist
     if (!data) {
-      console.log('נתוני Dashboard לא קיימים ברידקס. נטען מחדש.')
       dashboardService
         .getDashboardData()
-        .then((res) => {
-          dispatch(setDashboardData(res))
-        })
-        .catch(console.error)
+        .then((res) => dispatch(setDashboardData(res)))
     }
   }, [dispatch, data])
 
-  // Second useEffect to handle time data loading
   useEffect(() => {
     const currentTime = Date.now()
-
-    // Load time data if it doesn't exist or it's stale (> 10 minutes)
     if (!timeData || currentTime - (lastFetching || 0) > 10 * 60 * 1000) {
-      console.log('נתוני timeData לא קיימים או עברו 10 דקות. נטען מחדש.')
-      dashboardService
-        .getTimeData()
-        .then((res) => {
-          // Calculate rates based on the fetched data
-          calculateOpeningAndClosingRates(
-            res,
-            selectedBuilding,
-            setCalculatedTimeData,
-            createCombinedData,
-            setCombinedRateData
-          )
-          // Update Redux with the time data
-          dispatch(setTimeData(res))
-        })
-        .catch(console.error)
+      dashboardService.getTimeData().then((res) => {
+        calculateOpeningAndClosingRates(
+          res,
+          selectedBuilding,
+          setCalculatedTimeData,
+          createCombinedData,
+          setCombinedRateData
+        )
+        dispatch(setTimeData(res))
+      })
     } else if (timeData && !calculatedTimeData) {
-      // Use existing timeData if it exists but calculatedTimeData doesn't
       calculateOpeningAndClosingRates(
         timeData,
         selectedBuilding,
@@ -96,7 +71,6 @@ const DashboardPage: React.FC = () => {
     }
   }, [dispatch, timeData, lastFetching, selectedBuilding, calculatedTimeData])
 
-  // Third useEffect to handle changes to selectedBuilding
   useEffect(() => {
     if (calculatedTimeData) {
       createCombinedData(calculatedTimeData, setCombinedRateData)
@@ -105,142 +79,47 @@ const DashboardPage: React.FC = () => {
 
   if (!data || !calculatedTimeData || !combinedRateData) return <Loading />
 
-  const renderSiteGraphs = (site: 'A' | 'B' | 'C') => {
-    const siteData = data[site]
-
-    return (
-      <>
-        <h2 style={styles.sectionTitle}>{`${site} Opening & Closing Rates`}</h2>
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={combinedRateData[selectedBuilding]}>
-            <XAxis
-              dataKey="date"
-              tick={{ fontSize: 10 }}
-              tickFormatter={(dateStr) => {
-                const date = new Date(dateStr)
-                return `${date.getDate()}/${date.getMonth() + 1}`
-              }}
-            />
-            <YAxis
-              label={{ value: 'Requests', angle: -90, position: 'insideLeft' }}
-            />
-            <Tooltip
-              labelFormatter={(dateStr) =>
-                `Date: ${new Date(dateStr).toLocaleDateString()}`
-              }
-              formatter={(value, name) => {
-                const label =
-                  name === 'opening_rate' ? 'Opening Rate' : 'Closing Rate'
-                return [`${value} requests`, label]
-              }}
-            />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="opening_rate"
-              stroke="#e37e7d"
-              strokeWidth={2}
-              name="Opening Rate"
-              dot={false}
-              activeDot={false}
-            />
-            <Line
-              type="monotone"
-              dataKey="closing_rate"
-              stroke="#6e3635"
-              strokeWidth={2}
-              name="Closing Rate"
-              dot={false}
-              activeDot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-
-        <h2 style={styles.sectionTitle}>{`${site} SubCategory Breakdown`}</h2>
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={siteData.sub_category}>
-            <XAxis dataKey="subcategory" interval={0} tick={false} />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="count" fill="#ef8885" />
-          </BarChart>
-        </ResponsiveContainer>
-
-        <h2 style={styles.sectionTitle}>{`${site} Main Category Breakdown`}</h2>
-        <ResponsiveContainer width="100%" height={350}>
-          <BarChart data={siteData.main_category}>
-            <XAxis
-              dataKey="category"
-              tickFormatter={(value) => value.charAt(0)}
-              tick={{ fontSize: 14 }}
-            />
-            <YAxis />
-            <Tooltip
-              formatter={(value) => [`${value}`, 'Count']}
-              labelFormatter={(category) => `Category: ${category}`}
-            />
-            <Bar dataKey="count" fill="#a02725" />
-          </BarChart>
-        </ResponsiveContainer>
-
-        <h2 style={styles.sectionTitle}>{`${site} Requests by Weekday`}</h2>
-        <ResponsiveContainer width="100%" height={350}>
-          <BarChart data={siteData.by_weekday}>
-            <XAxis dataKey="weekday" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="count" fill="#ce332f" />
-          </BarChart>
-        </ResponsiveContainer>
-      </>
-    )
-  }
+  const siteData =
+    data[selectedBuilding]?.[String(selectedYear) as '2023' | '2024']
+  const rates = combinedRateData[selectedBuilding]
 
   return (
-    <div style={styles.container}>
-      <div style={styles.dropdownWrapper}>
-        <FormControl fullWidth variant="outlined">
-          <InputLabel id="site-select-label">Select Site</InputLabel>
-          <Select
-            labelId="site-select-label"
-            value={selectedBuilding}
-            onChange={(e) =>
-              setSelectedBuilding(e.target.value as 'A' | 'B' | 'C')
-            }
-            label="Select Site"
-          >
-            <MenuItem value="A">Site A</MenuItem>
-            <MenuItem value="B">Site B</MenuItem>
-            <MenuItem value="C">Site C</MenuItem>
-          </Select>
-        </FormControl>
+    <div style={{ padding: '2rem', maxWidth: '1200px', margin: 'auto' }}>
+      <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
+        <div style={{ flex: 1 }}>
+          <SiteSelector
+            selected={selectedBuilding}
+            onChange={setSelectedBuilding}
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <YearSelector
+            selectedYear={selectedYear}
+            onChange={setSelectedYear}
+          />
+        </div>
       </div>
 
-      {renderSiteGraphs(selectedBuilding)}
+      <OpeningClosingChart
+        site={selectedBuilding}
+        data={rates}
+        year={selectedYear}
+      />
+
+      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        <MainCategoryChart
+          site={selectedBuilding}
+          data={siteData.main_category}
+        />
+        <RequestsByWeekdayChart
+          site={selectedBuilding}
+          data={siteData.by_weekday}
+        />
+      </div>
+
+      <SubCategoryChart site={selectedBuilding} data={siteData.sub_category} />
     </div>
   )
-}
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: '2rem',
-    backgroundColor: '#FFFFFF',
-    color: '#212121',
-    borderRadius: '8px',
-    boxShadow: '0px 4px 6px rgba(0,0,0,0.1)',
-    fontFamily: "'Roboto', sans-serif",
-    maxWidth: '1200px',
-    margin: 'auto',
-  },
-  dropdownWrapper: {
-    marginBottom: '20px',
-  },
-  sectionTitle: {
-    marginTop: '3rem',
-    fontSize: '1.5rem',
-    color: '#212121',
-    textAlign: 'center',
-  },
 }
 
 export default DashboardPage

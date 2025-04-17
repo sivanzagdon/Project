@@ -29,20 +29,23 @@ export interface TimeDataList {
 
 export interface DashboardInterface {
   A: {
-    main_category: CategoryData[]
-    sub_category: SubCategoryData[]
-    by_weekday: WeekdayData[]
+    2023: SiteYearlyData
+    2024: SiteYearlyData
   }
   B: {
-    main_category: CategoryData[]
-    sub_category: SubCategoryData[]
-    by_weekday: WeekdayData[]
+    2023: SiteYearlyData
+    2024: SiteYearlyData
   }
   C: {
-    main_category: CategoryData[]
-    sub_category: SubCategoryData[]
-    by_weekday: WeekdayData[]
+    2023: SiteYearlyData
+    2024: SiteYearlyData
   }
+}
+
+export interface SiteYearlyData {
+  main_category: CategoryData[]
+  sub_category: SubCategoryData[]
+  by_weekday: WeekdayData[]
 }
 
 interface DashboardState {

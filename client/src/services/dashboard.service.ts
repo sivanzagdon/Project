@@ -17,20 +17,23 @@ export interface WeekdayData {
 
 export interface DashboardData {
   A: {
-    main_category: CategoryData[]
-    sub_category: SubCategoryData[]
-    by_weekday: WeekdayData[]
+    2023: SiteYearlyData
+    2024: SiteYearlyData
   }
   B: {
-    main_category: CategoryData[]
-    sub_category: SubCategoryData[]
-    by_weekday: WeekdayData[]
+    2023: SiteYearlyData
+    2024: SiteYearlyData
   }
   C: {
-    main_category: CategoryData[]
-    sub_category: SubCategoryData[]
-    by_weekday: WeekdayData[]
+    2023: SiteYearlyData
+    2024: SiteYearlyData
   }
+}
+
+export interface SiteYearlyData {
+  main_category: CategoryData[]
+  sub_category: SubCategoryData[]
+  by_weekday: WeekdayData[]
 }
 
 interface TimeData {
@@ -46,14 +49,23 @@ export interface TimeDataList {
 
 export class DashboardService {
   getDashboardData = async (): Promise<DashboardData> => {
-    const response = await get('/api/dashboard')
-    console.log(response.data)
-    return response.data
+    try {
+      const response = await get('/api/dashboard')
+      console.log('test', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error)
+      throw new Error('Failed to fetch dashboard data')
+    }
   }
 
   getTimeData = async (): Promise<TimeDataList> => {
-    const response = await get('/api/time-data')
-    console.log('First 5 rows of data:', response.data)
-    return response.data
+    try {
+      const response = await get('/api/time-data')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching time data:', error)
+      throw new Error('Failed to fetch time data')
+    }
   }
 }

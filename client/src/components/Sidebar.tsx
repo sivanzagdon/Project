@@ -46,7 +46,7 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'fixed' as 'fixed',
     top: 0,
     left: 0,
-    width: '220px', // היה 300px קודם
+    width: '220px',
     height: '100vh',
     backgroundColor: '#333',
     color: '#fff',
