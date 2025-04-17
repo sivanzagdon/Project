@@ -12,14 +12,15 @@ import {
 interface Props {
   site: string
   data: { subcategory: string; count: number }[]
+  title?: string
 }
 
-const SubCategoryChart: React.FC<Props> = ({ site, data }) => {
+const SubCategoryChart: React.FC<Props> = ({ site, data, title }) => {
   return (
     <div style={styles.card}>
-      <h2 style={styles.title}>{`${site} SubCategory Breakdown`}</h2>
+      <h2 style={styles.title}>{title || `${site} SubCategory Breakdown`}</h2>
       <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={data}>
+        <BarChart data={data} barCategoryGap={0} barGap={0}>
           <XAxis dataKey="subcategory" interval={0} tick={false} />
           <YAxis />
           <Tooltip />
@@ -45,7 +46,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   card: {
     backgroundColor: '#ffffff',
     borderRadius: '12px',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)', // ← זה השינוי
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
     padding: '24px',
     marginTop: '2rem',
     display: 'flex',

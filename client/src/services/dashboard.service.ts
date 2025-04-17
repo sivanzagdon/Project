@@ -14,26 +14,32 @@ export interface WeekdayData {
   weekday: string
   count: number
 }
-
-export interface DashboardData {
-  A: {
-    2023: SiteYearlyData
-    2024: SiteYearlyData
-  }
-  B: {
-    2023: SiteYearlyData
-    2024: SiteYearlyData
-  }
-  C: {
-    2023: SiteYearlyData
-    2024: SiteYearlyData
-  }
-}
-
 export interface SiteYearlyData {
   main_category: CategoryData[]
   sub_category: SubCategoryData[]
   by_weekday: WeekdayData[]
+}
+
+export interface SiteYearData {
+  yearly: SiteYearlyData
+  monthly: {
+    [monthName: string]: SiteYearlyData
+  }
+}
+
+export interface DashboardData {
+  A: {
+    2023: SiteYearData
+    2024: SiteYearData
+  }
+  B: {
+    2023: SiteYearData
+    2024: SiteYearData
+  }
+  C: {
+    2023: SiteYearData
+    2024: SiteYearData
+  }
 }
 
 interface TimeData {

@@ -1,4 +1,3 @@
-// DashboardPage.tsx
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../redux/store'
@@ -19,6 +18,7 @@ import SubCategoryChart from '../../components/charts/SubCategoryChart'
 import MainCategoryChart from '../../components/charts/MainCategoryChart'
 import RequestsByWeekdayChart from '../../components/charts/RequestsByWeekdayChart'
 import OpeningClosingChart from '../../components/charts/OpeningClosingChart'
+import ChartCarousel from '../../components/charts/ChartCarousel'
 
 const dashboardService = new DashboardService()
 
@@ -83,6 +83,75 @@ const DashboardPage: React.FC = () => {
     data[selectedBuilding]?.[String(selectedYear) as '2023' | '2024']
   const rates = combinedRateData[selectedBuilding]
 
+  //Main Category
+  const mainCategoryCharts: React.ReactNode[] = []
+
+  mainCategoryCharts.push(
+    <MainCategoryChart
+      key="yearly"
+      site={selectedBuilding}
+      data={siteData.yearly.main_category}
+      title={`${selectedBuilding} - Yearly Main Category`}
+    />
+  )
+
+  Object.entries(siteData.monthly).forEach(([monthName, monthlyData]) => {
+    mainCategoryCharts.push(
+      <MainCategoryChart
+        key={monthName}
+        site={selectedBuilding}
+        data={monthlyData.main_category}
+        title={`${selectedBuilding} - ${monthName} Main Category`}
+      />
+    )
+  })
+
+  //weekday
+  const weekdayCharts: React.ReactNode[] = []
+
+  weekdayCharts.push(
+    <RequestsByWeekdayChart
+      key="yearly-weekday"
+      site={selectedBuilding}
+      data={siteData.yearly.by_weekday}
+      title={`${selectedBuilding} - Yearly Weekday Requests`}
+    />
+  )
+
+  Object.entries(siteData.monthly).forEach(([monthName, monthlyData]) => {
+    weekdayCharts.push(
+      <RequestsByWeekdayChart
+        key={`weekday-${monthName}`}
+        site={selectedBuilding}
+        data={monthlyData.by_weekday}
+        title={`${selectedBuilding} - ${monthName} Weekday Requests`}
+      />
+    )
+  })
+
+  //sub category
+  const subCategoryCharts: React.ReactNode[] = []
+
+  subCategoryCharts.push(
+    <SubCategoryChart
+      key="yearly-sub"
+      site={selectedBuilding}
+      data={siteData.yearly.sub_category}
+      title={`${selectedBuilding} - Yearly SubCategory`}
+    />
+  )
+
+  Object.entries(siteData.monthly).forEach(([monthName, monthlyData]) => {
+    subCategoryCharts.push(
+      <SubCategoryChart
+        key={`sub-${monthName}`}
+        site={selectedBuilding}
+        data={monthlyData.sub_category}
+        title={`${selectedBuilding} - ${monthName} SubCategory`}
+      />
+    )
+  })
+
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: 'auto' }}>
       <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
@@ -106,18 +175,25 @@ const DashboardPage: React.FC = () => {
         year={selectedYear}
       />
 
-      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-        <MainCategoryChart
-          site={selectedBuilding}
-          data={siteData.main_category}
-        />
-        <RequestsByWeekdayChart
-          site={selectedBuilding}
-          data={siteData.by_weekday}
-        />
+      <div
+        style={{
+          display: 'flex',
+          gap: '2rem',
+          marginTop: '2rem',
+          flexWrap: 'wrap',
+        }}
+      >
+        <div style={{ flex: 1, minWidth: '480px' }}>
+          <ChartCarousel charts={mainCategoryCharts} />
+        </div>
+        <div style={{ flex: 1, minWidth: '480px' }}>
+          <ChartCarousel charts={weekdayCharts} />
+        </div>
       </div>
 
-      <SubCategoryChart site={selectedBuilding} data={siteData.sub_category} />
+      <div style={{ marginTop: '2rem' }}>
+        <ChartCarousel charts={subCategoryCharts} />
+      </div>
     </div>
   )
 }

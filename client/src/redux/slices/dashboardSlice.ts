@@ -27,18 +27,25 @@ export interface TimeDataList {
   C: CombinedRateData[]
 }
 
+export interface SiteYearData {
+  yearly: SiteYearlyData
+  monthly: {
+    [monthName: string]: SiteYearlyData
+  }
+}
+
 export interface DashboardInterface {
   A: {
-    2023: SiteYearlyData
-    2024: SiteYearlyData
+    2023: SiteYearData
+    2024: SiteYearData
   }
   B: {
-    2023: SiteYearlyData
-    2024: SiteYearlyData
+    2023: SiteYearData
+    2024: SiteYearData
   }
   C: {
-    2023: SiteYearlyData
-    2024: SiteYearlyData
+    2023: SiteYearData
+    2024: SiteYearData
   }
 }
 

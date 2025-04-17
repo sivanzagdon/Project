@@ -11,16 +11,20 @@ import {
 interface Props {
   site: string
   data: { category: string; count: number; date?: string }[]
+  title?: string
 }
 
-const MainCategoryChart: React.FC<Props> = ({ site, data }) => {
-  console.log('ddd', data)
+const MainCategoryChart: React.FC<Props> = ({ site, data, title }) => {
+  // מיון לפי סדר אלפביתי של שמות הקטגוריות
+  const orderedData = [...data].sort((a, b) =>
+    a.category.localeCompare(b.category)
+  )
 
   return (
     <div style={styles.card}>
-      <h2 style={styles.title}>{`${site} Main Category Breakdown`}</h2>
+      <h2 style={styles.title}>{title || `${site} Main Category Breakdown`}</h2>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} barCategoryGap={0} barGap={0}>
+        <BarChart data={orderedData} barCategoryGap={0} barGap={0}>
           <XAxis
             dataKey="category"
             tickFormatter={(value) => value.charAt(0)}

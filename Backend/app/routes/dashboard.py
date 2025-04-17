@@ -1,4 +1,4 @@
-from app.services.dashboard_service import get_dashboard_data, get_time_data
+from app.services.dashboard_service import get_dashboard_data_by_years_and_months, get_time_data
 from flask import Blueprint, jsonify
 from app.db import get_collection
 import os
@@ -10,9 +10,9 @@ dashboard_bp = Blueprint("dashboard", __name__)
 
 
 @dashboard_bp.route("/api/dashboard", methods=["GET"])
-def get_dashboard_data_route():
+def get_dashboard_data():
     try:
-        result = get_dashboard_data()
+        result = get_dashboard_data_by_years_and_months()
         return result, 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500

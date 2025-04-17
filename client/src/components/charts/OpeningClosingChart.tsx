@@ -67,7 +67,7 @@ const OpeningClosingChart: React.FC<Props> = ({ site, data, year }) => {
         </div>
         <div style={styles.legendItem}>
           <span style={{ ...styles.outerDot, backgroundColor: '#ede9fe' }}>
-            <span style={{ ...styles.innerDot, backgroundColor: '#a78bfa' }} />
+            <span style={{ ...styles.innerDot, backgroundColor: '#6b7280' }} />
           </span>
           <span style={styles.legendText}>Closing Rate</span>
         </div>

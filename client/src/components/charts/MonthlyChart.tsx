@@ -1,3 +1,4 @@
+// MonthlyChart.tsx
 import React from 'react'
 import {
   ResponsiveContainer,
@@ -19,16 +20,20 @@ const MonthlyChart: React.FC<Props> = ({ data, monthName }) => {
   return (
     <div
       style={{
-        flex: '1 1 50%',
-        minWidth: 250,
-        maxWidth: 450,
-        margin: '1rem',
+        flex: '1 1 100%',
+        minWidth: 400,
+        maxWidth: 600,
+        minHeight: 350,
+        margin: '1.5rem',
       }}
     >
-      <h4 style={{ marginBottom: '0.5rem', color: '#111827' }}>{monthName}</h4>
-      <ResponsiveContainer width="100%" height={250}>
+      <h4
+        style={{ marginBottom: '0.5rem', color: '#111827', fontSize: '1rem' }}
+      >
+        {monthName}
+      </h4>
+      <ResponsiveContainer width="100%" height={300}>
         <ComposedChart data={data}>
-          {/* גרדיאנט מדורג */}
           <defs>
             <linearGradient id="openingGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#6366f1" stopOpacity={0.25} />
@@ -46,7 +51,7 @@ const MonthlyChart: React.FC<Props> = ({ data, monthName }) => {
           <XAxis
             dataKey="date"
             tickFormatter={(d) => new Date(d).getDate().toString()}
-            style={{ fontSize: 10 }}
+            style={{ fontSize: 12 }}
           />
           <YAxis hide />
           <Tooltip />
@@ -76,7 +81,7 @@ const MonthlyChart: React.FC<Props> = ({ data, monthName }) => {
           <Line
             type="monotone"
             dataKey="closing_rate"
-            stroke="#a78bfa"
+            stroke="#6b7280"
             strokeWidth={2}
             dot={false}
           />

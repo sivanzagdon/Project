@@ -24,11 +24,11 @@ const ChartCarousel: React.FC<ChartCarouselProps> = ({ charts }) => {
   return (
     <div style={styles.carouselContainer}>
       <button style={styles.arrowButton} onClick={handlePrev}>
-        <ChevronLeft size={24} />
+        <ChevronLeft size={12} />
       </button>
       <div style={styles.chartWrapper}>{charts[currentIndex]}</div>
       <button style={styles.arrowButton} onClick={handleNext}>
-        <ChevronRight size={24} />
+        <ChevronRight size={12} />
       </button>
     </div>
   )
@@ -36,25 +36,33 @@ const ChartCarousel: React.FC<ChartCarouselProps> = ({ charts }) => {
 
 const styles: { [key: string]: React.CSSProperties } = {
   carouselContainer: {
+    display: 'grid',
+    gridTemplateColumns: 'auto 1fr auto',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: '2rem',
+    gap: '0.5rem',
+  },
+  arrowButton: {
+    background: 'white',
+    border: '1px solid #e5e7eb',
+    cursor: 'pointer',
+    padding: '0.25rem',
+    borderRadius: '50%',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+    width: '24px',
+    height: '24px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
-    gap: '1rem',
-    marginTop: '3rem',
-  },
-  arrowButton: {
-    background: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
-    padding: '0.5rem',
-    borderRadius: '50%',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
   },
   chartWrapper: {
-    flex: 1,
+    width: '100%',
     maxWidth: '1000px',
-    overflow: 'hidden',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }
 

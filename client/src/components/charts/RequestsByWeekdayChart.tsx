@@ -12,22 +12,48 @@ import {
 interface Props {
   site: string
   data: { weekday: string; count: number }[]
+  title?: string
 }
 
-const RequestsByWeekdayChart: React.FC<Props> = ({ site, data }) => {
+const RequestsByWeekdayChart: React.FC<Props> = ({ site, data, title }) => {
+  const weekdayMap: Record<string, string> = {
+    Sunday: 'Sun',
+    Monday: 'Mon',
+    Tuesday: 'Tue',
+    Wednesday: 'Wed',
+    Thursday: 'Thu',
+    Friday: 'Fri',
+    Saturday: 'Sat',
+  }
+
+  const weekdayOrder = Object.keys(weekdayMap)
+
+  const orderedData = weekdayOrder.map((day) => {
+    const found = data.find((d) => d.weekday === day)
+    return {
+      weekday: weekdayMap[day],
+      count: found?.count || 0,
+    }
+  })
+
   return (
     <div style={styles.card}>
-      <h2 style={styles.title}>{`${site} Requests by Weekday`}</h2>
+      <h2 style={styles.title}>{title || `${site} Requests by Weekday`}</h2>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} barCategoryGap={0} barGap={0}>
-          <XAxis dataKey="weekday" style={{ fontSize: '12px' }} />
+        <BarChart
+          data={orderedData}
+          barCategoryGap={10}
+          barGap={4}
+          margin={{ top: 10, right: 20, left: 20, bottom: 30 }}
+        >
+          <XAxis dataKey="weekday" interval={0} style={{ fontSize: '12px' }} />
           <YAxis style={{ fontSize: '12px' }} />
           <Tooltip />
           <Bar
             dataKey="count"
             fill="url(#gradient)"
             radius={[6, 6, 0, 0]}
-            barSize={40}
+            barSize={30}
           />
           <defs>
             <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
