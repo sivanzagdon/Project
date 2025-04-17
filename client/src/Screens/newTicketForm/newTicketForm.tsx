@@ -91,104 +91,129 @@ const NewTicketForm: React.FC = () => {
   }
 
   return (
-    <div dir="ltr" style={styles.page}>
-      <div style={styles.formContainer}>
-        <h2 style={styles.header}>Create New Service Request</h2>
+    <div className="ticket-page">
+      <div className="form-container">
+        <h2 className="form-header">Create New Service Request</h2>
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <SelectInput
-            label="Main Category"
-            value={MainCategory}
-            onChange={setMainCategory}
-            options={[
-              { value: '', label: 'Select category' },
-              { value: 'A. Cleaning', label: 'A. Cleaning' },
-              { value: 'B. Climate', label: 'B. Climate' },
-              {
-                value: 'C. Office & Kitchen & Printer Corner',
-                label: 'C. Office & Kitchen & Printer Corner',
-              },
-              { value: 'D. Water & Plumbing', label: 'D. Water & Plumbing' },
-              {
-                value: 'E. Electrical, IT & A/V Equipment',
-                label: 'E. Electrical, IT & A/V Equipment',
-              },
-              {
-                value: 'F. Building and Infrastructure',
-                label: 'F. Building and Infrastructure',
-              },
-              { value: 'G. Safety & Security', label: 'G. Safety & Security' },
-              { value: 'H. Events', label: 'H. Events' },
-              {
-                value: 'I. MIMO & Member Requests',
-                label: 'I. MIMO & Member Requests',
-              },
-              { value: 'J. Maintenance', label: 'J. Maintenance' },
-              { value: 'K. Top Priority', label: 'K. Top Priority' },
-              { value: 'M. Community', label: 'M. Community' },
-            ]}
-          />
+        <form onSubmit={handleSubmit} className="ticket-form">
+          <div className="input-group">
+            <label className="form-label">Main Category</label>
+            <div className="select-wrapper">
+              <select
+                value={MainCategory}
+                onChange={(e) => setMainCategory(e.target.value)}
+                className="form-select"
+                required
+              >
+                <option value="">Select category</option>
+                <option value="A. Cleaning">A. Cleaning</option>
+                <option value="B. Climate">B. Climate</option>
+                <option value="C. Office & Kitchen & Printer Corner">
+                  C. Office & Kitchen & Printer Corner
+                </option>
+                <option value="D. Water & Plumbing">D. Water & Plumbing</option>
+                <option value="E. Electrical, IT & A/V Equipment">
+                  E. Electrical, IT & A/V Equipment
+                </option>
+                <option value="F. Building and Infrastructure">
+                  F. Building and Infrastructure
+                </option>
+                <option value="G. Safety & Security">
+                  G. Safety & Security
+                </option>
+                <option value="H. Events">H. Events</option>
+                <option value="I. MIMO & Member Requests">
+                  I. MIMO & Member Requests
+                </option>
+                <option value="J. Maintenance">J. Maintenance</option>
+                <option value="K. Top Priority">K. Top Priority</option>
+                <option value="M. Community">M. Community</option>
+              </select>
+            </div>
+          </div>
 
-          <SelectInput
-            label="Subcategory"
-            value={SubCategory}
-            onChange={setSubCategory}
-            options={subCategoriesOptions}
-          />
+          <div className="input-group">
+            <label className="form-label">Subcategory</label>
+            <div className="select-wrapper">
+              <select
+                value={SubCategory}
+                onChange={(e) => setSubCategory(e.target.value)}
+                className="form-select"
+                required
+              >
+                <option value="">Select subcategory</option>
+                {subCategoriesOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-          <SelectInput
-            label="Site"
-            value={Site}
-            onChange={setSite}
-            options={[
-              { value: '', label: 'Select site' },
-              { value: 'A', label: 'A' },
-              { value: 'B', label: 'B' },
-              { value: 'C', label: 'C' },
-            ]}
-          />
+          <div className="input-group">
+            <label className="form-label">Site</label>
+            <div className="select-wrapper">
+              <select
+                value={Site}
+                onChange={(e) => setSite(e.target.value)}
+                className="form-select"
+                required
+              >
+                <option value="">Select site</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+              </select>
+            </div>
+          </div>
 
-          <SelectInput
-            label="Building"
-            value={Building}
-            onChange={setBuilding}
-            options={[
-              { value: '', label: 'Select building' },
-              { value: 'A1', label: 'A1' },
-              { value: 'A2', label: 'A2' },
-              { value: 'B1', label: 'B1' },
-              { value: 'B2', label: 'B2' },
-              { value: 'C1', label: 'C1' },
-              { value: 'C2', label: 'C2' },
-            ]}
-          />
+          <div className="input-group">
+            <label className="form-label">Building</label>
+            <div className="select-wrapper">
+              <select
+                value={Building}
+                onChange={(e) => setBuilding(e.target.value)}
+                className="form-select"
+                required
+              >
+                <option value="">Select building</option>
+                <option value="A1">A1</option>
+                <option value="A2">A2</option>
+                <option value="B1">B1</option>
+                <option value="B2">B2</option>
+                <option value="C1">C1</option>
+                <option value="C2">C2</option>
+              </select>
+            </div>
+          </div>
 
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Request Description</label>
+          <div className="input-group">
+            <label className="form-label">Request Description</label>
             <textarea
               value={Description}
               onChange={(e) => setDescription(e.target.value)}
-              style={styles.textarea}
+              className="form-textarea"
               placeholder="Describe the issue"
               required
             />
           </div>
 
-          <button type="submit" style={styles.button}>
+          <button type="submit" className="submit-button">
             Submit Request
           </button>
         </form>
 
         {(sla || prediction !== null) && (
-          <div style={styles.resultBox}>
+          <div className="result-box">
             {sla && (
-              <p style={styles.resultText}>
+              <p className="result-text">
                 <strong>SLA Time:</strong> {sla}
               </p>
             )}
 
             {prediction !== null && (
-              <div style={styles.riskContainer}>
+              <div className="risk-container">
                 <RiskReveal
                   riskLevel={getRiskLevel(prediction)}
                   color={
@@ -200,7 +225,7 @@ const NewTicketForm: React.FC = () => {
                   }
                 />
                 {recommendations.length > 0 && (
-                  <ul style={styles.recommendationList}>
+                  <ul className="recommendation-list">
                     {recommendations.map((rec, idx) => (
                       <li key={idx}>{rec}</li>
                     ))}
@@ -210,7 +235,7 @@ const NewTicketForm: React.FC = () => {
             )}
 
             {expectedTime !== null && (
-              <p style={styles.resultText}>
+              <p className="result-text">
                 <strong>Expected response time:</strong>{' '}
                 {expectedTime.toFixed(2)} hours
               </p>
@@ -221,117 +246,6 @@ const NewTicketForm: React.FC = () => {
       </div>
     </div>
   )
-}
-
-interface SelectInputProps {
-  label: string
-  value: string
-  onChange: (value: string) => void
-  options: { value: string; label: string }[]
-}
-
-const SelectInput: React.FC<SelectInputProps> = ({
-  label,
-  value,
-  onChange,
-  options,
-}) => (
-  <div style={styles.inputGroup}>
-    <label style={styles.label}>{label}</label>
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      style={styles.input}
-      required
-    >
-      {options.map((opt) => (
-        <option key={opt.value} value={opt.value}>
-          {opt.label}
-        </option>
-      ))}
-    </select>
-  </div>
-)
-
-const styles: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: '100vh',
-    padding: '40px 20px',
-  },
-  formContainer: {
-    maxWidth: '600px',
-    margin: '0 auto',
-    backgroundColor: '#ffffff',
-    padding: '30px',
-    borderRadius: '12px',
-    boxShadow: '0 8px 20px rgba(0,0,0,0.08)',
-    border: '1px solid #ddd',
-  },
-  header: {
-    fontSize: '24px',
-    fontWeight: 700,
-    marginBottom: '24px',
-    color: '#1a1a1a',
-    textAlign: 'center',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-  },
-  inputGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  label: {
-    marginBottom: '6px',
-    fontWeight: 500,
-    color: '#2f2f2f',
-  },
-  input: {
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #ccc',
-    fontSize: '16px',
-  },
-  textarea: {
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #ccc',
-    fontSize: '16px',
-    minHeight: '100px',
-    resize: 'vertical',
-  },
-  button: {
-    backgroundColor: '#007bff',
-    color: '#fff',
-    padding: '14px',
-    fontSize: '16px',
-    fontWeight: 600,
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    marginTop: '10px',
-    transition: 'background-color 0.3s ease',
-  },
-  resultBox: {
-    marginTop: '30px',
-    backgroundColor: '#2f2f2f',
-    padding: '16px',
-    borderRadius: '10px',
-    color: '#fff',
-  },
-  resultText: {
-    fontSize: '16px',
-    marginBottom: '8px',
-  },
-  recommendationList: {
-    paddingRight: '20px',
-    marginTop: '10px',
-    listStyle: 'disc',
-    fontSize: '15px',
-    color: '#e0e0e0',
-  },
 }
 
 export default NewTicketForm
