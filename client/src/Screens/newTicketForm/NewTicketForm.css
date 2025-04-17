@@ -7,9 +7,168 @@
   }
 }
 
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+/* Page Layout */
+.ticket-page {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background-color: #f9fafb;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    sans-serif;
+}
+
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+}
+
+.form-header {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #111827;
+  text-align: center;
+}
+
+.ticket-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Form Fields */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+/* Select Styling */
+.select-wrapper {
+  position: relative;
+}
+
+.form-select {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  color: #1f2937;
+  background-color: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%238B5CF6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+  background-size: 12px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+}
+
+.form-select:hover {
+  border-color: #d1d5db;
+}
+
+/* Textarea Styling */
+.form-textarea {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  color: #1f2937;
+  background-color: #fff;
+  min-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+}
+
+.form-textarea:hover {
+  border-color: #d1d5db;
+}
+
+/* Button Styling */
+.submit-button {
+  background-color: #8b5cf6;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 8px;
+}
+
+.submit-button:hover {
+  background-color: #7c3aed;
+}
+
+.submit-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+}
+
+/* Results Styling */
+.result-box {
+  margin-top: 30px;
+  background-color: #111827;
+  padding: 20px;
+  border-radius: 12px;
+  color: #fff;
+}
+
+.result-text {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.risk-container {
+  margin-top: 8px;
+}
+
+.recommendation-list {
+  padding-left: 20px;
+  margin-top: 12px;
+  list-style: disc;
+  font-size: 15px;
+  color: #e5e7eb;
+}
+
+/* Loading Spinner */
 .risk-spinner {
-  border: 4px solid #eee;
-  border-top: 4px solid #050d42;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #8b5cf6;
   border-radius: 50%;
   width: 40px;
   height: 40px;

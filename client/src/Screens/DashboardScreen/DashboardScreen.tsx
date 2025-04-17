@@ -1,144 +1,199 @@
 import React, { useEffect, useState } from 'react'
-import { Select, MenuItem, FormControl, InputLabel } from '@mui/material'
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from 'recharts' // Ensure proper imports from recharts
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../redux/store'
-import { setDashboardData } from '../../redux/slices/dashboardSlice'
+import {
+  setDashboardData,
+  setTimeData,
+} from '../../redux/slices/dashboardSlice'
 import { DashboardService } from '../../services/dashboard.service'
 import Loading from '../../components/Loading'
+import {
+  calculateOpeningAndClosingRates,
+  createCombinedData,
+} from './dashboardUtils'
+import SiteSelector from '../../components/charts/SiteSelector'
+import YearSelector from '../../components/charts/YearSelector'
+
+import SubCategoryChart from '../../components/charts/SubCategoryChart'
+import MainCategoryChart from '../../components/charts/MainCategoryChart'
+import RequestsByWeekdayChart from '../../components/charts/RequestsByWeekdayChart'
+import OpeningClosingChart from '../../components/charts/OpeningClosingChart'
+import ChartCarousel from '../../components/charts/ChartCarousel'
 
 const dashboardService = new DashboardService()
 
 const DashboardPage: React.FC = () => {
   const dispatch = useDispatch()
   const data = useSelector((state: RootState) => state.dashboard.data)
+  const timeData = useSelector((state: RootState) => state.dashboard.dataTimes)
+  const lastFetching = useSelector(
+    (state: RootState) => state.dashboard.lastFetched
+  )
+
   const [selectedBuilding, setSelectedBuilding] = useState<'A' | 'B' | 'C'>('A')
+  const [selectedYear, setSelectedYear] = useState(2024)
+  const [calculatedTimeData, setCalculatedTimeData] = useState<any>(null)
+  const [combinedRateData, setCombinedRateData] = useState({
+    A: [],
+    B: [],
+    C: [],
+  })
 
   useEffect(() => {
     if (!data) {
       dashboardService
         .getDashboardData()
-        .then((res) => {
-          dispatch(setDashboardData(res))
-        })
-        .catch(console.error)
+        .then((res) => dispatch(setDashboardData(res)))
     }
   }, [dispatch, data])
 
-  if (!data) return <Loading />
-
-  const renderSiteGraphs = (site: 'A' | 'B' | 'C') => {
-    const siteData = data[site]
-
-    // Function to shorten text if it's too long
-    const shortenText = (text: string) => {
-      if (text.length > 10) {
-        return text.slice(0, 10) + '...' // Cut the text to 10 characters and add "..."
-      }
-      return text
+  useEffect(() => {
+    const currentTime = Date.now()
+    if (!timeData || currentTime - (lastFetching || 0) > 10 * 60 * 1000) {
+      dashboardService.getTimeData().then((res) => {
+        calculateOpeningAndClosingRates(
+          res,
+          selectedBuilding,
+          setCalculatedTimeData,
+          createCombinedData,
+          setCombinedRateData
+        )
+        dispatch(setTimeData(res))
+      })
+    } else if (timeData && !calculatedTimeData) {
+      calculateOpeningAndClosingRates(
+        timeData,
+        selectedBuilding,
+        setCalculatedTimeData,
+        createCombinedData,
+        setCombinedRateData
+      )
     }
+  }, [dispatch, timeData, lastFetching, selectedBuilding, calculatedTimeData])
 
-    return (
-      <>
-        <h2>{`${site} Main Category Breakdown`}</h2>
-        <ResponsiveContainer width="100%" height={350}>
-          <BarChart data={siteData.main_category}>
-            {/* Replace full names with A, B, C in order */}
-            <XAxis
-              dataKey="category"
-              textAnchor="end"
-              interval={0}
-              height={100}
-              tick={{ fontSize: 10 }}
-              tickFormatter={(value, index) => {
-                // Map categories to A, B, C
-                const alphabet = [
-                  'A',
-                  'B',
-                  'C',
-                  'D',
-                  'E',
-                  'F',
-                  'G',
-                  'H',
-                  'I',
-                  'J',
-                  'K',
-                  'L',
-                ]
-                return alphabet[index] || value
-              }}
-            />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="count" fill="#007bff" />
-          </BarChart>
-        </ResponsiveContainer>
+  useEffect(() => {
+    if (calculatedTimeData) {
+      createCombinedData(calculatedTimeData, setCombinedRateData)
+    }
+  }, [selectedBuilding, calculatedTimeData])
 
-        <h2 style={{ marginTop: '3rem' }}>{`${site} SubCategory Breakdown`}</h2>
-        <ResponsiveContainer width="100%" height={350}>
-          <BarChart data={siteData.sub_category}>
-            <XAxis
-              dataKey="subcategory"
-              interval={0}
-              height={100}
-              tick={false} // Remove the tick labels for SubCategory
-            />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="count" fill="#00c49f" />
-          </BarChart>
-        </ResponsiveContainer>
+  if (!data || !calculatedTimeData || !combinedRateData) return <Loading />
 
-        <h2 style={{ marginTop: '3rem' }}>{`${site} Requests by Weekday`}</h2>
-        <ResponsiveContainer width="100%" height={350}>
-          <BarChart data={siteData.by_weekday}>
-            <XAxis
-              dataKey="weekday"
-              height={100}
-              tick={{ fontSize: 10 }}
-              tickFormatter={shortenText} // Apply tickFormatter for shortening text
-            />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="count" fill="#ff7300" />
-          </BarChart>
-        </ResponsiveContainer>
-      </>
+  const siteData =
+    data[selectedBuilding]?.[String(selectedYear) as '2023' | '2024']
+  const rates = combinedRateData[selectedBuilding]
+
+  //Main Category
+  const mainCategoryCharts: React.ReactNode[] = []
+
+  mainCategoryCharts.push(
+    <MainCategoryChart
+      key="yearly"
+      site={selectedBuilding}
+      data={siteData.yearly.main_category}
+      title={`${selectedBuilding} - Yearly Main Category`}
+    />
+  )
+
+  Object.entries(siteData.monthly).forEach(([monthName, monthlyData]) => {
+    mainCategoryCharts.push(
+      <MainCategoryChart
+        key={monthName}
+        site={selectedBuilding}
+        data={monthlyData.main_category}
+        title={`${selectedBuilding} - ${monthName} Main Category`}
+      />
     )
-  }
+  })
+
+  //weekday
+  const weekdayCharts: React.ReactNode[] = []
+
+  weekdayCharts.push(
+    <RequestsByWeekdayChart
+      key="yearly-weekday"
+      site={selectedBuilding}
+      data={siteData.yearly.by_weekday}
+      title={`${selectedBuilding} - Yearly Weekday Requests`}
+    />
+  )
+
+  Object.entries(siteData.monthly).forEach(([monthName, monthlyData]) => {
+    weekdayCharts.push(
+      <RequestsByWeekdayChart
+        key={`weekday-${monthName}`}
+        site={selectedBuilding}
+        data={monthlyData.by_weekday}
+        title={`${selectedBuilding} - ${monthName} Weekday Requests`}
+      />
+    )
+  })
+
+  //sub category
+  const subCategoryCharts: React.ReactNode[] = []
+
+  subCategoryCharts.push(
+    <SubCategoryChart
+      key="yearly-sub"
+      site={selectedBuilding}
+      data={siteData.yearly.sub_category}
+      title={`${selectedBuilding} - Yearly SubCategory`}
+    />
+  )
+
+  Object.entries(siteData.monthly).forEach(([monthName, monthlyData]) => {
+    subCategoryCharts.push(
+      <SubCategoryChart
+        key={`sub-${monthName}`}
+        site={selectedBuilding}
+        data={monthlyData.sub_category}
+        title={`${selectedBuilding} - ${monthName} SubCategory`}
+      />
+    )
+  })
 
   return (
-    <div style={{ padding: '2rem' }}>
-      {/* Dropdown for selecting site with Material UI */}
-      <div style={{ marginBottom: '20px' }}>
-        <FormControl fullWidth variant="outlined">
-          <InputLabel id="site-select-label">Select Site</InputLabel>
-          <Select
-            labelId="site-select-label"
-            value={selectedBuilding}
-            onChange={(e) =>
-              setSelectedBuilding(e.target.value as 'A' | 'B' | 'C')
-            }
-            label="Select Site"
-            style={{ minWidth: 120 }}
-          >
-            <MenuItem value="A">Site A</MenuItem>
-            <MenuItem value="B">Site B</MenuItem>
-            <MenuItem value="C">Site C</MenuItem>
-          </Select>
-        </FormControl>
+    <div style={{ padding: '2rem', maxWidth: '1200px', margin: 'auto' }}>
+      <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
+        <div style={{ flex: 1 }}>
+          <SiteSelector
+            selected={selectedBuilding}
+            onChange={setSelectedBuilding}
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <YearSelector
+            selectedYear={selectedYear}
+            onChange={setSelectedYear}
+          />
+        </div>
       </div>
 
-      {/* Display the graphs for the selected site */}
-      {renderSiteGraphs(selectedBuilding)}
+      <OpeningClosingChart
+        site={selectedBuilding}
+        data={rates}
+        year={selectedYear}
+      />
+
+      <div
+        style={{
+          display: 'flex',
+          gap: '2rem',
+          marginTop: '2rem',
+          flexWrap: 'wrap',
+        }}
+      >
+        <div style={{ flex: 1, minWidth: '480px' }}>
+          <ChartCarousel charts={mainCategoryCharts} />
+        </div>
+        <div style={{ flex: 1, minWidth: '480px' }}>
+          <ChartCarousel charts={weekdayCharts} />
+        </div>
+      </div>
+
+      <div style={{ marginTop: '2rem' }}>
+        <ChartCarousel charts={subCategoryCharts} />
+      </div>
     </div>
   )
 }

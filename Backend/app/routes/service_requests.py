@@ -31,11 +31,11 @@ def get_open_requests_route():
     try:
         open_requests = get_open_requests()  
         if isinstance(open_requests, tuple) and open_requests[1] == 500:
-            return jsonify(open_requests[0]), 500  # אם קרה שגיאה בשרת, תחזיר את הטעות עם קוד 500
+            return jsonify(open_requests[0]), 500  
        
-        print(f"Returning the first 5 open requests: {open_requests[:5]}")  # הדפסת 5 הבקשות הראשונות
+        print(f"Returning the first 5 open requests: {open_requests[:5]}")  
 
-        return jsonify(open_requests), 200  # אם הכל בסדר, תחזיר את הרשימה עם סטטוס 200
+        return jsonify(open_requests), 200 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
