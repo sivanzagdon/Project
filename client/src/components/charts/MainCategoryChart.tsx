@@ -12,10 +12,15 @@ interface Props {
   site: string
   data: { category: string; count: number; date?: string }[]
   title?: string
+  color?: string
 }
 
-const MainCategoryChart: React.FC<Props> = ({ site, data, title }) => {
-  // מיון לפי סדר אלפביתי של שמות הקטגוריות
+const MainCategoryChart: React.FC<Props> = ({
+  site,
+  data,
+  title,
+  color = '#6366f1',
+}) => {
   const orderedData = [...data].sort((a, b) =>
     a.category.localeCompare(b.category)
   )
@@ -43,7 +48,7 @@ const MainCategoryChart: React.FC<Props> = ({ site, data, title }) => {
           />
           <defs>
             <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#6366f1" stopOpacity={1} />
+              <stop offset="0%" stopColor={color} stopOpacity={1} />{' '}
               <stop offset="100%" stopColor="#e0e7ff" stopOpacity={1} />
             </linearGradient>
           </defs>

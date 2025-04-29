@@ -138,6 +138,7 @@ const DashboardPage: React.FC = () => {
       site={selectedBuilding}
       data={siteData.yearly.sub_category}
       title={`${selectedBuilding} - Yearly SubCategory`}
+      color="6366f1"
     />
   )
 
@@ -148,6 +149,7 @@ const DashboardPage: React.FC = () => {
         site={selectedBuilding}
         data={monthlyData.sub_category}
         title={`${selectedBuilding} - ${monthName} SubCategory`}
+        color="6366f1"
       />
     )
   })

@@ -1,63 +1,15 @@
 import { get } from './axios.service'
 
-export interface CategoryData {
-  category: string
-  count: number
-}
-
-export interface SubCategoryData {
-  subcategory: string
-  count: number
-}
-
-export interface WeekdayData {
-  weekday: string
-  count: number
-}
-export interface SiteYearlyData {
-  main_category: CategoryData[]
-  sub_category: SubCategoryData[]
-  by_weekday: WeekdayData[]
-}
-
-export interface SiteYearData {
-  yearly: SiteYearlyData
-  monthly: {
-    [monthName: string]: SiteYearlyData
-  }
-}
-
-export interface DashboardData {
-  A: {
-    2023: SiteYearData
-    2024: SiteYearData
-  }
-  B: {
-    2023: SiteYearData
-    2024: SiteYearData
-  }
-  C: {
-    2023: SiteYearData
-    2024: SiteYearData
-  }
-}
-
-interface TimeData {
-  created_at: string | null
-  closed_at: string | null
-}
-
-export interface TimeDataList {
-  A: TimeData[]
-  B: TimeData[]
-  C: TimeData[]
-}
+import {
+  DashboardData,
+  TimeDataList,
+  DashboardOpenRequests,
+} from '../types/dashboard.type'
 
 export class DashboardService {
   getDashboardData = async (): Promise<DashboardData> => {
     try {
       const response = await get('/api/dashboard')
-      console.log('test', response.data)
       return response.data
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
@@ -72,6 +24,27 @@ export class DashboardService {
     } catch (error) {
       console.error('Error fetching time data:', error)
       throw new Error('Failed to fetch time data')
+    }
+  }
+
+  getNumOfOpenRequests = async (): Promise<number> => {
+    try {
+      const response = await get('/api/num-open-requests')
+      return response.data.numOfRequests
+    } catch (error) {
+      console.error('Error get num of open requests:', error)
+      throw new Error('Error get num of open requests')
+    }
+  }
+
+  getOpenRequestsDashboadData = async (): Promise<DashboardOpenRequests> => {
+    try {
+      const response = await get('/api/dashboard-open-requests')
+      console.log('test', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error get data open requests:', error)
+      throw new Error('Error get data of open requests')
     }
   }
 }

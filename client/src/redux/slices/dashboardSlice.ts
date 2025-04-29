@@ -1,69 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-
-export interface CategoryData {
-  category: string
-  count: number
-}
-
-export interface SubCategoryData {
-  subcategory: string
-  count: number
-}
-
-export interface WeekdayData {
-  weekday: string
-  count: number
-}
-
-export interface CombinedRateData {
-  date: string
-  opening_rate: number
-  closing_rate: number
-}
-
-export interface TimeDataList {
-  A: CombinedRateData[]
-  B: CombinedRateData[]
-  C: CombinedRateData[]
-}
-
-export interface SiteYearData {
-  yearly: SiteYearlyData
-  monthly: {
-    [monthName: string]: SiteYearlyData
-  }
-}
-
-export interface DashboardInterface {
-  A: {
-    2023: SiteYearData
-    2024: SiteYearData
-  }
-  B: {
-    2023: SiteYearData
-    2024: SiteYearData
-  }
-  C: {
-    2023: SiteYearData
-    2024: SiteYearData
-  }
-}
-
-export interface SiteYearlyData {
-  main_category: CategoryData[]
-  sub_category: SubCategoryData[]
-  by_weekday: WeekdayData[]
-}
+import { DashboardData } from '../../types/dashboard.type'
 
 interface DashboardState {
-  data: DashboardInterface | null
-  dataTimes: any // Keep raw data from API
+  data: DashboardData | null
+  dataTimes: any
+  openRequestsData: any
   lastFetched: number | null
 }
 
 const initialState: DashboardState = {
   data: null,
   dataTimes: null,
+  openRequestsData: null,
   lastFetched: null,
 }
 
@@ -71,12 +19,16 @@ const dashboardSlice = createSlice({
   name: 'dashboard',
   initialState,
   reducers: {
-    setDashboardData(state, action: PayloadAction<DashboardInterface>) {
+    setDashboardData(state, action: PayloadAction<DashboardData>) {
       state.data = action.payload
       state.lastFetched = Date.now()
     },
     setTimeData(state, action: PayloadAction<any>) {
       state.dataTimes = action.payload
+      state.lastFetched = Date.now()
+    },
+    setOpenRequestsData(state, action: PayloadAction<any>) {
+      state.openRequestsData = action.payload
       state.lastFetched = Date.now()
     },
     clearDashboardData(state) {
@@ -87,6 +39,10 @@ const dashboardSlice = createSlice({
   },
 })
 
-export const { setDashboardData, setTimeData, clearDashboardData } =
-  dashboardSlice.actions
+export const {
+  setDashboardData,
+  setTimeData,
+  setOpenRequestsData,
+  clearDashboardData,
+} = dashboardSlice.actions
 export default dashboardSlice.reducer
