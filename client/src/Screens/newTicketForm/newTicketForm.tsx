@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { TicketResponse, requestService } from '../../services/request.service'
+import { requestService } from '../../services/request.service'
+import { TicketResponse } from '../../types/request.type'
 import Loading from '../../components/Loading'
 import './NewTicketForm.css'
 import RiskReveal from '../../components/RiskReveal'

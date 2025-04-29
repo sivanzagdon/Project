@@ -1,9 +1,5 @@
+import { LoginResponse } from '../types/user.type'
 import { post } from './axios.service'
-
-export interface LoginResponse {
-  user_name: string
-  token: string
-}
 
 export class UserService {
   async login(empId: number, password: string): Promise<LoginResponse> {

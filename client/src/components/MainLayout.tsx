@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Tabs, Tab } from '@mui/material'
 import DashboardPage from '../Screens/DashboardScreen/DashboardScreen'
 import NewTicketForm from '../Screens/newTicketForm/newTicketForm'
+import DashboardOpenScreen from '../Screens/DashboardOpenScreen/DashboardOpenScreen'
 
 export default function MainLayout() {
   const [tab, setTab] = useState('dashboard')
@@ -31,8 +32,8 @@ export default function MainLayout() {
           }}
         />
         <Tab
-          label="NEW REQUEST"
-          value="new_request"
+          label="OPEN REQUESTS"
+          value="opens"
           sx={{
             fontFamily: 'Inter, sans-serif',
             fontWeight: 600,
@@ -45,7 +46,7 @@ export default function MainLayout() {
 
       <div style={{ marginTop: '2rem' }}>
         {tab === 'dashboard' && <DashboardPage />}
-        {tab === 'new_request' && <NewTicketForm />}
+        {tab === 'opens' && <DashboardOpenScreen />}
       </div>
     </div>
   )

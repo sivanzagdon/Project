@@ -13,9 +13,10 @@ interface Props {
   site: string
   data: { subcategory: string; count: number }[]
   title?: string
+  color: string // תכונה חדשה לצבע
 }
 
-const SubCategoryChart: React.FC<Props> = ({ site, data, title }) => {
+const SubCategoryChart: React.FC<Props> = ({ site, data, title, color }) => {
   return (
     <div style={styles.card}>
       <h2 style={styles.title}>{title || `${site} SubCategory Breakdown`}</h2>
@@ -26,14 +27,16 @@ const SubCategoryChart: React.FC<Props> = ({ site, data, title }) => {
           <Tooltip />
           <Bar
             dataKey="count"
-            fill="url(#gradient)"
+            fill={`url(#gradient)`} // שימוש בצבע מהפרופס
             radius={[6, 6, 0, 0]}
             barSize={16}
           />
           <defs>
             <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#6366f1" stopOpacity={1} />
-              <stop offset="100%" stopColor="#e0e7ff" stopOpacity={1} />
+              <stop offset="0%" stopColor="#ffffff" stopOpacity={1} />{' '}
+              {/* White color at start */}
+              <stop offset="100%" stopColor={color} stopOpacity={1} />{' '}
+              {/* Use the passed color */}
             </linearGradient>
           </defs>
         </BarChart>

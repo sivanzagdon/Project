@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { LoginResponse, userService } from '../../services/user.service'
+import { LoginResponse } from '../../types/user.type'
 import { RootState } from '../../redux/store'
 import { login } from '../../redux/slices/userSlice'
 import Loading from '../../components/Loading'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { userService } from '../../services/user.service'
 
 const LoginScreen: React.FC = () => {
   const dispatch = useDispatch()
