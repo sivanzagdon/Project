@@ -19,6 +19,8 @@ import MainCategoryChart from '../../components/charts/MainCategoryChart'
 import RequestsByWeekdayChart from '../../components/charts/RequestsByWeekdayChart'
 import OpeningClosingChart from '../../components/charts/OpeningClosingChart'
 import ChartCarousel from '../../components/charts/ChartCarousel'
+import MainCategoryInsights from '../../components/charts/MainCategoryInsights'
+import WeekdayInsights from '../../components/charts/WeekdayInsights'
 
 const dashboardService = new DashboardService()
 
@@ -87,22 +89,32 @@ const DashboardPage: React.FC = () => {
   const mainCategoryCharts: React.ReactNode[] = []
 
   mainCategoryCharts.push(
-    <MainCategoryChart
-      key="yearly"
-      site={selectedBuilding}
-      data={siteData.yearly.main_category}
-      title={`${selectedBuilding} - Yearly Main Category`}
-    />
+    <div key="main-yearly">
+      <MainCategoryChart
+        site={selectedBuilding}
+        data={siteData.yearly.main_category}
+        title={`${selectedBuilding} - Yearly Main Category`}
+      />
+      <MainCategoryInsights
+        site={selectedBuilding}
+        data={siteData.yearly.main_category}
+      />
+    </div>
   )
 
   Object.entries(siteData.monthly).forEach(([monthName, monthlyData]) => {
     mainCategoryCharts.push(
-      <MainCategoryChart
-        key={monthName}
-        site={selectedBuilding}
-        data={monthlyData.main_category}
-        title={`${selectedBuilding} - ${monthName} Main Category`}
-      />
+      <div key={`main-${monthName}`}>
+        <MainCategoryChart
+          site={selectedBuilding}
+          data={monthlyData.main_category}
+          title={`${selectedBuilding} - ${monthName} Main Category`}
+        />
+        <MainCategoryInsights
+          site={selectedBuilding}
+          data={monthlyData.main_category}
+        />
+      </div>
     )
   })
 
@@ -110,22 +122,32 @@ const DashboardPage: React.FC = () => {
   const weekdayCharts: React.ReactNode[] = []
 
   weekdayCharts.push(
-    <RequestsByWeekdayChart
-      key="yearly-weekday"
-      site={selectedBuilding}
-      data={siteData.yearly.by_weekday}
-      title={`${selectedBuilding} - Yearly Weekday Requests`}
-    />
+    <div key="weekday-yearly">
+      <RequestsByWeekdayChart
+        site={selectedBuilding}
+        data={siteData.yearly.by_weekday}
+        title={`${selectedBuilding} - Yearly Weekday Requests`}
+      />
+      <WeekdayInsights
+        site={selectedBuilding}
+        data={siteData.yearly.by_weekday}
+      />
+    </div>
   )
 
   Object.entries(siteData.monthly).forEach(([monthName, monthlyData]) => {
     weekdayCharts.push(
-      <RequestsByWeekdayChart
-        key={`weekday-${monthName}`}
-        site={selectedBuilding}
-        data={monthlyData.by_weekday}
-        title={`${selectedBuilding} - ${monthName} Weekday Requests`}
-      />
+      <div key={`weekday-${monthName}`}>
+        <RequestsByWeekdayChart
+          site={selectedBuilding}
+          data={monthlyData.by_weekday}
+          title={`${selectedBuilding} - ${monthName} Weekday Requests`}
+        />
+        <WeekdayInsights
+          site={selectedBuilding}
+          data={monthlyData.by_weekday}
+        />
+      </div>
     )
   })
 
