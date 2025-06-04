@@ -12,11 +12,13 @@ interface ParsedCategoryInsights {
 }
 
 const MainCategoryInsights: React.FC<Props> = ({ site, data }) => {
+    console.log(data)
     const [parsedData, setParsedData] = useState<ParsedCategoryInsights | null>(null)
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         const fetchInsights = async () => {
+            console.log(data)
             const prompt = `
 You are a business operations analyst.
 
@@ -49,9 +51,9 @@ IMPORTANT:
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        model: 'gpt-4o',
+                        model: 'ft:gpt-4o-2024-08-06:noa:final:Beh9hf3v',
                         messages: [{ role: 'user', content: prompt }],
-                        temperature: 0.3,
+                        temperature: 0.8,
                     }),
                 })
 

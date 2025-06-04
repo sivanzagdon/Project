@@ -14,6 +14,7 @@ interface ParsedWeekdayInsights {
 const WeekdayInsights: React.FC<Props> = ({ site, data }) => {
     const [parsedData, setParsedData] = useState<ParsedWeekdayInsights | null>(null)
     const [error, setError] = useState<string | null>(null)
+    console.log(data)
 
     useEffect(() => {
         const fetchInsights = async () => {
@@ -45,7 +46,7 @@ Return valid JSON only. No markdown or explanation.`
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        model: 'gpt-4o',
+                        model: 'ft:gpt-4o-2024-08-06:noa:final:Beh9hf3v',
                         messages: [{ role: 'user', content: prompt }],
                         temperature: 0.3,
                     }),

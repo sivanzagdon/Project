@@ -22,7 +22,7 @@ const AiInsights: React.FC<AiInsightsProps> = ({ site, year, month, combinedData
         const fetchInsights = async () => {
             try {
                 const trimmedData = combinedData.slice(-30)
-
+                console.log(trimmedData)
                 const prompt = `
 You are an experienced business operations analyst.
 
@@ -60,9 +60,9 @@ IMPORTANT:
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        model: 'gpt-4o',
+                        model: 'ft:gpt-4o-2024-08-06:noa:final:Beh9hf3v',
                         messages: [{ role: 'user', content: prompt }],
-                        temperature: 0.4,
+                        temperature: 0.8,
                     }),
                 })
 
