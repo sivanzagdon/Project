@@ -1,6 +1,7 @@
 import React from 'react'
 import MonthlyChart from './MonthlyChart'
 import ChartCarousel from './ChartCarousel'
+import AiInsights from './OpeningClosingAiInsights'
 
 interface Props {
   site: string
@@ -35,25 +36,22 @@ const OpeningClosingChart: React.FC<Props> = ({ site, data, year }) => {
     return acc
   }, {} as Record<number, typeof data>)
 
-  const monthlyCharts = Object.entries(dataByMonth).map(
-    ([monthIndex, monthData]) => (
-      <MonthlyChart
-        key={monthIndex}
-        monthName={monthNames[parseInt(monthIndex)]}
-        data={monthData}
-      />
-    )
+  const monthlyCharts: React.ReactNode[] = Object.entries(dataByMonth).map(
+    ([monthIndex, monthData]) => {
+      const monthName = monthNames[parseInt(monthIndex)]
+      return (
+        <div key={monthIndex}>
+          <MonthlyChart monthName={monthName} data={monthData} />
+          <AiInsights
+            site={site as 'A' | 'B' | 'C'}
+            year={year}
+            month={monthName}
+            combinedData={monthData}
+          />
+        </div>
+      )
+    }
   )
-
-  const groupedCharts: React.ReactNode[] = []
-  for (let i = 0; i < monthlyCharts.length; i += 2) {
-    groupedCharts.push(
-      <div style={styles.pairContainer} key={i}>
-        {monthlyCharts[i]}
-        {monthlyCharts[i + 1] ?? null}
-      </div>
-    )
-  }
 
   return (
     <div style={styles.card}>
@@ -72,7 +70,8 @@ const OpeningClosingChart: React.FC<Props> = ({ site, data, year }) => {
           <span style={styles.legendText}>Closing Rate</span>
         </div>
       </div>
-      <ChartCarousel charts={groupedCharts} />
+
+      <ChartCarousel charts={monthlyCharts} />
     </div>
   )
 }
@@ -123,13 +122,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   legendText: {
     fontSize: '0.95rem',
     color: '#111827',
-  },
-  pairContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    gap: '2rem',
-    flexWrap: 'nowrap',
   },
 }
 
