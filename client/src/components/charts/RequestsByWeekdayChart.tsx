@@ -40,14 +40,9 @@ const RequestsByWeekdayChart: React.FC<Props> = ({ site, data, title }) => {
     <div style={styles.card}>
       <h2 style={styles.title}>{title || `${site} Requests by Weekday`}</h2>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart
-          data={orderedData}
-          barCategoryGap={10}
-          barGap={4}
-          margin={{ top: 10, right: 20, left: 20, bottom: 30 }}
-        >
-          <XAxis dataKey="weekday" interval={0} style={{ fontSize: '12px' }} />
-          <YAxis style={{ fontSize: '12px' }} />
+        <BarChart data={orderedData} barCategoryGap={0} barGap={0}>
+          <XAxis dataKey="weekday" interval={0} tick={{ fontSize: '14' }} />
+          <YAxis />
           <Tooltip />
           <Bar
             dataKey="count"
@@ -77,7 +72,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    width: '50%',
+    width: '100%',
+    minWidth: '480px',
     flex: 1,
   },
   title: {

@@ -24,7 +24,6 @@ const DashboardOpenRequests: React.FC = () => {
   const [error, setError] = useState<string>('')
   const [selectedSite, setSelectedSite] = useState<'A' | 'B' | 'C'>('A')
 
-  // שליפת מספר הקריאות הפתוחות
   useEffect(() => {
     const fetchNumOfRequests = async () => {
       try {
@@ -38,7 +37,6 @@ const DashboardOpenRequests: React.FC = () => {
     fetchNumOfRequests()
   }, [])
 
-  // שליפת נתוני הקריאות הפתוחות אם עברו יותר מ-10 דקות
   useEffect(() => {
     const fetchOpenRequestsData = async () => {
       const currentTime = Date.now()
@@ -47,7 +45,7 @@ const DashboardOpenRequests: React.FC = () => {
         try {
           setLoading(true)
           const response = await dashboardService.getOpenRequestsDashboadData()
-          dispatch(setOpenRequestsData(response)) // עדכון סטייט ברידקס
+          dispatch(setOpenRequestsData(response))
         } catch (error) {
           setError('Failed to fetch open requests data')
         } finally {
@@ -57,7 +55,7 @@ const DashboardOpenRequests: React.FC = () => {
     }
 
     fetchOpenRequestsData()
-  }, [dispatch, lastFetched]) // תלות רק ב-lastFetched
+  }, [dispatch, lastFetched])
 
   if (loading) {
     return <Loading />
