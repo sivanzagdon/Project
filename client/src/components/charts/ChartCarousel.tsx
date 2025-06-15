@@ -24,11 +24,11 @@ const ChartCarousel: React.FC<ChartCarouselProps> = ({ charts }) => {
   return (
     <div style={styles.carouselContainer}>
       <button style={styles.arrowButton} onClick={handlePrev}>
-        <ChevronLeft size={12} />
+        <ChevronLeft />
       </button>
       <div style={styles.chartWrapper}>{charts[currentIndex]}</div>
       <button style={styles.arrowButton} onClick={handleNext}>
-        <ChevronRight size={12} />
+        <ChevronRight />
       </button>
     </div>
   )
@@ -36,7 +36,7 @@ const ChartCarousel: React.FC<ChartCarouselProps> = ({ charts }) => {
 
 const styles: { [key: string]: React.CSSProperties } = {
   carouselContainer: {
-    display: 'grid',
+    display: 'grid ',
     gridTemplateColumns: 'auto 1fr auto',
     alignItems: 'center',
     width: '100%',
@@ -58,7 +58,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   chartWrapper: {
     width: '100%',
-    maxWidth: '1000px',
+    maxWidth: '1800px',
     height: '100%',
     display: 'flex',
     alignItems: 'center',
