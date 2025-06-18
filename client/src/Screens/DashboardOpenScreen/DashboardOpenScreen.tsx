@@ -5,6 +5,7 @@ import { setOpenRequestsData } from '../../redux/slices/dashboardSlice'
 import OpenRequestsCount from '../../components/charts-openRequest/OpenRequestsCount'
 import MainCategoryChart from '../../components/charts/MainCategoryChart'
 import SubCategoryChart from '../../components/charts/SubCategoryChart'
+import RequestsByWeekdayChart from '../../components/charts/RequestsByWeekdayChart'
 import SiteSelector from '../../components/charts/SiteSelector'
 import { DashboardService } from '../../services/dashboard.service'
 import Loading from '../../components/Loading'
@@ -13,12 +14,8 @@ const dashboardService = new DashboardService()
 
 const DashboardOpenRequests: React.FC = () => {
   const dispatch = useDispatch()
-  const { openRequestsData } = useSelector(
-    (state: RootState) => state.dashboard
-  )
-  const lastFetched = useSelector(
-    (state: RootState) => state.dashboard.lastFetched
-  )
+  const { openRequestsData } = useSelector((state: RootState) => state.dashboard)
+  const lastFetched = useSelector((state: RootState) => state.dashboard.lastFetched)
   const [numOfRequests, setNumOfRequests] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
@@ -57,7 +54,7 @@ const DashboardOpenRequests: React.FC = () => {
     }
 
     fetchOpenRequestsData()
-  }, [dispatch, lastFetched]) // תלות רק ב-lastFetched
+  }, [dispatch, lastFetched])
 
   if (loading) {
     return <Loading />
@@ -93,28 +90,44 @@ const DashboardOpenRequests: React.FC = () => {
       </div>
 
       {siteDataForSelectedSite && (
-        <div
-          style={{
-            display: 'flex',
-            gap: '2rem',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            marginTop: '2rem',
-          }}
-        >
-          <MainCategoryChart
-            site={selectedSite}
-            data={siteDataForSelectedSite?.main_category}
-            color="#B2E8F3"
-          />
-          <SubCategoryChart
-            site={selectedSite}
-            data={siteDataForSelectedSite?.sub_category}
-            color="#FF5733"
-          />
-        </div>
+        <>
+          {/* גרפים עבור MainCategory ו-RequestsByWeekdayChart בשורה אחת */}
+          <div
+            style={{
+              display: 'flex',
+              gap: '2rem',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              marginTop: '2rem',
+            }}
+          >
+            {/* גרפים עבור MainCategory */}
+            <MainCategoryChart
+              site={selectedSite}
+              data={siteDataForSelectedSite?.main_category}
+              color="#B2E8F3"
+              title={`${selectedSite} - Open Requests Main Category`}
+            />
+            {/* גרפים עבור קריאות לפי יום בשבוע */}
+            <RequestsByWeekdayChart
+              site={selectedSite}
+              data={siteDataForSelectedSite?.by_weekday}
+              title={`${selectedSite} - Open Requests by Weekday`}
+            />
+          </div>
+
+          {/* גרף עבור SubCategory בשורה נפרדת עם רוחב מוגדל */}
+          <div style={{ marginTop: '2rem', maxWidth: '900px', width: '100%' }}>
+            <SubCategoryChart
+              site={selectedSite}
+              data={siteDataForSelectedSite?.sub_category}
+              color="#FF5733"
+              title={`${selectedSite} - Open Requests SubCategory`}
+            />
+          </div>
+        </>
       )}
     </div>
   )
