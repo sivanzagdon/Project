@@ -19,8 +19,8 @@ import MainCategoryChart from '../../components/charts/MainCategoryChart'
 import RequestsByWeekdayChart from '../../components/charts/RequestsByWeekdayChart'
 import OpeningClosingChart from '../../components/charts/OpeningClosingChart'
 import ChartCarousel from '../../components/charts/ChartCarousel'
-import MainCategoryInsights from '../../components/charts/MainCategoryInsights'
-import WeekdayInsights from '../../components/charts/WeekdayInsights'
+import MainCategoryInsights from '../../components/insights/MainCategoryInsights'
+import WeekdayInsights from '../../components/insights/WeekdayInsights'
 
 const dashboardService = new DashboardService()
 

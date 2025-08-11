@@ -1,7 +1,7 @@
 import React from 'react'
 import MonthlyChart from './MonthlyChart'
 import ChartCarousel from './ChartCarousel'
-import AiInsights from './OpeningClosingAiInsights'
+import AiInsights from '../insights/OpeningClosingAiInsights'
 
 interface Props {
   site: string
