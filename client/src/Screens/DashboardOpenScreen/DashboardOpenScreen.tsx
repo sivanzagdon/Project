@@ -83,13 +83,12 @@ const DashboardOpenRequests: React.FC = () => {
           </div>
         </div>
         <OpenRequestsCount
-          numOfRequests={numOfRequests} 
+          numOfRequests={numOfRequests}
         />
       </div>
 
       {siteDataForSelectedSite && (
         <>
-          {/* גרפים עבור MainCategory ו-RequestsByWeekdayChart בשורה אחת */}
           <div
             style={{
               display: 'flex',
@@ -101,14 +100,12 @@ const DashboardOpenRequests: React.FC = () => {
               marginTop: '2rem',
             }}
           >
-            {/* גרפים עבור MainCategory */}
             <MainCategoryChart
               site={selectedSite}
               data={siteDataForSelectedSite?.main_category}
               color="#B2E8F3"
               title={`${selectedSite} - Open Requests Main Category`}
             />
-            {/* גרפים עבור קריאות לפי יום בשבוע */}
             <RequestsByWeekdayChart
               site={selectedSite}
               data={siteDataForSelectedSite?.by_weekday}
@@ -116,7 +113,6 @@ const DashboardOpenRequests: React.FC = () => {
             />
           </div>
 
-          {/* גרף עבור SubCategory בשורה נפרדת עם רוחב מוגדל */}
           <div style={{ marginTop: '2rem', maxWidth: '900px', width: '100%' }}>
             <SubCategoryChart
               site={selectedSite}

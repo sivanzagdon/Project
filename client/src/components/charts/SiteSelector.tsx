@@ -1,4 +1,3 @@
-// SiteSelector.tsx
 import React from 'react'
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material'
 

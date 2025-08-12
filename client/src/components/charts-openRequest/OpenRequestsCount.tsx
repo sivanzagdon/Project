@@ -12,7 +12,6 @@ const OpenRequestsCount: React.FC<Props> = ({ numOfRequests }) => {
     return () => clearTimeout(timer)
   }, [])
 
-  // מספר מעוצב עם פסיקים לפי אלפים
   const formattedNumber = numOfRequests.toLocaleString()
 
   return (
@@ -26,7 +25,6 @@ const OpenRequestsCount: React.FC<Props> = ({ numOfRequests }) => {
           }}
         ></div>
 
-        {/* מספר בקשות */}
         <div style={styles.numberContainer}>
           <span style={styles.numOfRequests}>{formattedNumber}</span>
           <span style={styles.subtitle}>Open Requests</span>

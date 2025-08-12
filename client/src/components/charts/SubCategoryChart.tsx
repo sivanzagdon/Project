@@ -1,4 +1,3 @@
-// SubCategoryChart.tsx
 import React from 'react'
 import {
   ResponsiveContainer,
@@ -13,7 +12,7 @@ interface Props {
   site: string
   data: { subcategory: string; count: number }[]
   title?: string
-  color: string // תכונה חדשה לצבע
+  color: string
 }
 
 const SubCategoryChart: React.FC<Props> = ({ site, data, title, color }) => {
@@ -27,7 +26,7 @@ const SubCategoryChart: React.FC<Props> = ({ site, data, title, color }) => {
           <Tooltip />
           <Bar
             dataKey="count"
-            fill={`url(#gradient)`} // שימוש בצבע מהפרופס
+            fill={`url(#gradient)`}
             radius={[6, 6, 0, 0]}
             barSize={16}
           />

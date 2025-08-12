@@ -2,6 +2,18 @@ import { LoginResponse } from '../types/user.type'
 import { post } from './axios.service'
 
 export class UserService {
+  updatePassword(empId: any, currentPassword: string, newPassword: string) {
+    throw new Error('Method not implemented.')
+  }
+  updateUsername(empId: any, username: string) {
+    throw new Error('Method not implemented.')
+  }
+  deleteAccount(empId: any) {
+    throw new Error('Method not implemented.')
+  }
+  updatePreferences(empId: any, darkMode: boolean, notificationsEnabled: boolean) {
+    throw new Error('Method not implemented.')
+  }
   async login(empId: number, password: string): Promise<LoginResponse> {
     const data = {
       EmpID: empId,

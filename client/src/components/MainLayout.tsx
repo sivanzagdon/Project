@@ -16,7 +16,7 @@ export default function MainLayout() {
         textColor="inherit"
         TabIndicatorProps={{
           style: {
-            backgroundColor: '#000', // קו תחתון שחור
+            backgroundColor: '#000',
           },
         }}
       >
@@ -27,7 +27,7 @@ export default function MainLayout() {
             fontFamily: 'Inter, sans-serif',
             fontWeight: 600,
             fontSize: '16px',
-            color: tab === 'dashboard' ? '#111827' : '#6B7280', // כהה אם נבחר, אפור אם לא
+            color: tab === 'dashboard' ? '#111827' : '#6B7280',
             textTransform: 'none',
           }}
         />

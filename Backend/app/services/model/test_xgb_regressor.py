@@ -3,7 +3,7 @@ import joblib
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.model_selection import train_test_split  # Import for splitting the data
+from sklearn.model_selection import train_test_split 
 from dotenv import load_dotenv
 from app.db import get_collection
 import warnings
@@ -25,17 +25,15 @@ ENCODER_PATHS = {
 }
 
 def fetch_data():
-    print("📰 Fetching data from MongoDB...")
+    print("Fetching data from MongoDB...")
     collection = get_collection(DATABASE_NAME, "service_requests")
     return pd.DataFrame(list(collection.find()))
 
 def preprocess(df):
-    print("🧼 Preprocessing test data...")
+    print("Preprocessing test data...")
     df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
     df = df.dropna(subset=["Created on"])
-
     df["DurationHours"] = pd.to_numeric(df["Response time (hours)"], errors="coerce")
-
     df["Hour"] = df["Created on"].dt.hour
     df["Weekday"] = df["Created on"].dt.weekday
     df["Month"] = df["Created on"].dt.month
@@ -67,7 +65,7 @@ def evaluate_model():
     # Split the data into 80% training and 20% test
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    print("⚙️ Making predictions...")
+    print("Making predictions...")
     model, _ = joblib.load(MODEL_PATH)
     y_pred = model.predict(X_test)
 

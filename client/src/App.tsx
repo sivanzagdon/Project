@@ -15,7 +15,7 @@ import {
 import NewTicketForm from './Screens/newTicketForm/newTicketForm'
 import DashboardPage from './Screens/DashboardScreen/DashboardScreen'
 import OpenRequests from './Screens/OpenRequestsScreen/OpenRequestsScreen'
-// import SettingsScreen from './Screens/SettingsScreen/SettingsScreen'
+import SettingsScreen from './Screens/SettingsScreen/SettingsScreen'
 
 const App: React.FC = () => {
   useEffect(() => {
@@ -67,7 +67,7 @@ const App: React.FC = () => {
                 <Route path="/new-ticket" element={<NewTicketForm />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/open-requests" element={<OpenRequests />} />
-                {/* <Route path="/settings" element={<SettingsScreen />} /> */}
+                {<Route path="/settings" element={<SettingsScreen />} />}
               </Routes>
             </div>
           </div>
