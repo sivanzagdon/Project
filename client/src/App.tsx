@@ -15,6 +15,7 @@ import {
 import NewTicketForm from './Screens/newTicketForm/newTicketForm'
 import DashboardPage from './Screens/DashboardScreen/DashboardScreen'
 import OpenRequests from './Screens/OpenRequestsScreen/OpenRequestsScreen'
+// import SettingsScreen from './Screens/SettingsScreen/SettingsScreen'
 
 const App: React.FC = () => {
   useEffect(() => {
@@ -41,7 +42,7 @@ const App: React.FC = () => {
       <PersistGate loading={<Loading />} persistor={persistor}>
         <Router>
           <div style={{ display: 'flex' }}>
-            {isLoggedIn && <Sidebar />} {/* הצגת Sidebar רק למשתמשים מחוברים */}
+            {isLoggedIn && <Sidebar />}
             <div
               style={{
                 marginLeft: isLoggedIn ? '200px' : '0',
@@ -66,6 +67,7 @@ const App: React.FC = () => {
                 <Route path="/new-ticket" element={<NewTicketForm />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/open-requests" element={<OpenRequests />} />
+                {/* <Route path="/settings" element={<SettingsScreen />} /> */}
               </Routes>
             </div>
           </div>

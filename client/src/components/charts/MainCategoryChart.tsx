@@ -68,7 +68,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    width: '50%',
+    width: '100%',
     flex: 1,
   },
   title: {

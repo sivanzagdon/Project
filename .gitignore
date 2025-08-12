@@ -1,8 +1,9 @@
 # Ignore Python virtual environment
-Backend/venv/
+Backend/myenv/
 
 # Ignore Node.js modules
 client/node_modules/
+node_modules
 
 # Ignore Python bytecode
 *.pyc

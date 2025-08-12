@@ -40,7 +40,7 @@ const OpeningClosingChart: React.FC<Props> = ({ site, data, year }) => {
     ([monthIndex, monthData]) => {
       const monthName = monthNames[parseInt(monthIndex)]
       return (
-        <div key={monthIndex}>
+        <div key={monthIndex} style={{ minWidth: '600px', flex: 1 }}>
           <MonthlyChart monthName={monthName} data={monthData} />
           <AiInsights
             site={site as 'A' | 'B' | 'C'}
@@ -99,6 +99,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
     marginBottom: '1.5rem',
     marginLeft: '0.5rem',
+    minWidth: '1000px',
   },
   legendItem: {
     display: 'flex',
