@@ -83,7 +83,7 @@ const DashboardOpenRequests: React.FC = () => {
           </div>
         </div>
         <OpenRequestsCount
-          numOfRequests={numOfRequests} // הצגת מספר הקריאות
+          numOfRequests={numOfRequests} 
         />
       </div>
 
