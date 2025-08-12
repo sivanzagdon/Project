@@ -68,17 +68,17 @@ IMPORTANT:
                             .replace(/^```/, '')
                             .replace(/```$/, '')
                         const parsed = JSON.parse(cleaned)
-                        console.log('✅ Main Category Insights Parsed:', parsed)
+                        console.log('Main Category Insights Parsed:', parsed)
                         setParsedData(parsed)
                     } catch (e) {
-                        console.error('❌ Failed to parse JSON:', e)
+                        console.error('Failed to parse JSON:', e)
                         setError('AI returned an invalid format.')
                     }
                 } else {
                     setError('AI did not return a valid response.')
                 }
             } catch (err) {
-                console.error('🚨 Fetch Error:', err)
+                console.error('Fetch Error:', err)
                 setError('Failed to retrieve AI analysis.')
             }
         }
@@ -88,7 +88,7 @@ IMPORTANT:
 
     return (
         <div style={styles.card}>
-            <h3 style={styles.title}>📊 AI-Generated Insights: Category Breakdown</h3>
+            <h3 style={styles.title}>AI-Generated Insights: Category Breakdown</h3>
 
             {parsedData ? (
                 <>

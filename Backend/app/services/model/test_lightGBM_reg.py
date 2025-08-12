@@ -25,47 +25,33 @@ ENCODER_PATHS = {
 }
 
 def fetch_data():
-    print("📡 Fetching data from MongoDB...")
+    print("Fetching data from MongoDB...")
     collection = get_collection(DATABASE_NAME, "service_requests")
     return pd.DataFrame(list(collection.find()))
 
 def target_encode(X, y, columns):
     """Apply target encoding to categorical columns."""
     for col in columns:
-        # חישוב ממוצע של היעד (DurationHours) עבור כל קטגוריה
         mean_encoded = X.groupby(col).apply(lambda x: y.loc[x.index].mean())
-        # החלפת הערכים בקטגוריות עם הממוצע שנמצא
         X[col] = X[col].map(mean_encoded)
     return X
 
 def preprocess(df):
-    print("🧼 Preprocessing data...")
+    print("Preprocessing data...")
 
-    # המרת התאריך בפורמט מתאים
     df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
     df = df.dropna(subset=["Created on"])
-
-    # חישוב זמן טיפול (DurationHours)
     df["DurationHours"] = pd.to_numeric(df["Response time (hours)"], errors="coerce")
-
-    # יצירת תכונות זמן נוספות
     df["Hour"] = df["Created on"].dt.hour
-    df["Weekday"] = df["Created on"].dt.weekday  # ימי השבוע (0=ראשון, 1=שני, וכו')
+    df["Weekday"] = df["Created on"].dt.weekday  
     df["Month"] = df["Created on"].dt.month
     df["DayOfMonth"] = df["Created on"].dt.day
     df["RequestLength"] = df["Request description"].apply(lambda x: len(str(x)))
-
-    # יצירת תכונה של זמן ביום: בוקר, צהריים, ערב
     df['TimeOfDay'] = df['Hour'].apply(lambda x: 'Morning' if 6 <= x < 12 else ('Afternoon' if 12 <= x < 18 else 'Evening'))
-
-    # הוספת שדה IS_WEEKEND - האם היום הוא בסוף שבוע (שבת או יום ראשון)
-    df["Is weekend"] = df["Weekday"].isin([5, 6]).astype(int)  # 5=שבת, 6=ראשון
-    df["IS_WEEKEND"] = df["Is weekend"]  # תוודא שהשדה יקרא IS_WEEKEND
-
-    # יצירת תכונות אינטראקציה (כמו שעה ויום בשבוע)
+    df["Is weekend"] = df["Weekday"].isin([5, 6]).astype(int) 
+    df["IS_WEEKEND"] = df["Is weekend"]  
     df["Hour_Weekday"] = df["Hour"] * df["Weekday"]
 
-    # יצירת תכונות חדשות עבור ה-preprocessing
     features = [
         "MainCategory", "SubCategory", "Building", "Site",
         "Hour", "Weekday", "Month", "DayOfMonth", "IS_WEEKEND", "RequestLength", "TimeOfDay", "Hour_Weekday"
@@ -75,10 +61,9 @@ def preprocess(df):
     X = df[features].copy()
     y = df["DurationHours"]
 
-    # Target Encoding עבור משתנים קטגוריאליים
     X = target_encode(X, y, columns=["MainCategory", "SubCategory", "Building", "Site", "TimeOfDay"])
 
-    print(f"🧮 Feature matrix shape: {X.shape}, Target shape: {y.shape}")
+    print(f"Feature matrix shape: {X.shape}, Target shape: {y.shape}")
     return X, y
 
 def evaluate_model():
@@ -98,7 +83,7 @@ def evaluate_model():
         X_train, X_test = X.iloc[train_index], X.iloc[test_index]
         y_train, y_test = y.iloc[train_index], y.iloc[test_index]
 
-        print("⚙️ Making predictions...")
+        print("Making predictions...")
         model = joblib.load(MODEL_PATH)
         y_pred = model.predict(X_test)
 

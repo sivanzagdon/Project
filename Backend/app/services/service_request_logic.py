@@ -82,23 +82,22 @@ from flask import jsonify
 
 def get_open_requests():
     try:
-        print("📡 Fetching open requests from the database...")  # הדפסה שמראה את תחילת תהליך הקריאה
+        print("Fetching open requests from the database...")  
 
         collection = get_collection("DS_PROJECT", "newRequests")
         
         if collection is None:
-            print("❌ Failed to connect to the database collection.")
+            print("Failed to connect to the database collection.")
             return jsonify({"error": "Failed to connect to the database collection."}), 500
         
         open_requests = collection.find({"Request status": "Open"})
         
         open_requests_list = []
 
-        # עכשיו אנחנו נשתמש ב- open_requests עצמו
         for request in open_requests:
 
             request_data = {
-                "id": str(request.get("_id", "")),  # המרת ה-ObjectId למחרוזת
+                "id": str(request.get("_id", "")),  
                 "Created on": request.get("Created on", ""),
                 "Request status": request.get("Request status", ""),
                 "MainCategory": request.get("MainCategory", ""),
@@ -113,13 +112,13 @@ def get_open_requests():
         if not open_requests_list:
             print("No open requests found.")
         else:
-            print(f"🧳 Found {len(open_requests_list)} open requests.")  # הדפסה שמראה את מספר הקריאות הפתוחות
+            print(f"Found {len(open_requests_list)} open requests.")  
 
-        print(f"📝 Returning {len(open_requests_list)} open requests.")  # הדפסה שמראה את מספר הקריאות שנמצאו
+        print(f"Returning {len(open_requests_list)} open requests.")  
 
         return (open_requests_list[322:])
     except Exception as e:
-        print(f"❌ Error while fetching open requests: {e}")
+        print(f"Error while fetching open requests: {e}")
         return jsonify({"error": str(e)}), 500
 
 

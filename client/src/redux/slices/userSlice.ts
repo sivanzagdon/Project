@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { LoginResponse } from '../../types/user.type'
 
 interface UserInterface {
+  empID: any
   isLoggedIn: boolean
   user_name: string | null
   token: string | null
@@ -11,6 +12,7 @@ const initialState: UserInterface = {
   isLoggedIn: false,
   user_name: null,
   token: null,
+  empID: undefined
 }
 
 const userSlice = createSlice({

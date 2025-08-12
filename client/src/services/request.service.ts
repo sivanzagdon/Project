@@ -1,5 +1,4 @@
 import { post, get } from './axios.service'
-
 import { OpenRequest, TicketData, TicketResponse } from '../types/request.type'
 
 export class RequestService {

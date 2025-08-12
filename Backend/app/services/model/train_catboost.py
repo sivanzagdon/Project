@@ -1,5 +1,3 @@
-# ✅ ENHANCED TRAIN FILE - CatBoost Classifier for Overdue Prediction (Improved Accuracy)
-
 import os
 import pandas as pd
 import joblib
@@ -91,7 +89,7 @@ def train_catboost_model():
         border_count=64,
         verbose=False,
         random_state=42,
-        class_weights=[1, 2]  # יותר רגיש ל-overdue
+        class_weights=[1, 2] 
     )
 
     model.fit(X_train, y_train)

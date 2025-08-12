@@ -1,4 +1,3 @@
-// RequestsByWeekdayChart.tsx
 import React from 'react'
 import {
   ResponsiveContainer,

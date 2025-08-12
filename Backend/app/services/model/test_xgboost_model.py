@@ -24,10 +24,10 @@ ENCODER_PATHS = {
 CATEGORICAL_COLS = ["MainCategory", "SubCategory", "Building", "Site"]
 
 def fetch_data_from_mongo():
-    print("📡 Fetching and preprocessing data...")
+    print("Fetching and preprocessing data...")
     collection = get_collection(DATABASE_NAME, "service_requests")
     if collection is None:
-        print("❌ Failed to connect to MongoDB")
+        print("Failed to connect to MongoDB")
         return pd.DataFrame()
     return pd.DataFrame(list(collection.find()))
 
@@ -69,28 +69,28 @@ def evaluate_model():
     df = shuffle(df).reset_index(drop=True)
     X, y = preprocess(df)
 
-    print("🧪 Splitting into train/test sets...")
+    print("Splitting into train/test sets...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    print("📦 Loading model...")
+    print("Loading model...")
     model, model_columns = joblib.load(MODEL_PATH)
 
-    print("🔧 Aligning test data columns...")
+    print("Aligning test data columns...")
     X_test_aligned = X_test.reindex(columns=model_columns, fill_value=0)
 
-    print("🔮 Predicting...")
+    print("Predicting...")
     y_pred = model.predict(X_test_aligned)
 
     acc = accuracy_score(y_test, y_pred)
-    print(f"\n🎯 Accuracy on test set: \033[1m{acc:.4f}\033[0m")
+    print(f"\nAccuracy on test set: \033[1m{acc:.4f}\033[0m")
 
     cm = confusion_matrix(y_test, y_pred)
-    print("\n🧩 Confusion Matrix:")
+    print("\nConfusion Matrix:")
     print(f"{'':<12}{'Not Overdue':<8}{'Overdue':<8}")
     print(f"{'Not Overdue':<12}{cm[0][0]:<8}{cm[0][1]:<8}")
     print(f"{'Overdue':<12}{cm[1][0]:<8}{cm[1][1]:<8}")
 
-    print("\n📋 Classification Report:")
+    print("\nClassification Report:")
     print(classification_report(y_test, y_pred, target_names=["Not Overdue", "Overdue"]))
 
 if __name__ == "__main__":

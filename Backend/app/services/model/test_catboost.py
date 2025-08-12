@@ -1,5 +1,3 @@
-# ✅ UPDATED TEST FILE - CatBoost Classifier Evaluation for Overdue Prediction
-
 import os
 import pandas as pd
 import joblib

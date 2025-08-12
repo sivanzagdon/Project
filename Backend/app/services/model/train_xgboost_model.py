@@ -25,7 +25,7 @@ ENCODER_PATHS = {
 def fetch_data_from_mongo():
     collection = get_collection(DATABASE_NAME, "service_requests")
     if collection is None:
-        print("❌ Failed to connect to MongoDB.")
+        print("Failed to connect to MongoDB.")
         return pd.DataFrame()
     return pd.DataFrame(list(collection.find()))
 
@@ -56,16 +56,16 @@ def preprocess(df):
     return X, y
 
 def print_confusion_matrix(cm, labels):
-    print("\n🧩 Confusion Matrix:")
+    print("\nConfusion Matrix:")
     print(f"{'':<12}{labels[0]:<12}{labels[1]:<12}")
     print(f"{labels[0]:<12}{cm[0][0]:<12}{cm[0][1]:<12}")
     print(f"{labels[1]:<12}{cm[1][0]:<12}{cm[1][1]:<12}")
 
 def train_xgboost_model():
-    print("🚀 Training XGBoost model...\n")
+    print("Training XGBoost model...\n")
     df = fetch_data_from_mongo()
     if df.empty:
-        print("🛑 No data found.")
+        print("No data found.")
         return
 
     df = shuffle(df, random_state=42).reset_index(drop=True)
@@ -94,16 +94,16 @@ def train_xgboost_model():
     y_pred = model.predict(X_test)
 
     acc = accuracy_score(y_test, y_pred)
-    print(f"\n🎯 Accuracy: \033[1m{acc:.4f}\033[0m")
+    print(f"\nAccuracy: \033[1m{acc:.4f}\033[0m")
 
     cm = confusion_matrix(y_test, y_pred)
     print_confusion_matrix(cm, labels=["Not Overdue", "Overdue"])
 
-    print("\n📋 Classification Report:")
+    print("\nClassification Report:")
     print(classification_report(y_test, y_pred, target_names=["Not Overdue", "Overdue"]))
 
     joblib.dump((model, X.columns), MODEL_PATH)
-    print(f"\n💾 Model saved to: {MODEL_PATH}")
+    print(f"\nModel saved to: {MODEL_PATH}")
 
 if __name__ == "__main__":
     train_xgboost_model()

@@ -67,7 +67,7 @@ IMPORTANT:
                 })
 
                 const data = await response.json()
-                console.log('🧠 Raw OpenAI Response:', data)
+                console.log('Raw OpenAI Response:', data)
 
                 if (data.error) {
                     setError(`OpenAI Error: ${data.error.message}`)
@@ -84,17 +84,17 @@ IMPORTANT:
                             .replace(/```$/, '')
 
                         const parsed = JSON.parse(cleaned)
-                        console.log('✅ Parsed AI Insight:', parsed)
+                        console.log('Parsed AI Insight:', parsed)
                         setParsedData(parsed)
                     } catch (e) {
-                        console.error('❌ Failed to parse JSON:', e)
+                        console.error('Failed to parse JSON:', e)
                         setError('AI returned an invalid format.')
                     }
                 } else {
                     setError('AI did not return a valid response.')
                 }
             } catch (err: any) {
-                console.error('🚨 Error during fetch:', err)
+                console.error('Error during fetch:', err)
                 setError('Failed to fetch AI analysis.')
             }
         }
@@ -104,7 +104,7 @@ IMPORTANT:
 
     return (
         <div style={styles.card}>
-            <h3 style={styles.title}>📊 AI-Generated Insights: {month}</h3>
+            <h3 style={styles.title}>AI-Generated Insights: {month}</h3>
 
             {parsedData ? (
                 <div style={styles.insightContainer}>
