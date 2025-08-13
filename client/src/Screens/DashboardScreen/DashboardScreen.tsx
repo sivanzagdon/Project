@@ -6,7 +6,7 @@ import {
   setTimeData,
 } from '../../redux/slices/dashboardSlice'
 import { DashboardService } from '../../services/dashboard.service'
-import Loading from '../../components/Loading'
+import Loading from '../../components/Loading/Loading'
 import {
   calculateOpeningAndClosingRates,
   createCombinedData,
@@ -14,13 +14,14 @@ import {
 import SiteSelector from '../../components/charts/SiteSelector'
 import YearSelector from '../../components/charts/YearSelector'
 
-import SubCategoryChart from '../../components/charts/SubCategoryChart'
-import MainCategoryChart from '../../components/charts/MainCategoryChart'
-import RequestsByWeekdayChart from '../../components/charts/RequestsByWeekdayChart'
-import OpeningClosingChart from '../../components/charts/OpeningClosingChart'
-import ChartCarousel from '../../components/charts/ChartCarousel'
-import MainCategoryInsights from '../../components/insights/MainCategoryInsights'
-import WeekdayInsights from '../../components/insights/WeekdayInsights'
+import SubCategoryChart from '../../components/charts/SubCategoryChart/SubCategoryChart'
+import MainCategoryChart from '../../components/charts/MainCategoryChart/MainCategoryChart'
+import RequestsByWeekdayChart from '../../components/charts/RequestsByWeekdayChart/RequestsByWeekdayChart'
+import OpeningClosingChart from '../../components/charts/OpeningClosingChart/OpeningClosingChart'
+import ChartCarousel from '../../components/charts/ChartCarousel/ChartCarousel'
+import WeekdayInsights from '../../components/insights/WeekdayInsights/WeekdayInsights'
+import './DashboardScreen.style.css'
+import MainCategoryInsights from '../../components/insights/MainCategoryInsights/MainCategoryInsights'
 
 const dashboardService = new DashboardService()
 
@@ -177,15 +178,15 @@ const DashboardPage: React.FC = () => {
   })
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '1200px', margin: 'auto' }}>
-      <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
-        <div style={{ flex: 1 }}>
+    <div className="dashboard-container">
+      <div className="dashboard-selectors">
+        <div className="dashboard-selector-item">
           <SiteSelector
             selected={selectedBuilding}
             onChange={setSelectedBuilding}
           />
         </div>
-        <div style={{ flex: 1 }}>
+        <div className="dashboard-selector-item">
           <YearSelector
             selectedYear={selectedYear}
             onChange={setSelectedYear}
@@ -199,23 +200,16 @@ const DashboardPage: React.FC = () => {
         year={selectedYear}
       />
 
-      <div
-        style={{
-          display: 'flex',
-          gap: '2rem',
-          marginTop: '2rem',
-          flexWrap: 'wrap',
-        }}
-      >
-        <div style={{ flex: 1, minWidth: '480px' }}>
+      <div className="dashboard-charts-wrapper">
+        <div className="dashboard-chart-section">
           <ChartCarousel charts={mainCategoryCharts} />
         </div>
-        <div style={{ flex: 1, minWidth: '480px' }}>
+        <div className="dashboard-chart-section">
           <ChartCarousel charts={weekdayCharts} />
         </div>
       </div>
 
-      <div style={{ marginTop: '2rem' }}>
+      <div className="dashboard-subcategory-section">
         <ChartCarousel charts={subCategoryCharts} />
       </div>
     </div>

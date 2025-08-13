@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import './OpenRequestsCount.css'
 
 interface Props {
   numOfRequests: number
@@ -15,85 +16,20 @@ const OpenRequestsCount: React.FC<Props> = ({ numOfRequests }) => {
   const formattedNumber = numOfRequests.toLocaleString()
 
   return (
-    <div style={styles.container}>
-      <div style={styles.circleWrapper}>
-        <div style={styles.circleBackgroundGray}></div>
+    <div className="open-requests-count-container">
+      <div className="circle-wrapper">
+        <div className="circle-background-gray"></div>
         <div
-          style={{
-            ...styles.circleActiveGreen,
-            ...(animate ? styles.animate : {}),
-          }}
+          className={`circle-active-green ${animate ? 'animate' : ''}`}
         ></div>
 
-        <div style={styles.numberContainer}>
-          <span style={styles.numOfRequests}>{formattedNumber}</span>
-          <span style={styles.subtitle}>Open Requests</span>
+        <div className="number-container">
+          <span className="num-of-requests">{formattedNumber}</span>
+          <span className="subtitle">Open Requests</span>
         </div>
       </div>
     </div>
   )
-}
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    width: '250px',
-    backgroundColor: '#ffffff',
-    borderRadius: '12px',
-    padding: '20px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.05)',
-    textAlign: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  circleWrapper: {
-    width: '200px',
-    height: '200px',
-    position: 'relative',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  circleBackgroundGray: {
-    width: '160px',
-    height: '160px',
-    borderRadius: '50%',
-    border: '12px solid #f0f0f0',
-    position: 'absolute',
-  },
-  circleActiveGreen: {
-    width: '160px',
-    height: '160px',
-    borderRadius: '50%',
-    border: '12px solid transparent',
-    borderTopColor: '##80E0E6',
-    borderRightColor: '#B2E8F3',
-    borderBottomColor: 'transparent',
-    borderLeftColor: 'transparent',
-    transform: 'rotate(-45deg)',
-    position: 'absolute',
-    transition: 'all 1s ease-out',
-  },
-  animate: {
-    transform: 'rotate(315deg)',
-  },
-  numberContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  numOfRequests: {
-    fontSize: '32px',
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: '4px',
-  },
-  subtitle: {
-    fontSize: '14px',
-    color: '#888',
-  },
 }
 
 export default OpenRequestsCount

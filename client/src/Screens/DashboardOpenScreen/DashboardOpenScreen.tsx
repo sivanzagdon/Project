@@ -3,12 +3,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../redux/store'
 import { setOpenRequestsData } from '../../redux/slices/dashboardSlice'
 import OpenRequestsCount from '../../components/charts-openRequest/OpenRequestsCount'
-import MainCategoryChart from '../../components/charts/MainCategoryChart'
-import SubCategoryChart from '../../components/charts/SubCategoryChart'
-import RequestsByWeekdayChart from '../../components/charts/RequestsByWeekdayChart'
+import MainCategoryChart from '../../components/charts/MainCategoryChart/MainCategoryChart'
+import SubCategoryChart from '../../components/charts/SubCategoryChart/SubCategoryChart'
+import RequestsByWeekdayChart from '../../components/charts/RequestsByWeekdayChart/RequestsByWeekdayChart'
 import SiteSelector from '../../components/charts/SiteSelector'
 import { DashboardService } from '../../services/dashboard.service'
-import Loading from '../../components/Loading'
+import Loading from '../../components/Loading/Loading'
+import './DashboardOpenRequests.style.css';  // ייבוא קובץ הסטיילים
 
 const dashboardService = new DashboardService()
 
@@ -65,41 +66,14 @@ const DashboardOpenRequests: React.FC = () => {
   const siteDataForSelectedSite = openRequestsData?.[selectedSite]
 
   return (
-    <div
-      style={{
-        padding: '2rem',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        maxWidth: '1200px',
-        margin: 'auto',
-      }}
-    >
-      <div style={{ padding: '2rem', maxWidth: '1200px', margin: 'auto' }}>
-        <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
-          <div style={{ flex: 1 }}>
-            <SiteSelector selected={selectedSite} onChange={setSelectedSite} />
-          </div>
-        </div>
-        <OpenRequestsCount
-          numOfRequests={numOfRequests}
-        />
+    <div className="dashboard-container">
+      <div className="site-selector-container">
+        <SiteSelector selected={selectedSite} onChange={setSelectedSite} />
       </div>
-
+      <OpenRequestsCount numOfRequests={numOfRequests} />
       {siteDataForSelectedSite && (
         <>
-          <div
-            style={{
-              display: 'flex',
-              gap: '2rem',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '100%',
-              marginTop: '2rem',
-            }}
-          >
+          <div className="chart-container">
             <MainCategoryChart
               site={selectedSite}
               data={siteDataForSelectedSite?.main_category}
@@ -112,8 +86,7 @@ const DashboardOpenRequests: React.FC = () => {
               title={`${selectedSite} - Open Requests by Weekday`}
             />
           </div>
-
-          <div style={{ marginTop: '2rem', maxWidth: '900px', width: '100%' }}>
+          <div className="subcategory-container">
             <SubCategoryChart
               site={selectedSite}
               data={siteDataForSelectedSite?.sub_category}

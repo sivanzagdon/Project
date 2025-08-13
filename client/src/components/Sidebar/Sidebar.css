@@ -1,0 +1,135 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    background-color: #f9fafb;
+    color: #111827;
+    padding: 24px;
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
+    border-right: 1px solid #e5e7eb;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(0);
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar.hidden {
+    transform: translateX(-100%);
+}
+
+.toggle-button-wrapper {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+.floating-toggle-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.icon-button {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0;
+}
+
+.logo {
+    display: block;
+    max-width: 180px;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto 2rem;
+    transform: scale(1.5);
+    clip-path: inset(10% 10% 10% 10%);
+    margin-left: 8px;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #111827;
+}
+
+.menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 10px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.menu-item.active {
+    background-color: #6366f1;
+    color: white;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.menu-item .icon {
+    margin-right: 12px;
+    color: #6b7280;
+}
+
+.menu-item.active .icon {
+    color: white;
+}
+
+.menu-item .link {
+    color: #374151;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.menu-item.active .link {
+    color: white;
+}
+
+.logout-button {
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+}

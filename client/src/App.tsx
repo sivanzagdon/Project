@@ -2,10 +2,9 @@ import React, { useEffect } from 'react'
 import { Provider, useSelector } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import { store, persistor, RootState } from './redux/store'
-import Loading from './components/Loading'
+import Loading from './components/Loading/Loading'
 import LoginScreen from './Screens/LoginScreen/LoginScreen'
 import HomeScreen from './Screens/HomeScreen/HomeScreen'
-import Sidebar from './components/Sidebar'
 import {
   BrowserRouter as Router,
   Routes,
@@ -16,6 +15,7 @@ import NewTicketForm from './Screens/newTicketForm/newTicketForm'
 import DashboardPage from './Screens/DashboardScreen/DashboardScreen'
 import OpenRequests from './Screens/OpenRequestsScreen/OpenRequestsScreen'
 import SettingsScreen from './Screens/SettingsScreen/SettingsScreen'
+import Sidebar from './components/Sidebar/Sidebar'
 
 const App: React.FC = () => {
   useEffect(() => {

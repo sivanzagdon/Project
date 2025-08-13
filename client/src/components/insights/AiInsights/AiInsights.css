@@ -1,0 +1,46 @@
+.card {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background-color: #f9fafb;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+}
+
+.section {
+    margin-bottom: 1rem;
+}
+
+.sectionTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.25rem;
+}
+
+.list {
+    padding-left: 1.25rem;
+    margin: 0;
+}
+
+.error {
+    color: red;
+    font-size: 0.95rem;
+}
+
+.loading {
+    font-style: italic;
+    color: #6b7280;
+}
+
+.insightContainer {
+    font-size: 0.95rem;
+    color: #374151;
+    line-height: 1.6;
+}
