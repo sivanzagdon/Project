@@ -1,0 +1,66 @@
+.open-requests-count-container {
+    width: 250px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle-wrapper {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle-background-gray {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 12px solid #f0f0f0;
+    position: absolute;
+}
+
+.circle-active-green {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 12px solid transparent;
+    border-top-color: #80E0E6;
+    border-right-color: #B2E8F3;
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+    transform: rotate(-45deg);
+    position: absolute;
+    transition: all 1s ease-out;
+}
+
+.circle-active-green.animate {
+    transform: rotate(315deg);
+}
+
+.number-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.num-of-requests {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #888;
+}

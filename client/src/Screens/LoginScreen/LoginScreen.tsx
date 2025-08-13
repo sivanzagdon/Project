@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { LoginResponse } from '../../types/user.type'
 import { RootState } from '../../redux/store'
 import { login } from '../../redux/slices/userSlice'
-import Loading from '../../components/Loading'
+import Loading from '../../components/Loading/Loading'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { userService } from '../../services/user.service'
+import './LoginScreen.style.css';
 
 const LoginScreen: React.FC = () => {
   const dispatch = useDispatch()
@@ -53,25 +54,25 @@ const LoginScreen: React.FC = () => {
   }
 
   return (
-    <div style={styles.container}>
-      <img src="/logo.svg" alt="Logo" style={styles.logo} />
+    <div className="container">
+      <img src="/logo.svg" alt="Logo" className="logo" />
 
       <input
         type="text"
-        style={styles.input}
+        className="input"
         placeholder="Employee ID"
         value={empId}
         onChange={(e) => setEmpId(e.target.value)}
       />
       <input
         type="password"
-        style={styles.input}
+        className="input"
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <button style={styles.button} onClick={handleLogin}>
+      <button className="button" onClick={handleLogin}>
         Sign in
       </button>
 
@@ -81,48 +82,3 @@ const LoginScreen: React.FC = () => {
 }
 
 export default LoginScreen
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-    backgroundColor: 'white',
-  },
-  logo: {
-    width: '1000px',
-    height: '600px',
-    marginBottom: '10px',
-  },
-  title: {
-    fontSize: '30px',
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: '21px',
-  },
-  input: {
-    width: '45%',
-    padding: '15px',
-    margin: '10px 0',
-    backgroundColor: '#F7F7F7',
-    borderRadius: '10px',
-    color: '#333',
-    fontSize: '16px',
-    border: '1px solid #DDD',
-  },
-  button: {
-    backgroundColor: '#4A90E2',
-    borderRadius: '10px',
-    padding: '16px 60px',
-    margin: '20px 0',
-    color: '#FFFFFF',
-    fontSize: '18px',
-    fontWeight: 600,
-    letterSpacing: '0.8px',
-    cursor: 'pointer',
-    border: 'none',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-  },
-}

@@ -1,0 +1,27 @@
+.main-layout {
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+.tab-content {
+    margin-top: 2rem;
+}
+
+.custom-tabs .MuiTabs-indicator {
+    background-color: #000 !important;
+}
+
+.custom-tab {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    text-transform: none !important;
+}
+
+.custom-tab.active {
+    color: #111827 !important;
+}
+
+.custom-tab.inactive {
+    color: #6B7280 !important;
+}

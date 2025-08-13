@@ -1,0 +1,53 @@
+.dashboard-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.dashboard-selectors {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-selector-item {
+    flex: 1;
+}
+
+.dashboard-charts-wrapper {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.dashboard-chart-section {
+    flex: 1;
+    min-width: 450px;
+    /* Reduced to allow better side-by-side layout */
+    max-width: 48%;
+    /* Ensure two charts fit side by side */
+}
+
+/* For subcategory charts specifically - make them full width */
+.dashboard-subcategory-section .dashboard-chart-section {
+    min-width: 100%;
+    width: 100%;
+}
+
+.dashboard-subcategory-section {
+    margin-top: 2rem;
+    width: 100%;
+}
+
+/* Make the subcategory chart wider */
+.dashboard-subcategory-section .chart-container {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Override any width restrictions on charts in subcategory section */
+.dashboard-subcategory-section * {
+    max-width: 100% !important;
+}

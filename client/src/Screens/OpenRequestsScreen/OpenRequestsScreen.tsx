@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { requestService } from '../../services/request.service'
-import Loading from '../../components/Loading'
+import Loading from '../../components/Loading/Loading'
+import './OpenRequests.style.css';
 
 interface OpenRequest {
   id: string
@@ -15,28 +16,18 @@ interface OpenRequest {
 
 const OpenRequestRow: React.FC<{ request: OpenRequest }> = ({ request }) => {
   const getStatusBadge = (status: string) => {
-    const statusStyles: React.CSSProperties = {
-      backgroundColor: '#d1fae5',
-      color: '#065f46',
-      padding: '2px 8px',
-      borderRadius: '12px',
-      fontWeight: 600,
-      fontSize: '12px',
-      display: 'inline-block',
-      textAlign: 'center',
-    }
-    return <div style={statusStyles}>{status}</div>
+    return <div className="status-badge">{status}</div>
   }
 
   return (
-    <div style={styles.rowCard}>
-      <div style={styles.cell}>{request['Created on']}</div>
-      <div style={styles.cell}>{getStatusBadge(request['Request status'])}</div>
-      <div style={styles.cell}>{request.MainCategory}</div>
-      <div style={styles.cell}>{request.SubCategory}</div>
-      <div style={styles.cell}>{request.Building}</div>
-      <div style={styles.cell}>{request.Site}</div>
-      <div style={styles.cell}>{request['Request description']}</div>
+    <div className="row-card">
+      <div className="cell">{request['Created on']}</div>
+      <div className="cell">{getStatusBadge(request['Request status'])}</div>
+      <div className="cell">{request.MainCategory}</div>
+      <div className="cell">{request.SubCategory}</div>
+      <div className="cell">{request.Building}</div>
+      <div className="cell">{request.Site}</div>
+      <div className="cell">{request['Request description']}</div>
     </div>
   )
 }
@@ -94,20 +85,20 @@ const OpenRequests = () => {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="open-requests-container">
       {/* Filters */}
-      <div style={styles.filtersWrapper}>
+      <div className="filters-wrapper">
         <input
           type="text"
           placeholder="Search..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={styles.searchInput}
+          className="search-input"
         />
         <select
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value as typeof sortOption)}
-          style={styles.selectInput}>
+          className="select-input">
           <option disabled value="">Sort by...</option>
           <option value="date-asc">Date - Oldest First</option>
           <option value="date-desc">Date - Newest First</option>
@@ -118,16 +109,16 @@ const OpenRequests = () => {
         </select>
       </div>
 
-      <div style={styles.sortLabel}>{sortLabel[sortOption]}</div>
+      <div className="sort-label">{sortLabel[sortOption]}</div>
 
-      <div style={styles.headerRow}>
-        <div style={styles.header}>Created on</div>
-        <div style={styles.header}>Status</div>
-        <div style={styles.header}>Main Category</div>
-        <div style={styles.header}>SubCategory</div>
-        <div style={styles.header}>Building</div>
-        <div style={styles.header}>Site</div>
-        <div style={styles.header}>Description</div>
+      <div className="header-row">
+        <div className="header">Created on</div>
+        <div className="header">Status</div>
+        <div className="header">Main Category</div>
+        <div className="header">SubCategory</div>
+        <div className="header">Building</div>
+        <div className="header">Site</div>
+        <div className="header">Description</div>
       </div>
 
       {filteredRequests.length === 0 ? (
@@ -139,75 +130,6 @@ const OpenRequests = () => {
       )}
     </div>
   )
-}
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    margin: '20px auto',
-    padding: '20px',
-    borderRadius: '10px',
-    backgroundColor: '#ffffff',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-    maxWidth: '98%',
-    overflowX: 'auto',
-  },
-  filtersWrapper: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: '16px',
-    gap: '12px',
-    alignItems: 'center',
-  },
-  searchInput: {
-    padding: '8px',
-    borderRadius: '6px',
-    border: '1px solid #ccc',
-    flex: 1,
-  },
-  selectInput: {
-    padding: '8px',
-    borderRadius: '6px',
-    border: '1px solid #ccc',
-    minWidth: '220px'
-  },
-  sortLabel: {
-    display: 'none'
-  },
-  headerRow: {
-    display: 'grid',
-    gridTemplateColumns: '120px 80px 160px 160px 80px 60px 1fr',
-    backgroundColor: '#333',
-    color: '#fff',
-    padding: '12px',
-    borderRadius: '8px',
-    fontSize: '14px',
-    fontWeight: 600,
-    marginBottom: '10px',
-    gap: '10px',
-  },
-  header: {
-    padding: '4px 8px',
-  },
-  rowCard: {
-    display: 'grid',
-    gridTemplateColumns: '120px 80px 160px 160px 80px 60px 1fr',
-    gap: '10px',
-    padding: '12px',
-    backgroundColor: '#f9f9f9',
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    marginBottom: '8px',
-    fontSize: '14px',
-    alignItems: 'center',
-    transition: 'background-color 0.2s ease',
-  },
-  cell: {
-    padding: '4px 8px',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
 }
 
 export default OpenRequests

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { requestService } from '../../services/request.service'
 import { TicketResponse } from '../../types/request.type'
-import Loading from '../../components/Loading'
+import Loading from '../../components/Loading/Loading'
 import './NewTicketForm.css'
-import RiskReveal from '../../components/RiskReveal'
+import RiskReveal from '../../components/RiskReveal/RiskReveal'
 
 const NewTicketForm: React.FC = () => {
   const [MainCategory, setMainCategory] = useState('')
@@ -221,8 +221,8 @@ const NewTicketForm: React.FC = () => {
                     prediction < 0.4
                       ? 'green'
                       : prediction < 0.7
-                      ? 'orange'
-                      : 'red'
+                        ? 'orange'
+                        : 'red'
                   }
                 />
                 {recommendations.length > 0 && (

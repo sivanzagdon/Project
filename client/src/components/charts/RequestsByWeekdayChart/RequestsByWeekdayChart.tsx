@@ -1,12 +1,6 @@
 import React from 'react'
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from 'recharts'
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts'
+import './RequestsByWeekdayChart.css'
 
 interface Props {
   site: string
@@ -36,8 +30,8 @@ const RequestsByWeekdayChart: React.FC<Props> = ({ site, data, title }) => {
   })
 
   return (
-    <div style={styles.card}>
-      <h2 style={styles.title}>{title || `${site} Requests by Weekday`}</h2>
+    <div className="card">
+      <h2 className="title">{title || `${site} Requests by Weekday`}</h2>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={orderedData} barCategoryGap={0} barGap={0}>
           <XAxis dataKey="weekday" interval={0} tick={{ fontSize: '14' }} />
@@ -59,29 +53,6 @@ const RequestsByWeekdayChart: React.FC<Props> = ({ site, data, title }) => {
       </ResponsiveContainer>
     </div>
   )
-}
-
-const styles: { [key: string]: React.CSSProperties } = {
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: '12px',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-    padding: '24px',
-    marginTop: '2rem',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    width: '100%',
-    minWidth: '480px',
-    flex: 1,
-  },
-  title: {
-    fontFamily: 'Inter, sans-serif',
-    fontSize: '18px',
-    fontWeight: 500,
-    letterSpacing: '0.25px',
-    color: '#111827',
-  },
 }
 
 export default RequestsByWeekdayChart
