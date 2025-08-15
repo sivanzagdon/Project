@@ -116,7 +116,7 @@ def get_open_requests():
 
         print(f"Returning {len(open_requests_list)} open requests.")  
 
-        return (open_requests_list[322:])
+        return (open_requests_list)
     except Exception as e:
         print(f"Error while fetching open requests: {e}")
         return jsonify({"error": str(e)}), 500
