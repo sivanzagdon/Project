@@ -9,7 +9,7 @@ interface Props {
 
 const MonthlyChart: React.FC<Props> = ({ data, monthName }) => {
   return (
-    <div className="chart-container">
+    <div className="chart-container-col">
       <h4 className="chart-title">{monthName}</h4>
       <div className="chart-wrapper">
         <LineAreaChart data={data} />
