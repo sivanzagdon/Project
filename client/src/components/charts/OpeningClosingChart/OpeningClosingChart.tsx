@@ -1,13 +1,13 @@
-import React from 'react';
-import MonthlyChart from '../MonthlyChart/MonthlyChart';
-import ChartCarousel from '../ChartCarousel/ChartCarousel';
-import './OpeningClosingChart.css';
-import AiInsights from '../../../components/insights/AiInsights/OpeningClosingAiInsights';
+import React from 'react'
+import MonthlyChart from '../MonthlyChart/MonthlyChart'
+import ChartCarousel from '../ChartCarousel/ChartCarousel'
+import './OpeningClosingChart.css'
+import AiInsights from '../../../components/insights/AiInsights/OpeningClosingAiInsights'
 
 interface Props {
-  site: string;
-  data: { date: string; opening_rate: number; closing_rate: number }[];
-  year: number;
+  site: string
+  data: { date: string; opening_rate: number; closing_rate: number }[]
+  year: number
 }
 
 const monthNames = [
@@ -23,25 +23,25 @@ const monthNames = [
   'October',
   'November',
   'December',
-];
+]
 
 const OpeningClosingChart: React.FC<Props> = ({ site, data, year }) => {
   const filteredData = data.filter(
     (item) => new Date(item.date).getFullYear() === year
-  );
+  )
 
   const dataByMonth = filteredData.reduce((acc, item) => {
-    const month = new Date(item.date).getMonth();
-    if (!acc[month]) acc[month] = [];
-    acc[month].push(item);
-    return acc;
-  }, {} as Record<number, typeof data>);
+    const month = new Date(item.date).getMonth()
+    if (!acc[month]) acc[month] = []
+    acc[month].push(item)
+    return acc
+  }, {} as Record<number, typeof data>)
 
   const monthlyCharts: React.ReactNode[] = Object.entries(dataByMonth).map(
     ([monthIndex, monthData]) => {
-      const monthName = monthNames[parseInt(monthIndex)];
+      const monthName = monthNames[parseInt(monthIndex)]
       return (
-        <div key={monthIndex} style={{ minWidth: '600px', flex: 1 }}>
+        <div key={monthIndex} style={{}}>
           <MonthlyChart monthName={monthName} data={monthData} />
           <AiInsights
             site={site as 'A' | 'B' | 'C'}
@@ -50,9 +50,9 @@ const OpeningClosingChart: React.FC<Props> = ({ site, data, year }) => {
             combinedData={monthData}
           />
         </div>
-      );
+      )
     }
-  );
+  )
 
   return (
     <div className="card">
@@ -70,7 +70,7 @@ const OpeningClosingChart: React.FC<Props> = ({ site, data, year }) => {
 
       <ChartCarousel charts={monthlyCharts} />
     </div>
-  );
-};
+  )
+}
 
-export default OpeningClosingChart;
+export default OpeningClosingChart
