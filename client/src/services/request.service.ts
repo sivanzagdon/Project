@@ -9,23 +9,6 @@ export class RequestService {
     return response.data as TicketResponse
   }
 
-  predictExpectedResponseTime = async (
-    ticketData: TicketData
-  ): Promise<number> => {
-    try {
-      console.log(ticketData)
-      const response = await post('/api/predict-duration', ticketData)
-      console.log(
-        'Predicted response time (hours):',
-        response.data.expected_response_time_hours
-      )
-      return response.data.expected_response_time_hours
-    } catch (error) {
-      console.error('Failed to predict expected response time:', error)
-      return -1
-    }
-  }
-
   getOpenRequests = async (): Promise<OpenRequest[]> => {
     try {
       const response = await get('/api/open-requests')

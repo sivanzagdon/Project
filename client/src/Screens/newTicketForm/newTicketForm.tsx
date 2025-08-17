@@ -1,3 +1,4 @@
+// src/pages/NewTicketForm/NewTicketForm.tsx
 import React, { useState, useEffect } from 'react'
 import { requestService } from '../../services/request.service'
 import { TicketResponse } from '../../types/request.type'
@@ -5,23 +6,40 @@ import Loading from '../../components/Loading/Loading'
 import './NewTicketForm.css'
 import RiskReveal from '../../components/RiskReveal/RiskReveal'
 
+const round = (n: number, d = 2) => Math.round(n * 10 ** d) / 10 ** d
+const toBucket = (p: number): 'Low' | 'Medium' | 'High' => {
+  if (p >= 0.66) return 'High'
+  if (p >= 0.33) return 'Medium'
+  return 'Low'
+}
+const bucketLabel = (b: 'Low' | 'Medium' | 'High') =>
+  b === 'Low' ? 'Low Risk' : b === 'Medium' ? 'Medium Risk' : 'High Risk'
+const bucketColor = (b: 'Low' | 'Medium' | 'High') =>
+  b === 'Low' ? 'green' : b === 'Medium' ? 'orange' : 'red'
+
 const NewTicketForm: React.FC = () => {
   const [MainCategory, setMainCategory] = useState('')
   const [SubCategory, setSubCategory] = useState('')
   const [Building, setBuilding] = useState('')
   const [Site, setSite] = useState('')
   const [Description, setDescription] = useState('')
+
   const [sla, setSla] = useState('')
   const [prediction, setPrediction] = useState<number | null>(null)
+  const [predictedHours, setPredictedHours] = useState<number | null>(null)
+  const [riskBucket, setRiskBucket] = useState<
+    'Low' | 'Medium' | 'High' | null
+  >(null)
+  const [inconsistent, setInconsistent] = useState<boolean>(false)
   const [recommendations, setRecommendations] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [expectedTime, setExpectedTime] = useState<number | null>(null)
+
   const [categoriesData, setCategoriesData] = useState<any>({})
   const [subCategoriesOptions, setSubCategoriesOptions] = useState<
     { value: string; label: string }[]
   >([])
 
-  // Fetch categories from the JSON file located in public folder
+  // טוען קטגוריות מקובץ public/data.json
   useEffect(() => {
     fetch('/data.json')
       .then((response) => response.json())
@@ -29,33 +47,25 @@ const NewTicketForm: React.FC = () => {
       .catch((error) => console.error('Error loading categories data:', error))
   }, [])
 
-  // Update subcategories options when main category changes
+  // מעדכן רשימת תתי קטגוריה לפי קטגוריה ראשית
   useEffect(() => {
     if (MainCategory && categoriesData[MainCategory]) {
       const subCategories = categoriesData[MainCategory].map(
-        (subCat: string) => ({
-          value: subCat,
-          label: subCat,
-        })
+        (subCat: string) => ({ value: subCat, label: subCat })
       )
       setSubCategoriesOptions(subCategories)
-
-      if (subCategories.length === 0) {
-        setSubCategory('')
-      }
+      if (subCategories.length === 0) setSubCategory('')
     }
   }, [MainCategory, categoriesData])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
     if (!MainCategory || !SubCategory) {
       alert('Please select both a main category and a subcategory.')
       return
     }
 
     setIsLoading(true)
-
     const ticketData = {
       MainCategory,
       SubCategory,
@@ -65,30 +75,43 @@ const NewTicketForm: React.FC = () => {
     }
 
     try {
-      const expected = await requestService.predictExpectedResponseTime(
-        ticketData
-      )
-      setExpectedTime(expected)
+      const res: TicketResponse = await requestService.createTicket(ticketData)
+      console.log('Ticket API response', res)
 
-      const response: TicketResponse = await requestService.createTicket(
-        ticketData
-      )
-      const { sla_time, risk_score, recommendations } = response
+      const slaHours =
+        typeof res.sla_time === 'number'
+          ? res.sla_time
+          : typeof res.sla_hours === 'number'
+          ? res.sla_hours
+          : 0
+      setSla(`${slaHours} Hours`)
 
-      setSla(`${sla_time} Hours`)
-      setPrediction(risk_score)
-      setRecommendations(recommendations || [])
+      const prob =
+        typeof res.overdue_probability === 'number'
+          ? res.overdue_probability
+          : typeof res.risk_score === 'number'
+          ? res.risk_score
+          : 0
+      const bucket = res.risk_bucket ?? toBucket(prob)
+      setPrediction(prob)
+      setRiskBucket(bucket)
+
+      const ph =
+        typeof res.predicted_hours === 'number' ? res.predicted_hours : null
+      setPredictedHours(ph)
+
+      setRecommendations(res.recommendations || [])
+
+      const isInconsistent =
+        ph !== null &&
+        ((ph >= slaHours * 2 && prob < 0.33) ||
+          (ph <= slaHours * 0.7 && prob > 0.66))
+      setInconsistent(isInconsistent)
     } catch (error) {
       console.error('Adding a request failed', error)
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const getRiskLevel = (score: number): string => {
-    if (score < 0.4) return 'Low Risk'
-    if (score < 0.7) return 'Medium Risk'
-    return 'High Risk'
   }
 
   return (
@@ -205,7 +228,7 @@ const NewTicketForm: React.FC = () => {
           </button>
         </form>
 
-        {(sla || prediction !== null) && (
+        {(sla || prediction !== null || predictedHours !== null) && (
           <div className="result-box">
             {sla && (
               <p className="result-text">
@@ -213,18 +236,21 @@ const NewTicketForm: React.FC = () => {
               </p>
             )}
 
+            {predictedHours !== null && (
+              <p className="result-text">
+                <strong>Expected response time:</strong>{' '}
+                {round(predictedHours, 2)} hours
+              </p>
+            )}
+
             {prediction !== null && (
               <div className="risk-container">
-                <RiskReveal
-                  riskLevel={getRiskLevel(prediction)}
-                  color={
-                    prediction < 0.4
-                      ? 'green'
-                      : prediction < 0.7
-                        ? 'orange'
-                        : 'red'
-                  }
-                />
+                {!!riskBucket && (
+                  <RiskReveal
+                    riskLevel={bucketLabel(riskBucket)}
+                    color={bucketColor(riskBucket)}
+                  />
+                )}
                 {recommendations.length > 0 && (
                   <ul className="recommendation-list">
                     {recommendations.map((rec, idx) => (
@@ -232,17 +258,17 @@ const NewTicketForm: React.FC = () => {
                     ))}
                   </ul>
                 )}
+                {inconsistent && (
+                  <p className="warning-text">
+                    Warning, predicted hours and risk disagree, please review
+                    assignment
+                  </p>
+                )}
               </div>
-            )}
-
-            {expectedTime !== null && (
-              <p className="result-text">
-                <strong>Expected response time:</strong>{' '}
-                {expectedTime.toFixed(2)} hours
-              </p>
             )}
           </div>
         )}
+
         {isLoading && <Loading />}
       </div>
     </div>

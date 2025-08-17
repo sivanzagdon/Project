@@ -6,12 +6,16 @@ export interface TicketData {
   Description: string
 }
 
-export interface TicketResponse {
-  message: string
-  sla_time: number
+export type RiskBucket = 'Low' | 'Medium' | 'High'
+
+export type TicketResponse = {
+  predicted_hours?: number
+  sla_hours?: number
+  overdue_probability?: number
+  risk_bucket?: RiskBucket
+  recommendations?: string[]
+  sla_time?: number
   risk_score: number
-  recommendations: string[]
-  request_id: string
 }
 
 export interface OpenRequest {
