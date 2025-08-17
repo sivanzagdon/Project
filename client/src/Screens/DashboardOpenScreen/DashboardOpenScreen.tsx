@@ -9,14 +9,18 @@ import RequestsByWeekdayChart from '../../components/charts/RequestsByWeekdayCha
 import SiteSelector from '../../components/charts/SiteSelector'
 import { DashboardService } from '../../services/dashboard.service'
 import Loading from '../../components/Loading/Loading'
-import './DashboardOpenRequests.style.css';  // ייבוא קובץ הסטיילים
+import './DashboardOpenRequests.style.css'
 
 const dashboardService = new DashboardService()
 
 const DashboardOpenRequests: React.FC = () => {
   const dispatch = useDispatch()
-  const { openRequestsData } = useSelector((state: RootState) => state.dashboard)
-  const lastFetched = useSelector((state: RootState) => state.dashboard.lastFetched)
+  const { openRequestsData } = useSelector(
+    (state: RootState) => state.dashboard
+  )
+  const lastFetched = useSelector(
+    (state: RootState) => state.dashboard.lastFetched
+  )
   const [numOfRequests, setNumOfRequests] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
@@ -66,37 +70,39 @@ const DashboardOpenRequests: React.FC = () => {
   const siteDataForSelectedSite = openRequestsData?.[selectedSite]
 
   return (
-    <div className="dashboard-container">
-      <div className="site-selector-container">
+    <>
+      <div className="site-selector">
         <SiteSelector selected={selectedSite} onChange={setSelectedSite} />
       </div>
-      <OpenRequestsCount numOfRequests={numOfRequests} />
-      {siteDataForSelectedSite && (
-        <>
-          <div className="chart-container">
-            <MainCategoryChart
-              site={selectedSite}
-              data={siteDataForSelectedSite?.main_category}
-              color="#B2E8F3"
-              title={`${selectedSite} - Open Requests Main Category`}
-            />
-            <RequestsByWeekdayChart
-              site={selectedSite}
-              data={siteDataForSelectedSite?.by_weekday}
-              title={`${selectedSite} - Open Requests by Weekday`}
-            />
-          </div>
-          <div className="subcategory-container">
-            <SubCategoryChart
-              site={selectedSite}
-              data={siteDataForSelectedSite?.sub_category}
-              color="#FF5733"
-              title={`${selectedSite} - Open Requests SubCategory`}
-            />
-          </div>
-        </>
-      )}
-    </div>
+      <div className="dashboard-container">
+        <OpenRequestsCount numOfRequests={numOfRequests} />
+        {siteDataForSelectedSite && (
+          <>
+            <div className="chart-container">
+              <MainCategoryChart
+                site={selectedSite}
+                data={siteDataForSelectedSite?.main_category}
+                color="#B2E8F3"
+                title={`${selectedSite} - Open Requests Main Category`}
+              />
+              <RequestsByWeekdayChart
+                site={selectedSite}
+                data={siteDataForSelectedSite?.by_weekday}
+                title={`${selectedSite} - Open Requests by Weekday`}
+              />
+            </div>
+            <div className="subcategory-container">
+              <SubCategoryChart
+                site={selectedSite}
+                data={siteDataForSelectedSite?.sub_category}
+                color="#FF5733"
+                title={`${selectedSite} - Open Requests SubCategory`}
+              />
+            </div>
+          </>
+        )}
+      </div>
+    </>
   )
 }
 
