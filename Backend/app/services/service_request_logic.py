@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import jsonify
 from app.db import get_collection
-from app.services.prediction_service import predict_combined_risk
+from app.services.predictors.overdue_risk_predictor import predict_combined_risk
 import json
 
 
