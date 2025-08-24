@@ -7,9 +7,9 @@ from app.services.service_request_logic import (
     get_open_requests,
     calculate_sla,
 )
-from app.services.predict_response_time import predict_response_time
-from app.services.prediction_service import predict_combined_risk
-from app.services.prediction_reconciler import reconcile_predictions
+from app.services.predictors.predict_response_time import predict_response_time
+from app.services.predictors.overdue_risk_predictor import predict_combined_risk
+from app.services.reconciliation.prediction_reconciler import reconcile_predictions
 
 service_requests_bp = Blueprint("service_requests", __name__)
 

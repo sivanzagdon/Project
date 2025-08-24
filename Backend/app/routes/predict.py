@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.services.prediction_service import predict_combined_risk
+from app.services.predictors.overdue_risk_predictor import predict_combined_risk
 
 predict_bp = Blueprint("predict_bp", __name__, url_prefix="/predict")
 

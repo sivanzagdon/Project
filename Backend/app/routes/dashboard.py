@@ -18,7 +18,7 @@ def get_dashboard_data():
         return jsonify({"error": str(e)}), 500
     
 
-@dashboard_bp.route("/api/time-data", methods=["GET"])
+@dashboard_bp.route("/api/dashboard-data", methods=["GET"])
 def get_time_data_route():
     try:
         result = dashboard_service.get_time_data()
