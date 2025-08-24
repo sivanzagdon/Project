@@ -23,11 +23,23 @@ const userSlice = createSlice({
       state.isLoggedIn = true
       state.user_name = action.payload.user_name
       state.token = action.payload.token
+      // Extract empID from the token
+      try {
+        const token = action.payload.token
+        if (token) {
+          const payload = JSON.parse(atob(token.split('.')[1]))
+          state.empID = payload.empID
+        }
+      } catch (error) {
+        console.error('Error extracting empID from token:', error)
+        state.empID = undefined
+      }
     },
     logout(state: UserInterface) {
       state.isLoggedIn = false
       state.user_name = null
       state.token = null
+      state.empID = undefined
     },
   },
 })

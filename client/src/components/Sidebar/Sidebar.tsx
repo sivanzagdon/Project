@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../../redux/slices/userSlice'
+import { RootState } from '../../redux/store'
 import HomeIcon from '@mui/icons-material/Home'
 import ListAltIcon from '@mui/icons-material/ListAlt'
 import SettingsIcon from '@mui/icons-material/Settings'
 import LogoutIcon from '@mui/icons-material/Logout'
 import AddIcon from '@mui/icons-material/Add'
 import MenuIcon from '@mui/icons-material/Menu'
+import PersonIcon from '@mui/icons-material/Person'
+import BusinessIcon from '@mui/icons-material/Business'
+import WorkIcon from '@mui/icons-material/Work'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import EventIcon from '@mui/icons-material/Event'
 import './Sidebar.css'
 
 const Sidebar: React.FC = () => {
@@ -16,10 +22,50 @@ const Sidebar: React.FC = () => {
   const navigate = useNavigate()
   const [activeItem, setActiveItem] = useState(location.pathname)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  
+  // User state
+  const userState = useSelector((state: RootState) => state.user)
+  const empId = userState.empID
+  const [userProfile, setUserProfile] = useState<any>(null)
 
   useEffect(() => {
     setActiveItem(location.pathname)
   }, [location.pathname])
+
+  // Debug user state
+  useEffect(() => {
+    console.log('User state changed:', userState)
+    console.log('EmpID:', empId)
+  }, [userState, empId])
+
+  // Load user profile data
+  useEffect(() => {
+    if (empId) {
+      console.log('EmpID found, loading profile...')
+      loadUserProfile()
+    } else {
+      console.log('No EmpID found, user not logged in')
+    }
+  }, [empId])
+
+  const loadUserProfile = async () => {
+    try {
+      console.log('Loading user profile for empId:', empId, 'Type:', typeof empId)
+      const response = await fetch(`http://127.0.0.1:5000/get-user-preferences?empId=${empId}`)
+      console.log('Response status:', response.status)
+      if (response.ok) {
+        const profile = await response.json()
+        console.log('Profile loaded successfully:', profile)
+        setUserProfile(profile)
+      } else {
+        console.error('Failed to load profile, status:', response.status)
+        const errorText = await response.text()
+        console.error('Error response:', errorText)
+      }
+    } catch (error) {
+      console.error('Failed to load user profile:', error)
+    }
+  }
 
   useEffect(() => {
     const mainContent = document.querySelector('.main-content');
@@ -95,6 +141,13 @@ const Sidebar: React.FC = () => {
             >
               <SettingsIcon className="mini-icon" />
             </li>
+            <li
+              className="mini-menu-item profile-item"
+              onClick={() => navigate('/settings')}
+              title="User Profile"
+            >
+              <PersonIcon className="mini-icon" />
+            </li>
           </ul>
 
           <div className="mini-logout-wrapper">
@@ -116,13 +169,13 @@ const Sidebar: React.FC = () => {
 
         <div className="logo-wrapper">
           <img src="/logo.svg" alt="Logo" className="logo" />
-          <div className="logo-text">SLAware</div>
-          <div className="logo-subtitle">AI powered SLA management</div>
+          <div className="logo-text sidebar-header">SLAware</div>
+          <div className="logo-subtitle sidebar-subtitle">AI powered SLA management</div>
         </div>
 
         <ul className="menu">
           <li
-            className={`menu-item ${activeItem === '/home' ? 'active' : ''}`}
+            className={`menu-item nav-item ${activeItem === '/home' ? 'active' : ''}`}
             onClick={() => handleItemClick('/home')}
           >
             <HomeIcon className="icon" />
@@ -138,7 +191,16 @@ const Sidebar: React.FC = () => {
             </Link>
           </li>
           <li
-            className={`menu-item ${activeItem === '/new-ticket' ? 'active' : ''}`}
+            className={`menu-item nav-item ${activeItem === '/profile' ? 'active' : ''}`}
+            onClick={() => handleItemClick('/profile')}
+          >
+            <PersonIcon className="icon" />
+            <Link to="/profile" className="link">
+              Profile
+            </Link>
+          </li>
+          <li
+            className={`menu-item nav-item ${activeItem === '/new-ticket' ? 'active' : ''}`}
             onClick={() => handleItemClick('/new-ticket')}
           >
             <AddIcon className="icon" />
@@ -147,7 +209,7 @@ const Sidebar: React.FC = () => {
             </Link>
           </li>
           <li
-            className={`menu-item ${activeItem === '/open-requests' ? 'active' : ''}`}
+            className={`menu-item nav-item ${activeItem === '/open-requests' ? 'active' : ''}`}
             onClick={() => handleItemClick('/open-requests')}
           >
             <ListAltIcon className="icon" />
@@ -156,7 +218,7 @@ const Sidebar: React.FC = () => {
             </Link>
           </li>
           <li
-            className={`menu-item ${activeItem === '/settings' ? 'active' : ''}`}
+            className={`menu-item nav-item ${activeItem === '/settings' ? 'active' : ''}`}
             onClick={() => handleItemClick('/settings')}
           >
             <SettingsIcon className="icon" />

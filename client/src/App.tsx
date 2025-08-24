@@ -15,7 +15,9 @@ import NewTicketForm from './Screens/newTicketForm/newTicketForm'
 import DashboardPage from './Screens/DashboardScreen/DashboardScreen'
 import OpenRequests from './Screens/OpenRequestsScreen/OpenRequestsScreen'
 import SettingsScreen from './Screens/SettingsScreen/SettingsScreen'
+import ProfileScreen from './Screens/ProfileScreen/ProfileScreen'
 import Sidebar from './components/Sidebar/Sidebar'
+import './styles/global.css'
 
 const App: React.FC = () => {
   useEffect(() => {
@@ -44,8 +46,9 @@ const App: React.FC = () => {
           <div style={{ display: 'flex' }}>
             {isLoggedIn && <Sidebar />}
             <div
+              className="main-content"
               style={{
-                marginLeft: isLoggedIn ? '200px' : '0',
+                marginLeft: isLoggedIn ? '280px' : '0',
                 flex: 1,
                 padding: '20px',
               }}
@@ -68,6 +71,7 @@ const App: React.FC = () => {
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/open-requests" element={<OpenRequests />} />
                 {<Route path="/settings" element={<SettingsScreen />} />}
+                {<Route path="/profile" element={<ProfileScreen />} />}
               </Routes>
             </div>
           </div>
