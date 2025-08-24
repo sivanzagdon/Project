@@ -2,189 +2,407 @@ import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../redux/store'
 import { userService } from '../../services/user.service'
+import './SettingsScreen.css'
 
 const SettingsScreen = () => {
     const userState = useSelector((state: RootState) => state.user)
-    console.log('userState', userState)
     const empId = userState.empID
 
+    // Active tab state
+    const [activeTab, setActiveTab] = useState('account')
+
+    // Account settings - Company & Role Info
+    const [company, setCompany] = useState('')
+    const [department, setDepartment] = useState('')
+    const [position, setPosition] = useState('')
+    const [level, setLevel] = useState('')
+    const [employeeId, setEmployeeId] = useState('')
+    const [hireDate, setHireDate] = useState('')
+    const [isUpdatingAccount, setIsUpdatingAccount] = useState(false)
+
+    // Privacy settings - Username & Password
     const [currentPassword, setCurrentPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
-    const [darkMode, setDarkMode] = useState(false)
-    const [notificationsEnabled, setNotificationsEnabled] = useState(true)
     const [username, setUsername] = useState('')
+    const [profileVisibility, setProfileVisibility] = useState('public')
+    const [activityStatus, setActivityStatus] = useState('visible')
     const [successMessage, setSuccessMessage] = useState('')
+    const [errorMessage, setErrorMessage] = useState('')
+    const [isUpdatingUsername, setIsUpdatingUsername] = useState(false)
+    const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
+    const [isUpdatingPrivacy, setIsUpdatingPrivacy] = useState(false)
 
-    const handlePasswordChange = async () => {
-        if (newPassword !== confirmPassword) {
-            alert("New passwords don't match")
+    const handleAccountUpdate = async () => {
+        if (!company.trim() || !department.trim() || !position.trim()) {
+            setErrorMessage('Company, Department, and Position are required')
+            setSuccessMessage('')
             return
         }
 
+        setIsUpdatingAccount(true)
+        try {
+            await userService.updateAccountInfo(empId, {
+                company,
+                department,
+                position,
+                level,
+                employeeId,
+                hireDate
+            })
+            setSuccessMessage('Account information updated successfully')
+            setErrorMessage('')
+        } catch (error: any) {
+            setErrorMessage(error.message || 'Failed to update account information')
+            setSuccessMessage('')
+        } finally {
+            setIsUpdatingAccount(false)
+        }
+    }
+
+    const handlePasswordChange = async () => {
+        if (newPassword !== confirmPassword) {
+            setErrorMessage("New passwords don't match")
+            setSuccessMessage('')
+            return
+        }
+
+        setIsUpdatingPassword(true)
         try {
             await userService.updatePassword(empId, currentPassword, newPassword)
             setSuccessMessage('Password updated successfully')
-        } catch {
-            alert('Failed to update password')
+            setErrorMessage('')
+            setCurrentPassword('')
+            setNewPassword('')
+            setConfirmPassword('')
+        } catch (error: any) {
+            setErrorMessage(error.message || 'Failed to update password')
+            setSuccessMessage('')
+        } finally {
+            setIsUpdatingPassword(false)
         }
     }
 
     const handleUsernameChange = async () => {
-        if (!username.trim()) return
+        if (!username.trim()) {
+            setErrorMessage('Username cannot be empty')
+            setSuccessMessage('')
+            return
+        }
 
+        setIsUpdatingUsername(true)
         try {
             await userService.updateUsername(empId, username)
             setSuccessMessage('Username updated successfully')
-        } catch {
-            alert('Failed to update username')
+            setErrorMessage('')
+            setUsername('')
+        } catch (error: any) {
+            setErrorMessage(error.message || 'Failed to update username')
+            setSuccessMessage('')
+        } finally {
+            setIsUpdatingUsername(false)
         }
     }
 
-    const handleDeleteAccount = async () => {
-        if (
-            window.confirm(
-                'Are you sure you want to delete your account? This action cannot be undone.'
-            )
-        ) {
-            try {
-                await userService.deleteAccount(empId)
-                setSuccessMessage('Account deleted successfully')
-            } catch {
-                alert('Failed to delete account')
+    const handlePrivacySettingsUpdate = async () => {
+        setIsUpdatingPrivacy(true)
+        try {
+            await userService.updatePrivacySettings(empId, {
+                profileVisibility,
+                activityStatus
+            })
+            setSuccessMessage('Privacy settings updated successfully')
+            setErrorMessage('')
+        } catch (error: any) {
+            setErrorMessage(error.message || 'Failed to update privacy settings')
+            setSuccessMessage('')
+        } finally {
+            setIsUpdatingPrivacy(false)
+        }
+    }
+
+    const loadUserPreferences = async () => {
+        try {
+            // Load user preferences from the new endpoint
+            const response = await fetch(`http://127.0.0.1:5000/get-user-preferences?empId=${empId}`)
+            if (response.ok) {
+                const preferences = await response.json()
+                console.log('User preferences loaded:', preferences)
+                
+                // Set account info
+                if (preferences.company) setCompany(preferences.company)
+                if (preferences.department) setDepartment(preferences.department)
+                if (preferences.position) setPosition(preferences.position)
+                if (preferences.level) setLevel(preferences.level)
+                if (preferences.employee_id) setEmployeeId(preferences.employee_id)
+                if (preferences.hire_date) setHireDate(preferences.hire_date)
+                
+                // Set privacy settings
+                if (preferences.privacy_settings) {
+                    const privacy = preferences.privacy_settings
+                    if (privacy.profileVisibility) setProfileVisibility(privacy.profileVisibility)
+                    if (privacy.activityStatus) setActivityStatus(privacy.activityStatus)
+                }
+                
+                console.log('All preferences loaded successfully')
+            } else {
+                console.log('No preferences found, using defaults')
             }
+        } catch (error) {
+            console.error('Failed to load preferences:', error)
         }
     }
 
     useEffect(() => {
-        const updatePrefs = async () => {
-            try {
-                await userService.updatePreferences(empId, darkMode, notificationsEnabled)
-            } catch {
-                console.warn('Failed to update preferences')
-            }
+        if (empId) {
+            loadUserPreferences()
         }
-        updatePrefs()
-    }, [darkMode, notificationsEnabled])
+    }, [empId])
+
+    const renderAccountTab = () => (
+        <div className="tab-content">
+            <div className="section">
+                <h3 className="section-title">Company Information</h3>
+                <div className="input-group">
+                    <label className="label">Company Name *</label>
+                    <input
+                        type="text"
+                        value={company}
+                        onChange={(e) => setCompany(e.target.value)}
+                        placeholder="Enter company name"
+                        className="input"
+                    />
+                </div>
+                <div className="input-group">
+                    <label className="label">Department *</label>
+                    <input
+                        type="text"
+                        value={department}
+                        onChange={(e) => setDepartment(e.target.value)}
+                        placeholder="Enter department"
+                        className="input"
+                    />
+                </div>
+                <div className="input-group">
+                    <label className="label">Position *</label>
+                    <input
+                        type="text"
+                        value={position}
+                        onChange={(e) => setPosition(e.target.value)}
+                        placeholder="Enter your position"
+                        className="input"
+                    />
+                </div>
+                <div className="input-group">
+                    <label className="label">Level</label>
+                    <select 
+                        value={level} 
+                        onChange={(e) => setLevel(e.target.value)}
+                        className="select-input"
+                    >
+                        <option value="">Select level</option>
+                        <option value="junior">Junior</option>
+                        <option value="mid">Mid-Level</option>
+                        <option value="senior">Senior</option>
+                        <option value="lead">Team Lead</option>
+                        <option value="manager">Manager</option>
+                        <option value="director">Director</option>
+                        <option value="executive">Executive</option>
+                    </select>
+                </div>
+                <div className="input-group">
+                    <label className="label">Employee ID</label>
+                    <input
+                        type="text"
+                        value={employeeId}
+                        onChange={(e) => setEmployeeId(e.target.value)}
+                        placeholder="Enter employee ID"
+                        className="input"
+                    />
+                </div>
+                <div className="input-group">
+                    <label className="label">Hire Date</label>
+                    <input
+                        type="date"
+                        value={hireDate}
+                        onChange={(e) => setHireDate(e.target.value)}
+                        className="input"
+                    />
+                </div>
+                <button 
+                    onClick={handleAccountUpdate} 
+                    className="button"
+                    disabled={isUpdatingAccount}
+                >
+                    {isUpdatingAccount ? (
+                        <>
+                            <span className="loading-spinner"></span>
+                            Updating...
+                        </>
+                    ) : (
+                        'Update Account Information'
+                    )}
+                </button>
+            </div>
+        </div>
+    )
+
+    const renderPrivacyTab = () => (
+        <div className="tab-content">
+            <div className="section">
+                <h3 className="section-title">Update Username</h3>
+                <div className="input-group">
+                    <label className="label">New Username</label>
+                    <input
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Enter new username"
+                        className="input"
+                    />
+                    <button 
+                        onClick={handleUsernameChange} 
+                        className="button"
+                        disabled={isUpdatingUsername}
+                    >
+                        {isUpdatingUsername ? (
+                            <>
+                                <span className="loading-spinner"></span>
+                                Updating...
+                            </>
+                        ) : (
+                            'Update Username'
+                        )}
+                    </button>
+                </div>
+            </div>
+
+            <div className="section">
+                <h3 className="section-title">Change Password</h3>
+                <div className="input-group">
+                    <label className="label">Current Password</label>
+                    <input
+                        type="password"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        placeholder="Enter current password"
+                        className="input"
+                    />
+                </div>
+                <div className="input-group">
+                    <label className="label">New Password</label>
+                    <input
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="Enter new password"
+                        className="input"
+                    />
+                </div>
+                <div className="input-group">
+                    <label className="label">Confirm New Password</label>
+                    <input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm new password"
+                        className="input"
+                    />
+                </div>
+                <button 
+                    onClick={handlePasswordChange} 
+                    className="button"
+                    disabled={isUpdatingPassword}
+                >
+                    {isUpdatingPassword ? (
+                        <>
+                            <span className="loading-spinner"></span>
+                            Updating...
+                        </>
+                    ) : (
+                        'Change Password'
+                    )}
+                </button>
+            </div>
+
+            <div className="section">
+                <h3 className="section-title">Privacy Preferences</h3>
+                <div className="setting-group">
+                    <label className="label">Profile Visibility</label>
+                    <select 
+                        value={profileVisibility} 
+                        onChange={(e) => setProfileVisibility(e.target.value)}
+                        className="select-input"
+                    >
+                        <option value="public">Public</option>
+                        <option value="team">Team Only</option>
+                        <option value="private">Private</option>
+                    </select>
+                </div>
+                <div className="setting-group">
+                    <label className="label">Activity Status</label>
+                    <select 
+                        value={activityStatus} 
+                        onChange={(e) => setActivityStatus(e.target.value)}
+                        className="select-input"
+                    >
+                        <option value="visible">Visible to Team</option>
+                        <option value="away">Show as Away</option>
+                        <option value="hidden">Hidden</option>
+                    </select>
+                </div>
+                <button 
+                    onClick={handlePrivacySettingsUpdate} 
+                    className="button"
+                    disabled={isUpdatingPrivacy}
+                >
+                    {isUpdatingPrivacy ? (
+                        <>
+                            <span className="loading-spinner"></span>
+                            Updating...
+                        </>
+                    ) : (
+                        'Update Privacy Settings'
+                    )}
+                </button>
+            </div>
+        </div>
+    )
 
     return (
-        <div style={styles.container}>
-            <h2 style={styles.title}>Settings</h2>
-
-            <div style={styles.section}>
-                <label style={styles.label}>Update Username</label>
-                <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="New username"
-                    style={styles.input}
-                />
-                <button onClick={handleUsernameChange} style={styles.button}>
-                    Update Username
-                </button>
-            </div>
-
-            <div style={styles.section}>
-                <label style={styles.label}>Current Password</label>
-                <input
-                    type="password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    style={styles.input}
-                />
-                <label style={styles.label}>New Password</label>
-                <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    style={styles.input}
-                />
-                <label style={styles.label}>Confirm New Password</label>
-                <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    style={styles.input}
-                />
-                <button onClick={handlePasswordChange} style={styles.button}>
-                    Change Password
-                </button>
-            </div>
-
-            <div style={styles.section}>
-                <label style={styles.label}>Dark Mode</label>
-                <input
-                    type="checkbox"
-                    checked={darkMode}
-                    onChange={() => setDarkMode(!darkMode)}
-                />
-            </div>
-
-            <div style={styles.section}>
-                <label style={styles.label}>Enable Notifications</label>
-                <input
-                    type="checkbox"
-                    checked={notificationsEnabled}
-                    onChange={() => setNotificationsEnabled(!notificationsEnabled)}
-                />
-            </div>
-
-            <div style={styles.section}>
-                <button
-                    onClick={handleDeleteAccount}
-                    style={{ ...styles.button, backgroundColor: '#dc2626' }}
+        <div className="settings-container">
+            <h2 className="main-title">Settings</h2>
+            
+            {/* Settings Navigation Tabs */}
+            <div className="settings-tabs">
+                <button 
+                    className={`tab-button ${activeTab === 'account' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('account')}
                 >
-                    Delete Account
+                    <span className="tab-icon">👤</span>
+                    Account
+                </button>
+                <button 
+                    className={`tab-button ${activeTab === 'privacy' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('privacy')}
+                >
+                    <span className="tab-icon">🔒</span>
+                    Privacy
                 </button>
             </div>
 
-            {successMessage && <div style={styles.success}>{successMessage}</div>}
+            {/* Tab Content */}
+            <div className="tab-container">
+                {activeTab === 'account' && renderAccountTab()}
+                {activeTab === 'privacy' && renderPrivacyTab()}
+            </div>
+
+            {/* Messages */}
+            {successMessage && <div className="success">{successMessage}</div>}
+            {errorMessage && <div className="error">{errorMessage}</div>}
         </div>
     )
 }
 
-const styles: Record<string, React.CSSProperties> = {
-    container: {
-        maxWidth: '600px',
-        margin: '0 auto',
-        padding: '20px',
-        backgroundColor: '#fff',
-        borderRadius: '10px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-    },
-    title: {
-        fontSize: '24px',
-        fontWeight: 'bold',
-        marginBottom: '20px',
-    },
-    section: {
-        marginBottom: '20px',
-    },
-    label: {
-        display: 'block',
-        fontWeight: 500,
-        marginBottom: '5px',
-    },
-    input: {
-        width: '100%',
-        padding: '8px',
-        borderRadius: '6px',
-        border: '1px solid #ccc',
-        marginBottom: '10px',
-    },
-    button: {
-        padding: '10px 16px',
-        backgroundColor: '#2563eb',
-        color: 'white',
-        border: 'none',
-        borderRadius: '6px',
-        cursor: 'pointer',
-    },
-    success: {
-        color: 'green',
-        marginTop: '12px',
-    },
-}
-
 export default SettingsScreen
+

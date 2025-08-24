@@ -18,7 +18,7 @@ export class DashboardService {
 
   getTimeData = async (): Promise<TimeDataList> => {
     try {
-      const response = await get('/api/time-data')
+      const response = await get('/api/dashboard-data')
       return response.data
     } catch (error) {
       console.error('Error fetching time data:', error)

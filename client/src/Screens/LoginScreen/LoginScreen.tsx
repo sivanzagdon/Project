@@ -55,28 +55,44 @@ const LoginScreen: React.FC = () => {
 
   return (
     <div className="container">
-      <img src="/logo.svg" alt="Logo" className="logo" />
+      <div className="login-card">
+        <img src="/logo.svg" alt="Logo" className="logo" />
+        
+        <h1 className="app-title">SLAware</h1>
+        <p className="app-subtitle">AI powered SLA management</p>
 
-      <input
-        type="text"
-        className="input"
-        placeholder="Employee ID"
-        value={empId}
-        onChange={(e) => setEmpId(e.target.value)}
-      />
-      <input
-        type="password"
-        className="input"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <div className="input-group">
+          <label className="input-label">Employee ID</label>
+          <input
+            type="text"
+            className="input"
+            placeholder="Enter your Employee ID"
+            value={empId}
+            onChange={(e) => setEmpId(e.target.value)}
+          />
+        </div>
 
-      <button className="button" onClick={handleLogin}>
-        Sign in
-      </button>
+        <div className="input-group">
+          <label className="input-label">Password</label>
+          <input
+            type="password"
+            className="input"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
 
-      {isLoading && <Loading message="Signing in..." />}
+        <button className="button" onClick={handleLogin} disabled={isLoading}>
+          {isLoading ? 'Signing in...' : 'Sign in'}
+        </button>
+
+        {isLoading && (
+          <div className="loading-container">
+            <Loading message="Signing in..." />
+          </div>
+        )}
+      </div>
     </div>
   )
 }

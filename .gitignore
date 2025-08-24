@@ -1,5 +1,7 @@
 # Ignore Python virtual environment
 Backend/venv/
+venv/
+**/venv/
 
 # Ignore Node.js modules
 client/node_modules/
@@ -11,3 +13,25 @@ __pycache__/
 
 # Ignore environment files
 *.env
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore build files
+client/build/
+client/dist/
+Backend/__pycache__/
+Backend/*.pyc
