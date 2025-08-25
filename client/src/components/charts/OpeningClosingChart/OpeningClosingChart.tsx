@@ -7,7 +7,7 @@ import AiInsights from '../../../components/insights/AiInsights/OpeningClosingAi
 interface Props {
   site: string
   data: { date: string; opening_rate: number; closing_rate: number }[]
-  year: number
+  year: '2023' | '2024'
 }
 
 const monthNames = [
@@ -27,7 +27,7 @@ const monthNames = [
 
 const OpeningClosingChart: React.FC<Props> = ({ site, data, year }) => {
   const filteredData = data.filter(
-    (item) => new Date(item.date).getFullYear() === year
+    (item) => new Date(item.date).getFullYear() === parseInt(year)
   )
 
   const dataByMonth = filteredData.reduce((acc, item) => {

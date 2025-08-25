@@ -28,7 +28,6 @@ const dashboardSlice = createSlice({
       state.lastFetched = Date.now()
     },
     setOpenRequestsData(state, action: PayloadAction<any>) {
-      console.log("Setting open requests data:", action.payload);
       state.openRequestsData = action.payload
       state.lastFetched = Date.now()
     },

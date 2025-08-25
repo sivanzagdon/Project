@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { memo } from 'react'
 import './Loading.css'
 
 interface LoadingProps {
   message?: string
 }
 
-const Loading: React.FC<LoadingProps> = ({ message = '' }) => {
+const Loading: React.FC<LoadingProps> = memo(({ message = '' }) => {
   return (
     <div className="loading-container">
       <div className="loading-content">
@@ -14,6 +14,8 @@ const Loading: React.FC<LoadingProps> = ({ message = '' }) => {
       </div>
     </div>
   )
-}
+})
+
+Loading.displayName = 'Loading'
 
 export default Loading

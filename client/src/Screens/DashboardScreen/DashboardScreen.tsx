@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../redux/store'
 import {
@@ -34,7 +34,7 @@ const DashboardPage: React.FC = () => {
   )
 
   const [selectedBuilding, setSelectedBuilding] = useState<'A' | 'B' | 'C'>('A')
-  const [selectedYear, setSelectedYear] = useState(2024)
+  const [selectedYear, setSelectedYear] = useState<'2023' | '2024'>('2024')
   const [calculatedTimeData, setCalculatedTimeData] = useState<any>(null)
   const [combinedRateData, setCombinedRateData] = useState({
     A: [],
@@ -42,6 +42,17 @@ const DashboardPage: React.FC = () => {
     C: [],
   })
 
+  // Memoize the building change handler
+  const handleBuildingChange = useCallback((building: 'A' | 'B' | 'C') => {
+    setSelectedBuilding(building)
+  }, [])
+
+  // Memoize the year change handler
+  const handleYearChange = useCallback((year: '2023' | '2024') => {
+    setSelectedYear(year)
+  }, [])
+
+  // Fetch dashboard data only once
   useEffect(() => {
     if (!data) {
       dashboardService
@@ -50,20 +61,21 @@ const DashboardPage: React.FC = () => {
     }
   }, [dispatch, data])
 
+  // Fetch time data with caching
   useEffect(() => {
     const currentTime = Date.now()
-    if (!timeData || currentTime - (lastFetching || 0) > 10 * 60 * 1000) {
+    const shouldFetch = !timeData || currentTime - (lastFetching || 0) > 10 * 60 * 1000
+    
+    if (shouldFetch) {
       dashboardService.getTimeData().then((res) => {
-        calculateOpeningAndClosingRates(
-          res,
-          selectedBuilding,
-          setCalculatedTimeData,
-          createCombinedData,
-          setCombinedRateData
-        )
         dispatch(setTimeData(res))
       })
-    } else if (timeData && !calculatedTimeData) {
+    }
+  }, [dispatch, timeData, lastFetching])
+
+  // Calculate rates only when timeData or building changes
+  useEffect(() => {
+    if (timeData) {
       calculateOpeningAndClosingRates(
         timeData,
         selectedBuilding,
@@ -72,110 +84,137 @@ const DashboardPage: React.FC = () => {
         setCombinedRateData
       )
     }
-  }, [dispatch, timeData, lastFetching, selectedBuilding, calculatedTimeData])
+  }, [timeData, selectedBuilding])
 
-  useEffect(() => {
-    if (calculatedTimeData) {
-      createCombinedData(calculatedTimeData, setCombinedRateData)
+  // Memoize site data to prevent unnecessary recalculations
+  const siteData = useMemo(() => {
+    if (!data || !data[selectedBuilding] || !data[selectedBuilding][selectedYear]) {
+      return null
     }
-  }, [selectedBuilding, calculatedTimeData])
+    return data[selectedBuilding][selectedYear]
+  }, [data, selectedBuilding, selectedYear])
 
-  if (!data || !calculatedTimeData || !combinedRateData) return <Loading />
+  // Memoize rates data
+  const rates = useMemo(() => {
+    return combinedRateData[selectedBuilding] || []
+  }, [combinedRateData, selectedBuilding])
 
-  const siteData =
-    data[selectedBuilding]?.[String(selectedYear) as '2023' | '2024']
-  const rates = combinedRateData[selectedBuilding]
-
-  //Main Category
-  const mainCategoryCharts: React.ReactNode[] = []
-
-  mainCategoryCharts.push(
-    <div key="main-yearly">
-      <MainCategoryChart
-        site={selectedBuilding}
-        data={siteData.yearly.main_category}
-        title={`${selectedBuilding} - Yearly Main Category`}
-      />
-      <MainCategoryInsights
-        site={selectedBuilding}
-        data={siteData.yearly.main_category}
-      />
-    </div>
-  )
-
-  Object.entries(siteData.monthly).forEach(([monthName, monthlyData]) => {
-    mainCategoryCharts.push(
-      <div key={`main-${monthName}`}>
+  // Memoize main category charts
+  const mainCategoryCharts = useMemo(() => {
+    if (!siteData) return []
+    
+    const charts: React.ReactNode[] = []
+    
+    // Yearly chart
+    charts.push(
+      <div key="main-yearly">
         <MainCategoryChart
           site={selectedBuilding}
-          data={monthlyData.main_category}
-          title={`${selectedBuilding} - ${monthName} Main Category`}
+          data={siteData.yearly.main_category}
+          title={`${selectedBuilding} - Yearly Main Category`}
         />
         <MainCategoryInsights
           site={selectedBuilding}
-          data={monthlyData.main_category}
+          data={siteData.yearly.main_category}
         />
       </div>
     )
-  })
 
-  //weekday
-  const weekdayCharts: React.ReactNode[] = []
+    // Monthly charts
+    Object.entries(siteData.monthly).forEach(([monthName, monthlyData]) => {
+      charts.push(
+        <div key={`main-${monthName}`}>
+          <MainCategoryChart
+            site={selectedBuilding}
+            data={monthlyData.main_category}
+            title={`${selectedBuilding} - ${monthName} Main Category`}
+          />
+          <MainCategoryInsights
+            site={selectedBuilding}
+            data={monthlyData.main_category}
+          />
+        </div>
+      )
+    })
+    
+    return charts
+  }, [siteData, selectedBuilding])
 
-  weekdayCharts.push(
-    <div key="weekday-yearly">
-      <RequestsByWeekdayChart
-        site={selectedBuilding}
-        data={siteData.yearly.by_weekday}
-        title={`${selectedBuilding} - Yearly Weekday Requests`}
-      />
-      <WeekdayInsights
-        site={selectedBuilding}
-        data={siteData.yearly.by_weekday}
-      />
-    </div>
-  )
-
-  Object.entries(siteData.monthly).forEach(([monthName, monthlyData]) => {
-    weekdayCharts.push(
-      <div key={`weekday-${monthName}`}>
+  // Memoize weekday charts
+  const weekdayCharts = useMemo(() => {
+    if (!siteData) return []
+    
+    const charts: React.ReactNode[] = []
+    
+    // Yearly chart
+    charts.push(
+      <div key="weekday-yearly">
         <RequestsByWeekdayChart
           site={selectedBuilding}
-          data={monthlyData.by_weekday}
-          title={`${selectedBuilding} - ${monthName} Weekday Requests`}
+          data={siteData.yearly.by_weekday}
+          title={`${selectedBuilding} - Yearly Weekday Requests`}
         />
         <WeekdayInsights
           site={selectedBuilding}
-          data={monthlyData.by_weekday}
+          data={siteData.yearly.by_weekday}
         />
       </div>
     )
-  })
 
-  //sub category
-  const subCategoryCharts: React.ReactNode[] = []
+    // Monthly charts
+    Object.entries(siteData.monthly).forEach(([monthName, monthlyData]) => {
+      charts.push(
+        <div key={`weekday-${monthName}`}>
+          <RequestsByWeekdayChart
+            site={selectedBuilding}
+            data={monthlyData.by_weekday}
+            title={`${selectedBuilding} - ${monthName} Weekday Requests`}
+          />
+          <WeekdayInsights
+            site={selectedBuilding}
+            data={monthlyData.by_weekday}
+          />
+        </div>
+      )
+    })
+    
+    return charts
+  }, [siteData, selectedBuilding])
 
-  subCategoryCharts.push(
-    <SubCategoryChart
-      key="yearly-sub"
-      site={selectedBuilding}
-      data={siteData.yearly.sub_category}
-      title={`${selectedBuilding} - Yearly SubCategory`}
-      color="6366f1"
-    />
-  )
-
-  Object.entries(siteData.monthly).forEach(([monthName, monthlyData]) => {
-    subCategoryCharts.push(
+  // Memoize sub category charts
+  const subCategoryCharts = useMemo(() => {
+    if (!siteData) return []
+    
+    const charts: React.ReactNode[] = []
+    
+    // Yearly chart
+    charts.push(
       <SubCategoryChart
-        key={`sub-${monthName}`}
+        key="yearly-sub"
         site={selectedBuilding}
-        data={monthlyData.sub_category}
-        title={`${selectedBuilding} - ${monthName} SubCategory`}
+        data={siteData.yearly.sub_category}
+        title={`${selectedBuilding} - Yearly SubCategory`}
         color="6366f1"
       />
     )
-  })
+
+    // Monthly charts
+    Object.entries(siteData.monthly).forEach(([monthName, monthlyData]) => {
+      charts.push(
+        <SubCategoryChart
+          key={`sub-${monthName}`}
+          site={selectedBuilding}
+          data={monthlyData.sub_category}
+          title={`${selectedBuilding} - ${monthName} SubCategory`}
+          color="6366f1"
+        />
+      )
+    })
+    
+    return charts
+  }, [siteData, selectedBuilding])
+
+  if (!data || !calculatedTimeData || !combinedRateData || !siteData) return <Loading />
 
   return (
     <div className="dashboard-container">
@@ -183,13 +222,13 @@ const DashboardPage: React.FC = () => {
         <div className="dashboard-selector-item">
           <SiteSelector
             selected={selectedBuilding}
-            onChange={setSelectedBuilding}
+            onChange={handleBuildingChange}
           />
         </div>
         <div className="dashboard-selector-item">
           <YearSelector
             selectedYear={selectedYear}
-            onChange={setSelectedYear}
+            onChange={handleYearChange}
           />
         </div>
       </div>

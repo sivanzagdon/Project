@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { memo, useEffect } from 'react'
 import { Provider, useSelector } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import { store, persistor, RootState } from './redux/store'
@@ -19,62 +19,61 @@ import ProfileScreen from './Screens/ProfileScreen/ProfileScreen'
 import Sidebar from './components/Sidebar/Sidebar'
 import './styles/global.css'
 
-const App: React.FC = () => {
-  useEffect(() => {
-    const logPersistedStorage = () => {
-      try {
-        const storedData = localStorage.getItem('persist:root')
-        if (storedData) {
-          console.log('Persisted Storage Data:', JSON.parse(storedData))
-        } else {
-          console.log('No persisted data found.')
-        }
-      } catch (error) {
-        console.error('Error reading persisted storage:', error)
-      }
-    }
-
-    logPersistedStorage()
-  }, [])
-
+// Memoize the main app content to prevent unnecessary re-renders
+const AppContent = memo(() => {
   const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn)
+  const userState = useSelector((state: RootState) => state.user)
 
+  // Debug logging
+  useEffect(() => {
+    console.log('AppContent - isLoggedIn:', isLoggedIn)
+    console.log('AppContent - userState:', userState)
+    console.log('AppContent - localStorage persist:', localStorage.getItem('persist:root'))
+  }, [isLoggedIn, userState])
+
+  return (
+    <div style={{ display: 'flex' }}>
+      {isLoggedIn && <Sidebar />}
+      <div
+        className="main-content"
+        style={{
+          marginLeft: isLoggedIn ? '280px' : '0',
+          flex: 1,
+          padding: '20px',
+        }}
+      >
+        <Routes>
+          <Route
+            path="/"
+            element={
+              isLoggedIn ? (
+                <Navigate to="/home" />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route path="/login" element={<LoginScreen />} />
+          <Route path="/home" element={<HomeScreen />} />
+          <Route path="/new-ticket" element={<NewTicketForm />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/open-requests" element={<OpenRequests />} />
+          <Route path="/settings" element={<SettingsScreen />} />
+          <Route path="/profile" element={<ProfileScreen />} />
+        </Routes>
+      </div>
+    </div>
+  )
+})
+
+AppContent.displayName = 'AppContent'
+
+const App: React.FC = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={<Loading />} persistor={persistor}>
         <Router>
-          <div style={{ display: 'flex' }}>
-            {isLoggedIn && <Sidebar />}
-            <div
-              className="main-content"
-              style={{
-                marginLeft: isLoggedIn ? '280px' : '0',
-                flex: 1,
-                padding: '20px',
-              }}
-            >
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    isLoggedIn ? (
-                      <Navigate to="/home" />
-                    ) : (
-                      <Navigate to="/login" />
-                    )
-                  }
-                />
-                <Route path="/login" element={<LoginScreen />} />
-                <Route path="/home" element={<HomeScreen />} />
-                <Route path="/" element={<HomeScreen />} />
-                <Route path="/new-ticket" element={<NewTicketForm />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/open-requests" element={<OpenRequests />} />
-                {<Route path="/settings" element={<SettingsScreen />} />}
-                {<Route path="/profile" element={<ProfileScreen />} />}
-              </Routes>
-            </div>
-          </div>
+          <AppContent />
         </Router>
       </PersistGate>
     </Provider>

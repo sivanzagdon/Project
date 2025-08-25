@@ -36,7 +36,7 @@ export class DashboardService {
     }
   }
 
-  getOpenRequestsDashboadData = async (): Promise<DashboardOpenRequests> => {
+  getOpenRequestsDashboardData = async (): Promise<DashboardOpenRequests> => {
     try {
       const response = await get('/api/dashboard-open-requests')
       console.log('test', response.data)

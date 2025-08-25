@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../../redux/slices/userSlice'
@@ -32,40 +32,24 @@ const Sidebar: React.FC = () => {
     setActiveItem(location.pathname)
   }, [location.pathname])
 
-  // Debug user state
-  useEffect(() => {
-    console.log('User state changed:', userState)
-    console.log('EmpID:', empId)
-  }, [userState, empId])
-
-  // Load user profile data
+  // Load user profile data only when empId changes
   useEffect(() => {
     if (empId) {
-      console.log('EmpID found, loading profile...')
       loadUserProfile()
-    } else {
-      console.log('No EmpID found, user not logged in')
     }
   }, [empId])
 
-  const loadUserProfile = async () => {
+  const loadUserProfile = useCallback(async () => {
     try {
-      console.log('Loading user profile for empId:', empId, 'Type:', typeof empId)
       const response = await fetch(`http://127.0.0.1:5000/get-user-preferences?empId=${empId}`)
-      console.log('Response status:', response.status)
       if (response.ok) {
         const profile = await response.json()
-        console.log('Profile loaded successfully:', profile)
         setUserProfile(profile)
-      } else {
-        console.error('Failed to load profile, status:', response.status)
-        const errorText = await response.text()
-        console.error('Error response:', errorText)
       }
     } catch (error) {
-      console.error('Failed to load user profile:', error)
+      // Silent error handling for better performance
     }
-  }
+  }, [empId])
 
   useEffect(() => {
     const mainContent = document.querySelector('.main-content');
@@ -78,29 +62,32 @@ const Sidebar: React.FC = () => {
     }
   }, [isSidebarOpen]);
 
-  const handleLogout = () => {
+  // Debug logging
+  useEffect(() => {
+    console.log('Sidebar - isSidebarOpen:', isSidebarOpen)
+    console.log('Sidebar - activeItem:', activeItem)
+    console.log('Sidebar - userState:', userState)
+  }, [isSidebarOpen, activeItem, userState])
+
+  const handleLogout = useCallback(() => {
     dispatch(logout())
     localStorage.removeItem('persist:root')
     window.location.href = '/login'
-  }
+  }, [dispatch])
 
-  const handleItemClick = (path: string) => {
+  const handleItemClick = useCallback((path: string) => {
     setActiveItem(path)
     navigate(path)
-    setTimeout(() => {
-      if (location.pathname !== path) {
-        window.location.href = path
-      }
-    }, 100)
-  }
+    // Remove the setTimeout hack - it's causing performance issues
+  }, [navigate])
 
-  const openSidebar = () => {
+  const openSidebar = useCallback(() => {
     setIsSidebarOpen(true)
-  }
+  }, [])
 
-  const closeSidebar = () => {
+  const closeSidebar = useCallback(() => {
     setIsSidebarOpen(false)
-  }
+  }, [])
 
   return (
     <>

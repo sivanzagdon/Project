@@ -3,7 +3,7 @@ import './AiInsights.css';
 
 interface AiInsightsProps {
     site: 'A' | 'B' | 'C';
-    year: number;
+    year: '2023' | '2024';
     month: string;
     combinedData: { date: string; opening_rate: number; closing_rate: number }[];
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import './ChartCarousel.css'
 
@@ -9,16 +9,26 @@ interface ChartCarouselProps {
 const ChartCarousel: React.FC<ChartCarouselProps> = ({ charts }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? charts.length - 1 : prevIndex - 1
     )
-  }
+  }, [charts.length])
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === charts.length - 1 ? 0 : prevIndex + 1
+      prevIndex === 0 ? 0 : prevIndex + 1
     )
+  }, [])
+
+  // Memoize current chart to prevent unnecessary re-renders
+  const currentChart = useMemo(() => {
+    return charts[currentIndex] || null
+  }, [charts, currentIndex])
+
+  // Don't render if no charts
+  if (!charts || charts.length === 0) {
+    return null
   }
 
   return (
@@ -26,7 +36,7 @@ const ChartCarousel: React.FC<ChartCarouselProps> = ({ charts }) => {
       <button className="arrow-button" onClick={handlePrev}>
         <ChevronLeft />
       </button>
-      <div className="chart-wrapper">{charts[currentIndex]}</div>
+      <div className="chart-wrapper">{currentChart}</div>
       <button className="arrow-button" onClick={handleNext}>
         <ChevronRight />
       </button>
