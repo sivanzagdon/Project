@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, memo } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../redux/store'
 import PersonIcon from '@mui/icons-material/Person'
@@ -9,87 +9,103 @@ import EventIcon from '@mui/icons-material/Event'
 import BadgeIcon from '@mui/icons-material/Badge'
 import './ProfileScreen.css'
 
-const ProfileScreen: React.FC = () => {
-  const userState = useSelector((state: RootState) => state.user)
-  const empId = userState.empID
-  const [userProfile, setUserProfile] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+// Memoize the profile info rows to prevent unnecessary re-renders
+const ProfileInfoRow = memo(({ icon: Icon, label, value }: { icon: any, label: string, value: string }) => (
+  <div className="info-row">
+    <div className="info-label">
+      <Icon className="info-icon" />
+      <span>{label}</span>
+    </div>
+    <div className="info-value">{value}</div>
+  </div>
+))
 
-  useEffect(() => {
-    if (empId) {
-      loadUserProfile()
-    } else {
-      setError('User not logged in')
-      setIsLoading(false)
-    }
-  }, [empId])
+ProfileInfoRow.displayName = 'ProfileInfoRow'
 
-  const loadUserProfile = async () => {
-    try {
-      setIsLoading(true)
-      setError(null)
-      console.log('Loading user profile for empId:', empId, 'Type:', typeof empId)
-      
-      const response = await fetch(`http://127.0.0.1:5000/get-user-preferences?empId=${empId}`)
-      console.log('Response status:', response.status)
-      
-      if (response.ok) {
-        const profile = await response.json()
-        console.log('Profile loaded successfully:', profile)
-        setUserProfile(profile)
-      } else {
-        const errorText = await response.text()
-        console.error('Failed to load profile, status:', response.status, 'Error:', errorText)
-        setError(`Failed to load profile: ${response.status}`)
-      }
-    } catch (error: any) {
-      console.error('Failed to load user profile:', error)
-      setError('Failed to load profile. Please try again.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  if (isLoading) {
-    return (
-      <div className="profile-screen">
-        <div className="profile-container">
-          <div className="profile-header">
-            <PersonIcon className="profile-header-icon" />
-            <h1>User Profile</h1>
-          </div>
-          <div className="profile-card">
-            <div className="loading-spinner">
-              <div className="spinner"></div>
-              <p>Loading profile information...</p>
-            </div>
-          </div>
+// Memoize the loading component
+const LoadingComponent = memo(() => (
+  <div className="profile-screen">
+    <div className="profile-container">
+      <div className="profile-header">
+        <PersonIcon className="profile-header-icon" />
+        <h1>User Profile</h1>
+      </div>
+      <div className="profile-card">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Loading profile information...</p>
         </div>
       </div>
-    )
-  }
+    </div>
+  </div>
+))
 
-  if (error) {
-    return (
-      <div className="profile-screen">
-        <div className="profile-container">
-          <div className="profile-header">
-            <PersonIcon className="profile-header-icon" />
-            <h1>User Profile</h1>
-          </div>
-          <div className="profile-card">
-            <div className="error-message">
-              <p>❌ {error}</p>
-              <button onClick={loadUserProfile} className="retry-button">
-                Retry
-              </button>
-            </div>
-          </div>
+LoadingComponent.displayName = 'LoadingComponent'
+
+// Memoize the error component
+const ErrorComponent = memo(({ error, onRetry }: { error: string, onRetry: () => void }) => (
+  <div className="profile-screen">
+    <div className="profile-container">
+      <div className="profile-header">
+        <PersonIcon className="profile-header-icon" />
+        <h1>User Profile</h1>
+      </div>
+      <div className="profile-card">
+        <div className="error-message">
+          <p>❌ {error}</p>
+          <button onClick={onRetry} className="retry-button">
+            Retry
+          </button>
         </div>
       </div>
+    </div>
+  </div>
+))
+
+ErrorComponent.displayName = 'ErrorComponent'
+
+// Memoize the profile content
+const ProfileContent = memo(({ userProfile, empId }: { userProfile: any, empId: any }) => {
+  // Memoize the profile info rows to prevent unnecessary re-renders
+  const profileInfoRows = useMemo(() => {
+    const rows = []
+    
+    if (userProfile.emp_name) {
+      rows.push(
+        <ProfileInfoRow key="emp_name" icon={PersonIcon} label="Employee Name" value={userProfile.emp_name} />
+      )
+    }
+    
+    rows.push(
+      <ProfileInfoRow key="company" icon={BusinessIcon} label="Company" value={userProfile.company || 'Not set'} />
     )
-  }
+    
+    rows.push(
+      <ProfileInfoRow key="department" icon={WorkIcon} label="Department" value={userProfile.department || 'Not set'} />
+    )
+    
+    rows.push(
+      <ProfileInfoRow key="position" icon={WorkIcon} label="Position" value={userProfile.position || 'Not set'} />
+    )
+    
+    if (userProfile.level) {
+      rows.push(
+        <ProfileInfoRow key="level" icon={TrendingUpIcon} label="Level" value={userProfile.level} />
+      )
+    }
+    
+    if (userProfile.hire_date) {
+      rows.push(
+        <ProfileInfoRow key="hire_date" icon={EventIcon} label="Hire Date" value={userProfile.hire_date} />
+      )
+    }
+    
+    rows.push(
+      <ProfileInfoRow key="empId" icon={BadgeIcon} label="Employee ID" value={empId} />
+    )
+    
+    return rows
+  }, [userProfile, empId])
 
   return (
     <div className="profile-screen">
@@ -99,87 +115,81 @@ const ProfileScreen: React.FC = () => {
           <h1>User Profile</h1>
         </div>
         
-        {userProfile && (
-          <div className="profile-card">
-            <div className="profile-avatar">
-              <PersonIcon className="avatar-icon" />
-            </div>
-            
-            <div className="profile-info">
-              {/* Employee Name */}
-              {userProfile.emp_name && (
-                <div className="info-row">
-                  <div className="info-label">
-                    <PersonIcon className="info-icon" />
-                    <span>Employee Name</span>
-                  </div>
-                  <div className="info-value">{userProfile.emp_name}</div>
-                </div>
-              )}
-              
-              {/* Company */}
-              <div className="info-row">
-                <div className="info-label">
-                  <BusinessIcon className="info-icon" />
-                  <span>Company</span>
-                </div>
-                <div className="info-value">{userProfile.company || 'Not set'}</div>
-              </div>
-              
-              {/* Department */}
-              <div className="info-row">
-                <div className="info-label">
-                  <WorkIcon className="info-icon" />
-                  <span>Department</span>
-                </div>
-                <div className="info-value">{userProfile.department || 'Not set'}</div>
-              </div>
-              
-              {/* Position */}
-              <div className="info-row">
-                <div className="info-label">
-                  <WorkIcon className="info-icon" />
-                  <span>Position</span>
-                </div>
-                <div className="info-value">{userProfile.position || 'Not set'}</div>
-              </div>
-              
-              {/* Level */}
-              {userProfile.level && (
-                <div className="info-row">
-                  <div className="info-label">
-                    <TrendingUpIcon className="info-icon" />
-                    <span>Level</span>
-                  </div>
-                  <div className="info-value">{userProfile.level}</div>
-                </div>
-              )}
-              
-              {/* Hire Date */}
-              {userProfile.hire_date && (
-                <div className="info-row">
-                  <div className="info-label">
-                    <EventIcon className="info-icon" />
-                    <span>Hire Date</span>
-                  </div>
-                  <div className="info-value">{userProfile.hire_date}</div>
-                </div>
-              )}
-              
-              {/* Employee ID */}
-              <div className="info-row">
-                <div className="info-label">
-                  <BadgeIcon className="info-icon" />
-                  <span>Employee ID</span>
-                </div>
-                <div className="info-value">{empId}</div>
-              </div>
-            </div>
+        <div className="profile-card">
+          <div className="profile-avatar">
+            <PersonIcon className="avatar-icon" />
           </div>
-        )}
+          
+          <div className="profile-info">
+            {profileInfoRows}
+          </div>
+        </div>
       </div>
     </div>
   )
+})
+
+ProfileContent.displayName = 'ProfileContent'
+
+const ProfileScreen: React.FC = () => {
+  const userState = useSelector((state: RootState) => state.user)
+  const empId = userState.empID
+  const [userProfile, setUserProfile] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Memoize the loadUserProfile function to prevent unnecessary re-renders
+  const loadUserProfile = useCallback(async () => {
+    if (!empId) return
+    
+    try {
+      setIsLoading(true)
+      setError(null)
+      
+      const response = await fetch(`http://127.0.0.1:5000/get-user-preferences?empId=${empId}`)
+      
+      if (response.ok) {
+        const profile = await response.json()
+        setUserProfile(profile)
+      } else {
+        setError(`Failed to load profile: ${response.status}`)
+      }
+    } catch (error: any) {
+      setError('Failed to load profile. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [empId])
+
+  // Load user profile only when empId changes
+  useEffect(() => {
+    if (empId) {
+      loadUserProfile()
+    } else {
+      setError('User not logged in')
+      setIsLoading(false)
+    }
+  }, [empId, loadUserProfile])
+
+  // Memoize the retry handler
+  const handleRetry = useCallback(() => {
+    loadUserProfile()
+  }, [loadUserProfile])
+
+  // Early returns for loading and error states
+  if (isLoading) {
+    return <LoadingComponent />
+  }
+
+  if (error) {
+    return <ErrorComponent error={error} onRetry={handleRetry} />
+  }
+
+  if (!userProfile) {
+    return <ErrorComponent error="No profile data available" onRetry={handleRetry} />
+  }
+
+  return <ProfileContent userProfile={userProfile} empId={empId} />
 }
 
-export default ProfileScreen
+export default memo(ProfileScreen)

@@ -21,23 +21,9 @@ const DashboardOpenRequests: React.FC = () => {
   const lastFetched = useSelector(
     (state: RootState) => state.dashboard.lastFetched
   )
-  const [numOfRequests, setNumOfRequests] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
   const [selectedSite, setSelectedSite] = useState<'A' | 'B' | 'C'>('A')
-
-  useEffect(() => {
-    const fetchNumOfRequests = async () => {
-      try {
-        const response = await dashboardService.getNumOfOpenRequests()
-        setNumOfRequests(response)
-      } catch (error) {
-        setError('Failed to fetch the number of requests')
-      }
-    }
-
-    fetchNumOfRequests()
-  }, [])
 
   useEffect(() => {
     const fetchOpenRequestsData = async () => {
@@ -46,7 +32,7 @@ const DashboardOpenRequests: React.FC = () => {
       if (!lastFetched || currentTime - lastFetched > 10 * 60 * 1000) {
         try {
           setLoading(true)
-          const response = await dashboardService.getOpenRequestsDashboadData()
+          const response = await dashboardService.getOpenRequestsDashboardData()
           dispatch(setOpenRequestsData(response))
         } catch (error) {
           setError('Failed to fetch open requests data')
@@ -68,6 +54,15 @@ const DashboardOpenRequests: React.FC = () => {
   }
 
   const siteDataForSelectedSite = openRequestsData?.[selectedSite]
+  
+  // Calculate the number of requests for the selected site
+  const numOfRequestsForSelectedSite = siteDataForSelectedSite?.main_category?.reduce((total: number, category: { count: number }) => total + category.count, 0) || 0
+
+  // Debug logging
+  console.log('DashboardOpenRequests - openRequestsData:', openRequestsData)
+  console.log('DashboardOpenRequests - selectedSite:', selectedSite)
+  console.log('DashboardOpenRequests - siteDataForSelectedSite:', siteDataForSelectedSite)
+  console.log('DashboardOpenRequests - numOfRequestsForSelectedSite:', numOfRequestsForSelectedSite)
 
   return (
     <>
@@ -75,7 +70,7 @@ const DashboardOpenRequests: React.FC = () => {
         <SiteSelector selected={selectedSite} onChange={setSelectedSite} />
       </div>
       <div className="dashboard-container">
-        <OpenRequestsCount numOfRequests={numOfRequests} />
+        <OpenRequestsCount numOfRequests={numOfRequestsForSelectedSite} />
         {siteDataForSelectedSite && (
           <>
             <div className="chart-container">

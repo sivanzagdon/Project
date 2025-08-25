@@ -15,57 +15,47 @@ export const calculateOpeningAndClosingRates = (
     C: { opening_rate: [], closing_rate: [] },
   }
 
+  // Process only the sites that have data
   for (const site in data) {
-    if (data[site]) {
+    if (data[site] && Array.isArray(data[site])) {
       const siteData = data[site]
+      
+      // Use Map for better performance with large datasets
+      const openingDateCounts = new Map<string, number>()
+      const closingDateCounts = new Map<string, number>()
 
-      const openingDates = siteData
-        .map((entry: any) => new Date(entry.created_on))
-        .sort((a: Date, b: Date) => a.getTime() - b.getTime())
-      const closingDates = siteData
-        .map((entry: any) => new Date(entry.closed_at))
-        .sort((a: Date, b: Date) => a.getTime() - b.getTime())
-
-      const openingDateCounts: { [key: string]: number } = {}
-      const closingDateCounts: { [key: string]: number } = {}
-
-      openingDates.forEach((date: Date) => {
-        const dateStr = date.toISOString().split('T')[0]
-        openingDateCounts[dateStr] = (openingDateCounts[dateStr] || 0) + 1
-      })
-
-      closingDates.forEach((date: Date) => {
-        const dateStr = date.toISOString().split('T')[0]
-        closingDateCounts[dateStr] = (closingDateCounts[dateStr] || 0) + 1
-      })
-
-      for (const dateStr in openingDateCounts) {
-        siteRates[site as keyof typeof siteRates].opening_rate.push({
-          date: dateStr,
-          opening_rate: openingDateCounts[dateStr],
-        })
+      // Process opening dates
+      for (const entry of siteData) {
+        if (entry.created_on) {
+          const dateStr = new Date(entry.created_on).toISOString().split('T')[0]
+          openingDateCounts.set(dateStr, (openingDateCounts.get(dateStr) || 0) + 1)
+        }
       }
 
-      for (const dateStr in closingDateCounts) {
-        siteRates[site as keyof typeof siteRates].closing_rate.push({
-          date: dateStr,
-          closing_rate: closingDateCounts[dateStr],
-        })
+      // Process closing dates
+      for (const entry of siteData) {
+        if (entry.closed_at) {
+          const dateStr = new Date(entry.closed_at).toISOString().split('T')[0]
+          closingDateCounts.set(dateStr, (closingDateCounts.get(dateStr) || 0) + 1)
+        }
       }
 
-      siteRates[site as keyof typeof siteRates].opening_rate.sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-      )
+      // Convert to arrays and sort
+      const openingRates = Array.from(openingDateCounts.entries())
+        .map(([date, count]) => ({ date, opening_rate: count }))
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
-      siteRates[site as keyof typeof siteRates].closing_rate.sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-      )
-    } else {
-      console.log(`No time_data for site ${site}`)
+      const closingRates = Array.from(closingDateCounts.entries())
+        .map(([date, count]) => ({ date, closing_rate: count }))
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+
+      siteRates[site as keyof typeof siteRates] = {
+        opening_rate: openingRates,
+        closing_rate: closingRates
+      }
     }
   }
 
-  console.log('utils 68:', siteRates)
   setCalculatedTimeData(siteRates)
   createCombinedData(siteRates, setCombinedRateData)
 }
@@ -83,30 +73,36 @@ export const createCombinedData = (siteData: any, setCombinedRateData: any) => {
       if (!siteSpecificData) continue
 
       const { opening_rate, closing_rate } = siteSpecificData
+      
+      // Use Set for unique dates
       const allDates = new Set<string>()
-
+      
+      // Add all dates from both arrays
       opening_rate.forEach((item: any) => allDates.add(item.date))
       closing_rate.forEach((item: any) => allDates.add(item.date))
 
+      // Convert to sorted array
       const sortedDates = Array.from(allDates).sort(
         (a, b) => new Date(a).getTime() - new Date(b).getTime()
       )
 
-      const openingLookup: { [key: string]: number } = {}
-      const closingLookup: { [key: string]: number } = {}
+      // Create lookup maps for O(1) access
+      const openingLookup = new Map<string, number>()
+      const closingLookup = new Map<string, number>()
 
       opening_rate.forEach((item: any) => {
-        openingLookup[item.date] = item.opening_rate
+        openingLookup.set(item.date, item.opening_rate)
       })
 
       closing_rate.forEach((item: any) => {
-        closingLookup[item.date] = item.closing_rate
+        closingLookup.set(item.date, item.closing_rate)
       })
 
+      // Combine data efficiently
       const combined = sortedDates.map((date) => ({
         date,
-        opening_rate: openingLookup[date] || 0,
-        closing_rate: closingLookup[date] || 0,
+        opening_rate: openingLookup.get(date) || 0,
+        closing_rate: closingLookup.get(date) || 0,
       }))
 
       combinedData[site as 'A' | 'B' | 'C'] = combined
@@ -114,5 +110,4 @@ export const createCombinedData = (siteData: any, setCombinedRateData: any) => {
   }
 
   setCombinedRateData(combinedData)
-  console.log('utils: ', combinedData)
 }
