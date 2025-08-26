@@ -300,17 +300,17 @@
 /* Loading Animation */
 .loading-spinner {
     display: inline-block;
-    width: 20px;
-    height: 20px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f4f6;
     border-radius: 50%;
-    border-top-color: #fff;
-    animation: spin 1s ease-in-out infinite;
+    border-top: 2px solid #6b7280;
+    animation: simple-spin 1.2s linear infinite;
+    box-shadow: 0 2px 8px rgba(107, 114, 128, 0.15);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
+
 
 /* Coming Soon Message */
 .coming-soon {

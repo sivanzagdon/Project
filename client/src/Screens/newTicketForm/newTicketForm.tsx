@@ -271,7 +271,11 @@ const NewTicketForm: React.FC = () => {
           </div>
         )}
 
-        {isLoading && <Loading />}
+        {isLoading && (
+          <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', minHeight: '400px', paddingLeft: '20%' }}>
+            <Loading />
+          </div>
+        )}
       </div>
     </div>
   )

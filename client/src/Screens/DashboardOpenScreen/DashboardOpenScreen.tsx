@@ -30,13 +30,16 @@ const DashboardOpenRequests: React.FC = () => {
   useEffect(() => {
     const fetchOpenRequestsData = async () => {
       const currentTime = Date.now()
+      const shouldFetch = !openRequestsData || !lastFetched || currentTime - lastFetched > 10 * 60 * 1000
 
-      if (!lastFetched || currentTime - lastFetched > 10 * 60 * 1000) {
+      if (shouldFetch) {
         try {
           setLoading(true)
+          setError('')
           const response = await dashboardService.getOpenRequestsDashboardData()
           dispatch(setOpenRequestsData(response))
         } catch (error) {
+          console.error('Error fetching open requests data:', error)
           setError('Failed to fetch open requests data')
         } finally {
           setLoading(false)
@@ -45,14 +48,47 @@ const DashboardOpenRequests: React.FC = () => {
     }
 
     fetchOpenRequestsData()
-  }, [dispatch, lastFetched])
+  }, [dispatch, lastFetched, openRequestsData])
 
   if (loading) {
-    return <Loading />
+    return (
+      <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', minHeight: '400px', paddingLeft: '20%' }}>
+        <Loading />
+      </div>
+    )
   }
 
   if (error) {
-    return <p>{error}</p>
+    return (
+      <div className="dashboard-container">
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <p style={{ color: '#ef4444', fontSize: '18px', marginBottom: '1rem' }}>❌ {error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            style={{
+              background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '12px 24px',
+              fontSize: '16px',
+              cursor: 'pointer'
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // If no data is available, show loading or empty state
+  if (!openRequestsData) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', minHeight: '400px', paddingLeft: '20%' }}>
+        <Loading />
+      </div>
+    )
   }
 
   const siteDataForSelectedSite = openRequestsData?.[selectedSite]
@@ -73,7 +109,7 @@ const DashboardOpenRequests: React.FC = () => {
       </div>
       <div className="dashboard-container">
         <OpenRequestsCount numOfRequests={numOfRequestsForSelectedSite} />
-        {siteDataForSelectedSite && (
+        {siteDataForSelectedSite && numOfRequestsForSelectedSite > 0 ? (
           <>
             <div className="chart-container">
               <MainCategoryChart
@@ -97,6 +133,18 @@ const DashboardOpenRequests: React.FC = () => {
               />
             </div>
           </>
+        ) : (
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '3rem', 
+            color: '#64748b',
+            fontSize: '18px'
+          }}>
+            <p>📊 No open requests data available for {selectedSite}</p>
+            <p style={{ fontSize: '14px', marginTop: '0.5rem' }}>
+              Try refreshing the page or selecting a different site
+            </p>
+          </div>
         )}
       </div>
     </>
