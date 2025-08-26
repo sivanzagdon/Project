@@ -25,6 +25,7 @@ import MainCategoryInsights from '../../components/insights/MainCategoryInsights
 
 const dashboardService = new DashboardService()
 
+// Main dashboard screen component that displays analytics charts and insights with site and year filtering
 const DashboardPage: React.FC = () => {
   const dispatch = useDispatch()
   const data = useSelector((state: RootState) => state.dashboard.data)
@@ -42,12 +43,12 @@ const DashboardPage: React.FC = () => {
     C: [],
   })
 
-  // Memoize the building change handler
+  // Handles building/site selection changes and updates the selected building state
   const handleBuildingChange = useCallback((building: 'A' | 'B' | 'C') => {
     setSelectedBuilding(building)
   }, [])
 
-  // Memoize the year change handler
+  // Handles year selection changes and updates the selected year state
   const handleYearChange = useCallback((year: '2023' | '2024') => {
     setSelectedYear(year)
   }, [])

@@ -12,11 +12,13 @@ interface ParsedWeekdayInsights {
     business_recommendations: string[];
 }
 
+// Component that generates AI-powered insights about weekday service request patterns
 const WeekdayInsights: React.FC<Props> = ({ site, data }) => {
     const [parsedData, setParsedData] = useState<ParsedWeekdayInsights | null>(null);
     const [error, setError] = useState<string | null>(null);
     console.log(data);
 
+    // Fetches AI-generated insights about weekday patterns using OpenAI API
     useEffect(() => {
         const fetchInsights = async () => {
             const prompt = `

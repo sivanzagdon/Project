@@ -15,10 +15,12 @@ const initialState: UserInterface = {
   empID: undefined
 }
 
+// Redux slice for managing user authentication state and profile information
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    // Handles user login by setting authentication state and extracting empID from JWT token
     login(state: UserInterface, action: PayloadAction<LoginResponse>) {
       state.isLoggedIn = true
       state.user_name = action.payload.user_name
@@ -35,6 +37,7 @@ const userSlice = createSlice({
         state.empID = undefined
       }
     },
+    // Handles user logout by clearing all authentication state and user information
     logout(state: UserInterface) {
       state.isLoggedIn = false
       state.user_name = null

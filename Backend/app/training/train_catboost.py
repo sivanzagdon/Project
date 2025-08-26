@@ -21,6 +21,7 @@ os.makedirs(ENCODER_DIR, exist_ok=True)
 CATEGORICAL_COLS = ["MainCategory", "SubCategory", "Building", "Site"]
 
 
+# Fetches service request data from MongoDB collection for CatBoost model training
 def fetch_data_from_mongo():
     collection = get_collection(DATABASE_NAME, "service_requests")
     if collection is None:
@@ -29,6 +30,7 @@ def fetch_data_from_mongo():
     return pd.DataFrame(list(collection.find()))
 
 
+# Preprocesses data by creating time-based features, urgency detection and feature selection
 def preprocess(df):
     df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
     df["Hour"] = df["Created on"].dt.hour
@@ -60,6 +62,7 @@ def preprocess(df):
     return X, y
 
 
+# Prints a formatted confusion matrix for model evaluation
 def print_confusion_matrix(cm, labels):
     print("Confusion Matrix:")
     print(f"{'':<12}{labels[0]:<12}{labels[1]:<12}")
@@ -67,6 +70,7 @@ def print_confusion_matrix(cm, labels):
     print(f"{labels[1]:<12}{cm[1][0]:<12}{cm[1][1]:<12}")
 
 
+# Trains CatBoost classifier for predicting overdue service requests with enhanced features and class balancing
 def train_catboost_model():
     print("Training CatBoost model (Enhanced)...\n")
     df = fetch_data_from_mongo()

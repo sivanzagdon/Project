@@ -17,6 +17,7 @@ const bucketLabel = (b: 'Low' | 'Medium' | 'High') =>
 const bucketColor = (b: 'Low' | 'Medium' | 'High') =>
   b === 'Low' ? 'green' : b === 'Medium' ? 'orange' : 'red'
 
+// Form component for creating new service requests with ML predictions and risk assessment
 const NewTicketForm: React.FC = () => {
   const [MainCategory, setMainCategory] = useState('')
   const [SubCategory, setSubCategory] = useState('')
@@ -58,6 +59,7 @@ const NewTicketForm: React.FC = () => {
     }
   }, [MainCategory, categoriesData])
 
+  // Handles form submission by creating a new service request and displaying ML predictions
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!MainCategory || !SubCategory) {

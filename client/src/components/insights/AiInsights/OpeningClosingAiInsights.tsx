@@ -15,10 +15,12 @@ interface ParsedInsights {
     actionable_recommendations: string[];
 }
 
+// Component that generates AI-powered insights about opening and closing rate trends
 const AiInsights: React.FC<AiInsightsProps> = ({ site, year, month, combinedData }) => {
     const [parsedData, setParsedData] = useState<ParsedInsights | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+    // Fetches AI-generated insights about opening and closing patterns using OpenAI API
     useEffect(() => {
         const fetchInsights = async () => {
             try {

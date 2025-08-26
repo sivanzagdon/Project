@@ -20,6 +20,7 @@ interface OpenRequest {
   'Request description': string
 }
 
+// Component that renders a single open request row with formatted data and status badge
 const OpenRequestRow: React.FC<{ request: OpenRequest }> = ({ request }) => {
   const getStatusBadge = (status: string) => {
     return (
@@ -60,6 +61,7 @@ const OpenRequestRow: React.FC<{ request: OpenRequest }> = ({ request }) => {
   )
 }
 
+// Pagination component that handles page navigation and displays current page information
 const Pagination: React.FC<{
   currentPage: number
   totalPages: number
@@ -147,6 +149,7 @@ const Pagination: React.FC<{
   )
 }
 
+// Main screen component that displays and manages open service requests with search, sorting and pagination
 const OpenRequests = () => {
   const [requests, setRequests] = useState<OpenRequest[]>([])
   const [searchTerm, setSearchTerm] = useState('')

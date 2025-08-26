@@ -9,6 +9,7 @@ import pandas as pd
 dashboard_bp = Blueprint("dashboard", __name__)
 
 
+# Retrieves dashboard data organized by years and months for visualization
 @dashboard_bp.route("/api/dashboard", methods=["GET"])
 def get_dashboard_data():
     try:
@@ -18,6 +19,7 @@ def get_dashboard_data():
         return jsonify({"error": str(e)}), 500
     
 
+# Retrieves time-based data for dashboard charts and analytics
 @dashboard_bp.route("/api/dashboard-data", methods=["GET"])
 def get_time_data_route():
     try:
@@ -27,6 +29,7 @@ def get_time_data_route():
         return jsonify({"error": str(e)}), 500
     
 
+# Returns the count of currently open service requests
 @dashboard_bp.route("/api/num-open-requests", methods=["GET"])
 def get_num_of_open_requests_route():
     try:
@@ -36,6 +39,7 @@ def get_num_of_open_requests_route():
         return jsonify({"error": str(e)}), 500
 
 
+# Retrieves detailed data for open requests dashboard including risk analysis and predictions
 @dashboard_bp.route("/api/dashboard-open-requests", methods=["GET"])
 def get_open_requests_dashboard_route():
     try:

@@ -10,6 +10,7 @@ load_dotenv()
 auth_bp = Blueprint('auth', __name__)
 secret_key = os.getenv("SECRET_KEY")
 
+# Authenticates user credentials and returns JWT token if valid
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -32,6 +33,7 @@ def login():
     else:
         return jsonify({"error": "Database connection failed"}), 500
 
+# Updates the username for a specific user account
 @auth_bp.route('/update-username', methods=['POST'])
 def update_username():
     try:
@@ -72,6 +74,7 @@ def update_username():
         print(f"Error updating username: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Updates the password for a specific user account after verifying current password
 @auth_bp.route('/update-password', methods=['POST'])
 def update_password():
     try:
@@ -121,6 +124,7 @@ def update_password():
         print(f"Error updating password: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Updates account information including company, department, position, level, employee ID and hire date
 @auth_bp.route('/update-account-info', methods=['POST'])
 def update_account_info():
     try:
@@ -175,6 +179,7 @@ def update_account_info():
         print(f"Error updating account info: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Updates user dashboard preferences including default page, refresh interval, card layout and default filter
 @auth_bp.route('/update-dashboard-preferences', methods=['POST'])
 def update_dashboard_preferences():
     try:
@@ -222,6 +227,7 @@ def update_dashboard_preferences():
         print(f"Error updating dashboard preferences: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Updates user privacy settings including profile visibility and activity status
 @auth_bp.route('/update-privacy-settings', methods=['POST'])
 def update_privacy_settings():
     try:
@@ -267,6 +273,7 @@ def update_privacy_settings():
         print(f"Error updating privacy settings: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Retrieves all user preferences including account info, dashboard preferences and privacy settings
 @auth_bp.route('/get-user-preferences', methods=['GET'])
 def get_user_preferences():
     try:
@@ -314,6 +321,7 @@ def get_user_preferences():
         print(f"Error getting user preferences: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Updates general user preferences including dark mode and notifications settings
 @auth_bp.route('/update-preferences', methods=['POST'])
 def update_preferences():
     try:
@@ -359,6 +367,7 @@ def update_preferences():
         print(f"Error updating preferences: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Debug endpoint to retrieve all users from the database for troubleshooting purposes
 @auth_bp.route('/debug-users', methods=['GET'])
 def debug_users():
     try:
@@ -373,6 +382,7 @@ def debug_users():
         print(f"Error getting users: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Permanently deletes a user account from the database
 @auth_bp.route('/delete-account', methods=['POST'])
 def delete_account():
     try:

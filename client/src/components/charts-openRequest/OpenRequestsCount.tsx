@@ -5,6 +5,7 @@ interface Props {
   numOfRequests: number
 }
 
+// Component that displays the count of open requests with animated circle visualization
 const OpenRequestsCount: React.FC<Props> = ({ numOfRequests }) => {
   const [animate, setAnimate] = useState(true)
 

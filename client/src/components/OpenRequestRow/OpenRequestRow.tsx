@@ -12,6 +12,7 @@ interface OpenRequest {
   'Request description': string
 }
 
+// Component that renders a single open request row with formatted data display
 const OpenRequestRow: React.FC<{ request: OpenRequest }> = ({ request }) => {
   return (
     <div className="row-container">

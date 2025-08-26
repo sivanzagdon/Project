@@ -25,6 +25,7 @@ FEATURE_COLUMNS = [
     "RequestLength", "TimeOfDay", "Hour_Weekday"
 ]
 
+# Extracts the actual estimator from various artifact formats for the duration prediction model
 def _unwrap_estimator(artifact: Any) -> Any:
     if isinstance(artifact, (tuple, list)):
         for item in artifact:
@@ -40,11 +41,13 @@ art = joblib.load(MODEL_PATH)
 MODEL = _unwrap_estimator(art)
 
 ENCODERS: Dict[str, Any] = {}
+# Loads and caches label encoders for categorical feature transformation in duration prediction
 def get_encoder(col: str):
     if col not in ENCODERS:
         ENCODERS[col] = joblib.load(ENCODER_PATHS[col])
     return ENCODERS[col]
 
+# Safely transforms categorical data using label encoders with unknown value handling
 def _safe_transform(col: str, series: pd.Series) -> pd.Series:
     enc = get_encoder(col)
     classes = set(getattr(enc, "classes_", []))
@@ -57,6 +60,7 @@ def _safe_transform(col: str, series: pd.Series) -> pd.Series:
         s = s.where(~unknown_mask, "Unknown")
     return enc.transform(s)
 
+# Preprocesses input data for duration prediction including feature engineering and encoding
 def preprocess_input(data: dict) -> pd.DataFrame:
     df = pd.DataFrame([data])
 
@@ -86,6 +90,7 @@ def preprocess_input(data: dict) -> pd.DataFrame:
     X = df.reindex(columns=FEATURE_COLUMNS, fill_value=0)
     return X
 
+# Predicts the expected response time in hours for a new service request using LightGBM model
 def predict_response_time(new_request: dict) -> float:
     X = preprocess_input(new_request)
     yhat = MODEL.predict(X)

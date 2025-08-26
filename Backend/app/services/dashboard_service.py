@@ -9,6 +9,7 @@ dashboard_bp = Blueprint("dashboard", __name__)
 DATABASE_NAME = os.getenv("DATABASE_NAME")    
 
 ###########################################################################################
+# Retrieves dashboard data for open requests including breakdowns by site, category and weekday
 def get_open_requests_dashboard_data():
     collection = get_collection(DATABASE_NAME, "newRequests")
     if collection is None:
@@ -54,6 +55,7 @@ def get_open_requests_dashboard_data():
 
 
 ####################################################################################################
+# Retrieves time-based data for service requests including creation and resolution dates
 def get_time_data():
     collection = get_collection(DATABASE_NAME, "service_requests")
     if collection is None:
@@ -83,6 +85,7 @@ def get_time_data():
     return jsonify(results)
 
 ##################################################################################################3
+# Retrieves comprehensive dashboard data organized by years and months with category breakdowns
 def get_dashboard_data_by_years_and_months():
     collection = get_collection(DATABASE_NAME, "service_requests")
     if collection is None:
@@ -168,6 +171,7 @@ def get_dashboard_data_by_years_and_months():
 
 
 ####################################################################################
+# Returns the total count of open service requests in the database
 def get_num_of_open_requests():
     collection = get_collection(DATABASE_NAME, "newRequests")
     if collection is None:

@@ -2,6 +2,7 @@ from datetime import datetime
 from bson import ObjectId
 
 
+# Data model class for service requests with parsing and serialization capabilities
 class ServiceRequest:
     def __init__(self, data: dict):
         self.id = data.get('_id', None)
@@ -19,12 +20,14 @@ class ServiceRequest:
         self.request_description = data.get('Request description', '')
         self.is_overdue = data.get('is_overdue', 0)
 
+    # Parses datetime strings from database format to Python datetime objects
     def _parse_datetime(self, date_str):
         try:
             return datetime.strptime(date_str, "%m/%d/%Y %H:%M")
         except (ValueError, TypeError):
             return None
 
+    # Converts the service request object to a dictionary for API responses
     def to_dict(self):
         return {
             "Type": self.type,
@@ -42,5 +45,6 @@ class ServiceRequest:
             "is_overdue": self.is_overdue
         }
 
+    # String representation of the service request object for debugging
     def __repr__(self):
         return f"<ServiceRequest {self.request_id} | Overdue: {self.is_overdue}>"

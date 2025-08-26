@@ -19,7 +19,7 @@ import ProfileScreen from './Screens/ProfileScreen/ProfileScreen'
 import Sidebar from './components/Sidebar/Sidebar'
 import './styles/global.css'
 
-// Memoize the main app content to prevent unnecessary re-renders
+// Main app content component that handles routing and authentication state
 const AppContent = memo(() => {
   const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn)
   const userState = useSelector((state: RootState) => state.user)
@@ -68,6 +68,7 @@ const AppContent = memo(() => {
 
 AppContent.displayName = 'AppContent'
 
+// Root application component that provides Redux store and routing
 const App: React.FC = () => {
   return (
     <Provider store={store}>

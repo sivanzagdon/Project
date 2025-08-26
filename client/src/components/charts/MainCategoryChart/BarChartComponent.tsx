@@ -13,6 +13,7 @@ interface BarChartComponentProps {
     color: string
 }
 
+// Reusable bar chart component with gradient styling for displaying category data
 const BarChartComponent: React.FC<BarChartComponentProps> = ({
     data,
     color,

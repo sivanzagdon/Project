@@ -24,11 +24,13 @@ ENCODER_PATHS = {
     "Site": os.path.join(ENCODER_DIR, "Site_encoder.pkl")
 }
 
+# Fetches service request data from MongoDB collection for LightGBM model evaluation
 def fetch_data():
     print("Fetching data from MongoDB...")
     collection = get_collection(DATABASE_NAME, "service_requests")
     return pd.DataFrame(list(collection.find()))
 
+# Applies target encoding to categorical columns for consistent feature representation
 def target_encode(X, y, columns):
     """Apply target encoding to categorical columns."""
     for col in columns:
@@ -36,6 +38,7 @@ def target_encode(X, y, columns):
         X[col] = X[col].map(mean_encoded)
     return X
 
+# Preprocesses data by creating time-based features and applying target encoding for model evaluation
 def preprocess(df):
     print("Preprocessing data...")
 
@@ -66,6 +69,7 @@ def preprocess(df):
     print(f"Feature matrix shape: {X.shape}, Target shape: {y.shape}")
     return X, y
 
+# Evaluates LightGBM regression model performance using cross-validation with MAE, RMSE and R² metrics
 def evaluate_model():
     print("\U0001F50D Evaluating LightGBM Duration Regressor with Cross-Validation...")
     df = fetch_data()

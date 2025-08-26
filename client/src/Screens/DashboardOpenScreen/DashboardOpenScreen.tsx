@@ -13,6 +13,7 @@ import './DashboardOpenRequests.style.css'
 
 const dashboardService = new DashboardService()
 
+// Dashboard screen component that displays analytics for open service requests with site filtering
 const DashboardOpenRequests: React.FC = () => {
   const dispatch = useDispatch()
   const { openRequestsData } = useSelector(
@@ -25,6 +26,7 @@ const DashboardOpenRequests: React.FC = () => {
   const [error, setError] = useState<string>('')
   const [selectedSite, setSelectedSite] = useState<'A' | 'B' | 'C'>('A')
 
+  // Fetches open requests dashboard data with caching to avoid unnecessary API calls
   useEffect(() => {
     const fetchOpenRequestsData = async () => {
       const currentTime = Date.now()

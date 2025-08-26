@@ -14,6 +14,7 @@ interface LineAreaChartProps {
     data: { date: string; opening_rate: number; closing_rate: number }[]
 }
 
+// Combined line and area chart component for displaying opening and closing rate trends over time
 const LineAreaChart: React.FC<LineAreaChartProps> = ({ data }) => {
     return (
         <ResponsiveContainer width="100%" height={400}>

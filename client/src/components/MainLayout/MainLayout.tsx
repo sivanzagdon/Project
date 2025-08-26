@@ -4,6 +4,7 @@ import './MainLayout.css'
 import DashboardPage from '../../Screens/DashboardScreen/DashboardScreen'
 import DashboardOpenScreen from '../../Screens/DashboardOpenScreen/DashboardOpenScreen'
 
+// Main layout component that provides tabbed navigation between dashboard and open requests views
 export default function MainLayout() {
   const [tab, setTab] = useState('dashboard')
 
