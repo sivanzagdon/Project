@@ -23,14 +23,18 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
     )
 
     return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={550}>
             <BarChart data={orderedData} barCategoryGap={0} barGap={0}>
                 <XAxis
                     dataKey="category"
-                    tickFormatter={(value) => value.charAt(0)}
-                    tick={{ fontSize: 14 }}
+                    tick={{ fontSize: 10 }}
+                    height={150}
+                    angle={-90}
+                    textAnchor="end"
+                    interval={0}
+                    tickLine={false}
                 />
-                <YAxis />
+                <YAxis width={60} />
                 <Tooltip
                     formatter={(value) => [`${value}`, 'Count']}
                     labelFormatter={(category) => `Category: ${category}`}

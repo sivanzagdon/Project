@@ -31,10 +31,7 @@ const LoadingComponent = memo(() => (
         <h1>User Profile</h1>
       </div>
       <div className="profile-card">
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <p>Loading profile information...</p>
-        </div>
+        <div className="spinner"></div>
       </div>
     </div>
   </div>

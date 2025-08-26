@@ -215,7 +215,13 @@ const DashboardPage: React.FC = () => {
     return charts
   }, [siteData, selectedBuilding])
 
-  if (!data || !calculatedTimeData || !combinedRateData || !siteData) return <Loading />
+  if (!data || !calculatedTimeData || !combinedRateData || !siteData) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', minHeight: '400px', paddingLeft: '20%' }}>
+        <Loading />
+      </div>
+    )
+  }
 
   return (
     <div className="dashboard-container">

@@ -10,7 +10,9 @@
     flex-direction: column;
     align-items: flex-start;
     width: 100%;
-    flex: 1;
+    max-width: 600px;
+    min-width: 500px;
+    flex: 0 0 auto;
 }
 
 .title {
@@ -19,4 +21,7 @@
     font-weight: 500;
     letter-spacing: 0.25px;
     color: #111827;
+    margin-bottom: 1rem;
+    word-wrap: break-word;
+    line-height: 1.4;
 }

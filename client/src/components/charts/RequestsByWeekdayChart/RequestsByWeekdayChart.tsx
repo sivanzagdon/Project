@@ -33,10 +33,10 @@ const RequestsByWeekdayChart: React.FC<Props> = ({ site, data, title }) => {
   return (
     <div className="card">
       <h2 className="title">{title || `${site} Requests by Weekday`}</h2>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={550}>
         <BarChart data={orderedData} barCategoryGap={0} barGap={0}>
           <XAxis dataKey="weekday" interval={0} tick={{ fontSize: '14' }} />
-          <YAxis />
+          <YAxis width={60} />
           <Tooltip />
           <Bar
             dataKey="count"
