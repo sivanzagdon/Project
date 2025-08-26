@@ -5,6 +5,7 @@ interface LoadingProps {
   message?: string
 }
 
+// Loading spinner component with optional message display for user feedback
 const Loading: React.FC<LoadingProps> = memo(({ message = '' }) => {
   return (
     <div className="loading-container">

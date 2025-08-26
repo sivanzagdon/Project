@@ -4,6 +4,7 @@ import { RootState } from '../../redux/store'
 import { userService } from '../../services/user.service'
 import './SettingsScreen.css'
 
+// Settings screen component that allows users to manage account information and privacy settings
 const SettingsScreen = () => {
     const userState = useSelector((state: RootState) => state.user)
     const empId = userState.empID
@@ -33,6 +34,7 @@ const SettingsScreen = () => {
     const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
     const [isUpdatingPrivacy, setIsUpdatingPrivacy] = useState(false)
 
+    // Handles updating user account information including company, department and position
     const handleAccountUpdate = async () => {
         if (!company.trim() || !department.trim() || !position.trim()) {
             setErrorMessage('Company, Department, and Position are required')
@@ -60,6 +62,7 @@ const SettingsScreen = () => {
         }
     }
 
+    // Handles changing user password with current password verification
     const handlePasswordChange = async () => {
         if (newPassword !== confirmPassword) {
             setErrorMessage("New passwords don't match")
@@ -83,6 +86,7 @@ const SettingsScreen = () => {
         }
     }
 
+    // Handles updating user username with validation
     const handleUsernameChange = async () => {
         if (!username.trim()) {
             setErrorMessage('Username cannot be empty')
@@ -104,6 +108,7 @@ const SettingsScreen = () => {
         }
     }
 
+    // Handles updating user privacy settings including profile visibility and activity status
     const handlePrivacySettingsUpdate = async () => {
         setIsUpdatingPrivacy(true)
         try {
@@ -121,6 +126,7 @@ const SettingsScreen = () => {
         }
     }
 
+    // Loads user preferences from the backend and populates form fields
     const loadUserPreferences = async () => {
         try {
             // Load user preferences from the new endpoint
@@ -159,6 +165,7 @@ const SettingsScreen = () => {
         }
     }, [empId])
 
+    // Renders the account settings tab with company information form
     const renderAccountTab = () => (
         <div className="tab-content">
             <div className="section">
@@ -247,6 +254,7 @@ const SettingsScreen = () => {
         </div>
     )
 
+    // Renders the privacy settings tab with username, password and privacy preferences forms
     const renderPrivacyTab = () => (
         <div className="tab-content">
             <div className="section">

@@ -7,6 +7,7 @@ interface Props {
   color: 'green' | 'orange' | 'red'
 }
 
+// Component that displays risk level assessment with animated reveal and color-coded styling
 const RiskReveal: React.FC<Props> = ({ riskLevel, color }) => {
   const [showResult, setShowResult] = useState(false)
 

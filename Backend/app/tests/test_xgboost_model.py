@@ -23,6 +23,7 @@ ENCODER_PATHS = {
 
 CATEGORICAL_COLS = ["MainCategory", "SubCategory", "Building", "Site"]
 
+# Fetches service request data from MongoDB collection for XGBoost model evaluation
 def fetch_data_from_mongo():
     print("Fetching and preprocessing data...")
     collection = get_collection(DATABASE_NAME, "service_requests")
@@ -31,6 +32,7 @@ def fetch_data_from_mongo():
         return pd.DataFrame()
     return pd.DataFrame(list(collection.find()))
 
+# Preprocesses data by creating time-based features and applying label encoding for model evaluation
 def preprocess(df):
     df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
     df["Hour"] = df["Created on"].dt.hour
@@ -58,9 +60,11 @@ def preprocess(df):
 
     return X, y
 
+# Aligns test data columns with model training columns for consistent prediction
 def align_columns(X, model_columns):
     return X.reindex(columns=model_columns, fill_value=0)
 
+# Evaluates XGBoost model performance on test data with accuracy, confusion matrix and classification report
 def evaluate_model():
     df = fetch_data_from_mongo()
     if df.empty:

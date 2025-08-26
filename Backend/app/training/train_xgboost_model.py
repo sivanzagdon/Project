@@ -22,6 +22,7 @@ ENCODER_PATHS = {
     "Site": os.path.join(ENCODER_DIR, "Site_encoder.pkl")
 }
 
+# Fetches service request data from MongoDB collection for model training
 def fetch_data_from_mongo():
     collection = get_collection(DATABASE_NAME, "service_requests")
     if collection is None:
@@ -29,6 +30,7 @@ def fetch_data_from_mongo():
         return pd.DataFrame()
     return pd.DataFrame(list(collection.find()))
 
+# Preprocesses data by creating time-based features and encoding categorical variables
 def preprocess(df):
     df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
     df["Hour"] = df["Created on"].dt.hour
@@ -55,12 +57,14 @@ def preprocess(df):
 
     return X, y
 
+# Prints a formatted confusion matrix for model evaluation
 def print_confusion_matrix(cm, labels):
     print("\nConfusion Matrix:")
     print(f"{'':<12}{labels[0]:<12}{labels[1]:<12}")
     print(f"{labels[0]:<12}{cm[0][0]:<12}{cm[0][1]:<12}")
     print(f"{labels[1]:<12}{cm[1][0]:<12}{cm[1][1]:<12}")
 
+# Trains XGBoost classifier for predicting overdue service requests with hyperparameter optimization
 def train_xgboost_model():
     print("Training XGBoost model...\n")
     df = fetch_data_from_mongo()

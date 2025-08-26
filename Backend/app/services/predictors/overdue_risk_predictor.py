@@ -30,9 +30,11 @@ FEATURE_COLUMNS = {
 
 CATEGORICAL_COLS = ["MainCategory", "SubCategory", "Building", "Site"]
 
+# Checks if an object has prediction capabilities (predict or predict_proba methods)
 def _has_predict_like(o: Any) -> bool:
     return hasattr(o, "predict") or hasattr(o, "predict_proba")
 
+# Extracts the actual estimator from various artifact formats (tuples, lists, dictionaries)
 def _unwrap_estimator(artifact: Any) -> Any:
     if isinstance(artifact, (tuple, list)):
         for item in artifact:
@@ -60,11 +62,13 @@ if not LOADED_MODELS:
     raise RuntimeError(f"No overdue models loaded. Errors: {LOAD_ERRORS}")
 
 ENCODERS: Dict[str, Any] = {}
+# Loads and caches label encoders for categorical feature transformation
 def get_encoder(col: str):
     if col not in ENCODERS:
         ENCODERS[col] = joblib.load(os.path.join(ENCODER_DIR, f"{col}_encoder.pkl"))
     return ENCODERS[col]
 
+# Preprocesses input data for machine learning models including feature engineering and encoding
 def preprocess_input(data: dict, model_name: str) -> pd.DataFrame:
     df = pd.DataFrame([data])
 
@@ -92,6 +96,7 @@ def preprocess_input(data: dict, model_name: str) -> pd.DataFrame:
     X = df.reindex(columns=feats, fill_value=0)
     return X
 
+# Extracts prediction score from a model using either predict_proba or predict methods
 def _model_score(model, X) -> float:
     if hasattr(model, "predict_proba"):
         proba = model.predict_proba(X)
@@ -99,6 +104,7 @@ def _model_score(model, X) -> float:
     pred = model.predict(X)
     return float(np.ravel(pred)[0])
 
+# Combines predictions from multiple ML models using weighted ensemble to predict overdue risk
 def predict_combined_risk(data: dict) -> float:
     total_w = 0.0
     weighted = 0.0

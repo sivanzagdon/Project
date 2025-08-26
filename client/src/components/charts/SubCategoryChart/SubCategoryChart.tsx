@@ -9,6 +9,7 @@ interface Props {
   color: string;
 }
 
+// Chart component that displays subcategory breakdown data with gradient bars
 const SubCategoryChart: React.FC<Props> = ({ site, data, title, color }) => {
   return (
     <div className="card">

@@ -6,6 +6,7 @@ interface YearSelectorProps {
   onChange: (year: '2023' | '2024') => void
 }
 
+// Dropdown selector component for choosing between different years (2023, 2024)
 const YearSelector: React.FC<YearSelectorProps> = ({
   selectedYear,
   onChange,

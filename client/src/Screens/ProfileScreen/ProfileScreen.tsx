@@ -9,7 +9,7 @@ import EventIcon from '@mui/icons-material/Event'
 import BadgeIcon from '@mui/icons-material/Badge'
 import './ProfileScreen.css'
 
-// Memoize the profile info rows to prevent unnecessary re-renders
+// Component that renders a single profile information row with icon and value
 const ProfileInfoRow = memo(({ icon: Icon, label, value }: { icon: any, label: string, value: string }) => (
   <div className="info-row">
     <div className="info-label">
@@ -22,7 +22,7 @@ const ProfileInfoRow = memo(({ icon: Icon, label, value }: { icon: any, label: s
 
 ProfileInfoRow.displayName = 'ProfileInfoRow'
 
-// Memoize the loading component
+// Loading component that displays a spinner while profile data is being fetched
 const LoadingComponent = memo(() => (
   <div className="profile-screen">
     <div className="profile-container">
@@ -42,7 +42,7 @@ const LoadingComponent = memo(() => (
 
 LoadingComponent.displayName = 'LoadingComponent'
 
-// Memoize the error component
+// Error component that displays error messages with retry functionality
 const ErrorComponent = memo(({ error, onRetry }: { error: string, onRetry: () => void }) => (
   <div className="profile-screen">
     <div className="profile-container">
@@ -64,7 +64,7 @@ const ErrorComponent = memo(({ error, onRetry }: { error: string, onRetry: () =>
 
 ErrorComponent.displayName = 'ErrorComponent'
 
-// Memoize the profile content
+// Main profile content component that displays user information in organized rows
 const ProfileContent = memo(({ userProfile, empId }: { userProfile: any, empId: any }) => {
   // Memoize the profile info rows to prevent unnecessary re-renders
   const profileInfoRows = useMemo(() => {
@@ -131,6 +131,7 @@ const ProfileContent = memo(({ userProfile, empId }: { userProfile: any, empId: 
 
 ProfileContent.displayName = 'ProfileContent'
 
+// Profile screen component that displays user profile information with loading and error states
 const ProfileScreen: React.FC = () => {
   const userState = useSelector((state: RootState) => state.user)
   const empId = userState.empID
@@ -138,7 +139,7 @@ const ProfileScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Memoize the loadUserProfile function to prevent unnecessary re-renders
+  // Loads user profile data from the backend API
   const loadUserProfile = useCallback(async () => {
     if (!empId) return
     
@@ -171,7 +172,7 @@ const ProfileScreen: React.FC = () => {
     }
   }, [empId, loadUserProfile])
 
-  // Memoize the retry handler
+  // Handles retry action for loading user profile data
   const handleRetry = useCallback(() => {
     loadUserProfile()
   }, [loadUserProfile])

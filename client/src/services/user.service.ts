@@ -1,7 +1,9 @@
 import { LoginResponse } from '../types/user.type'
 import { post } from './axios.service'
 
+// Service class for handling user-related API calls including authentication and profile management
 export class UserService {
+  // Updates user password after verifying the current password
   async updatePassword(empId: any, currentPassword: string, newPassword: string) {
     try {
       const response = await post('/update-password', {
@@ -16,6 +18,7 @@ export class UserService {
     }
   }
 
+  // Updates the username for a specific user account
   async updateUsername(empId: any, username: string) {
     try {
       const response = await post('/update-username', {
@@ -29,6 +32,7 @@ export class UserService {
     }
   }
 
+  // Updates user account information including company, department, position and other details
   async updateAccountInfo(empId: any, accountData: {
     company: string
     department: string
@@ -49,6 +53,7 @@ export class UserService {
     }
   }
 
+  // Updates user dashboard preferences including default page, refresh interval and layout settings
   async updateDashboardPreferences(empId: any, dashboardData: {
     defaultPage: string
     autoRefreshInterval: number
@@ -67,6 +72,7 @@ export class UserService {
     }
   }
 
+  // Updates user privacy settings including profile visibility and activity status
   async updatePrivacySettings(empId: any, privacyData: {
     profileVisibility: string
     activityStatus: string
@@ -83,6 +89,7 @@ export class UserService {
     }
   }
 
+  // Retrieves all user preferences including account info, dashboard preferences and privacy settings
   async getUserPreferences(empId: any) {
     try {
       const response = await fetch(`http://127.0.0.1:5000/get-user-preferences?empId=${empId}`)
@@ -96,6 +103,7 @@ export class UserService {
     }
   }
 
+  // Permanently deletes a user account from the system
   async deleteAccount(empId: any) {
     try {
       const response = await post('/delete-account', { empId })
@@ -106,6 +114,7 @@ export class UserService {
     }
   }
 
+  // Updates general user preferences including dark mode and notifications settings
   async updatePreferences(empId: any, darkMode: boolean, notificationsEnabled: boolean) {
     try {
       const response = await post('/update-preferences', {
@@ -120,6 +129,7 @@ export class UserService {
     }
   }
 
+  // Authenticates user credentials and returns login response with JWT token
   async login(empId: number, password: string): Promise<LoginResponse> {
     const data = {
       EmpID: empId,

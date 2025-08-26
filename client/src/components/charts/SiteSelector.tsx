@@ -6,6 +6,7 @@ interface Props {
   onChange: (value: 'A' | 'B' | 'C') => void
 }
 
+// Dropdown selector component for choosing between different sites (A, B, C)
 const SiteSelector: React.FC<Props> = ({ selected, onChange }) => {
   return (
     <div style={{ marginBottom: '20px' }}>

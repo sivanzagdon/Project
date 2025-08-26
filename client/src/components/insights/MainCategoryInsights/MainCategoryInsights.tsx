@@ -12,10 +12,12 @@ interface ParsedCategoryInsights {
     business_recommendations: string[];
 }
 
+// Component that generates AI-powered insights about main category service request patterns
 const MainCategoryInsights: React.FC<Props> = ({ site, data }) => {
     const [parsedData, setParsedData] = useState<ParsedCategoryInsights | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+    // Fetches AI-generated insights about category patterns using OpenAI API
     useEffect(() => {
         const fetchInsights = async () => {
             const prompt = `

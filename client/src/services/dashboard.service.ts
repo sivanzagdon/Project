@@ -5,7 +5,9 @@ import {
   DashboardOpenRequests,
 } from '../types/dashboard.type'
 
+// Service class for handling dashboard-related API calls and data fetching
 export class DashboardService {
+  // Fetches comprehensive dashboard data organized by sites, years and months
   getDashboardData = async (): Promise<DashboardData> => {
     try {
       const response = await get('/api/dashboard')
@@ -16,6 +18,7 @@ export class DashboardService {
     }
   }
 
+  // Fetches time-based data for service requests including creation and resolution dates
   getTimeData = async (): Promise<TimeDataList> => {
     try {
       const response = await get('/api/dashboard-data')
@@ -26,6 +29,7 @@ export class DashboardService {
     }
   }
 
+  // Returns the total count of currently open service requests
   getNumOfOpenRequests = async (): Promise<number> => {
     try {
       const response = await get('/api/num-open-requests')
@@ -36,6 +40,7 @@ export class DashboardService {
     }
   }
 
+  // Fetches detailed dashboard data for open requests including risk analysis and predictions
   getOpenRequestsDashboardData = async (): Promise<DashboardOpenRequests> => {
     try {
       const response = await get('/api/dashboard-open-requests')

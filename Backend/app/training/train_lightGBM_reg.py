@@ -29,6 +29,7 @@ ENCODER_PATHS = {
     "Site": os.path.join(ENCODER_DIR, "Site_encoder.pkl")
 }
 
+# Fetches service request data from MongoDB collection for duration prediction model training
 def fetch_data_from_mongo():
     print("Fetching data from MongoDB...")
     collection = get_collection(DATABASE_NAME, "service_requests")
@@ -39,6 +40,7 @@ def fetch_data_from_mongo():
     print(f"Retrieved {len(data)} records.")
     return pd.DataFrame(data)
 
+# Applies target encoding to categorical columns for better feature representation
 def target_encode(X, y, columns):
     """Apply target encoding to categorical columns."""
     for col in columns:
@@ -46,6 +48,7 @@ def target_encode(X, y, columns):
         X[col] = X[col].map(mean_encoded)
     return X
 
+# Preprocesses data by creating time-based features and applying target encoding for duration prediction
 def preprocess(df):
     print("Preprocessing data...")
 
@@ -76,6 +79,7 @@ def preprocess(df):
     print(f"Feature matrix shape: {X.shape}, Target shape: {y.shape}")
     return X, y
 
+# Trains LightGBM regressor for predicting service request response time with hyperparameter optimization
 def train_model():
     print("Starting training process...")
     df = fetch_data_from_mongo()

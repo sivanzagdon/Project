@@ -5,6 +5,7 @@ from app.services.predictors.overdue_risk_predictor import predict_combined_risk
 import json
 
 
+# Loads SLA data from JSON file containing subcategory to hours mapping
 def load_sla_data():
     try:
         print("Attempting to load SLA data from JSON file...")
@@ -17,6 +18,7 @@ def load_sla_data():
         return {}
 
 
+# Calculates SLA hours for a given subcategory based on predefined SLA data
 def calculate_sla(sub_category: str) -> int:
     print(f"Calculating SLA for sub-category: '{sub_category}'")
     
@@ -35,6 +37,7 @@ def calculate_sla(sub_category: str) -> int:
     return -1  
 
 
+# Creates a new service request in the database with SLA calculation and risk prediction
 def create_new_service_request(data: dict) -> dict:
     collection = get_collection("DS_PROJECT", "newRequests")
 
@@ -80,6 +83,7 @@ from datetime import datetime
 from flask import jsonify
 
 
+# Retrieves all open service requests from the database with formatted data
 def get_open_requests():
     try:
         print("Fetching open requests from the database...")  

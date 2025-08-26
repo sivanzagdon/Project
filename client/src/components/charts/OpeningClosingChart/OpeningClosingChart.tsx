@@ -25,6 +25,7 @@ const monthNames = [
   'December',
 ]
 
+// Chart component that displays opening and closing rates by month with carousel navigation
 const OpeningClosingChart: React.FC<Props> = ({ site, data, year }) => {
   const filteredData = data.filter(
     (item) => new Date(item.date).getFullYear() === parseInt(year)

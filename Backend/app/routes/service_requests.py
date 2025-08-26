@@ -13,6 +13,7 @@ from app.services.reconciliation.prediction_reconciler import reconcile_predicti
 
 service_requests_bp = Blueprint("service_requests", __name__)
 
+# Creates a new service request ticket with ML predictions for response time and overdue risk
 @service_requests_bp.route('/api/tickets', methods=['POST'])
 def create_ticket():
     payload = request.get_json()
@@ -65,6 +66,7 @@ def create_ticket():
         }), 201
 
 
+# Predicts the expected response time duration for a service request
 @service_requests_bp.route('/api/predict-duration', methods=['POST'])
 def predict_duration():
     data = request.get_json()
@@ -76,6 +78,7 @@ def predict_duration():
         return jsonify({"error": str(e)}), 500
 
 
+# Retrieves all currently open service requests from the database
 @service_requests_bp.route('/api/open-requests', methods=['GET'])
 def get_open_requests_route():
     try:

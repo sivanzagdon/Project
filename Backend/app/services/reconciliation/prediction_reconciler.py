@@ -3,10 +3,12 @@ from typing import Dict, Union
 
 Number = Union[float, int]
 
+# Calculates implied overdue probability from predicted hours vs SLA hours using sigmoid function
 def implied_prob_from_hours(pred_hours: Number, sla_hours: Number, k: float = 0.35) -> float:
     ratio = float(pred_hours) / max(float(sla_hours), 1e-6)
     return 1.0 / (1.0 + math.exp(-(ratio - 1.0) / k))
 
+# Categorizes probability into risk buckets: High (>=0.66), Medium (>=0.33), Low (<0.33)
 def categorize(prob: float) -> str:
     if prob >= 0.66:
         return "High"
@@ -14,6 +16,7 @@ def categorize(prob: float) -> str:
         return "Medium"
     return "Low"
 
+# Combines ML model predictions with time-based predictions to create final risk assessment
 def reconcile_predictions(pred_hours: Number, prob_overdue: Number, sla_hours: Number, w: float = 0.5) -> Dict[str, float | str]:
     pred_h = float(pred_hours)
     sla_h = float(sla_hours)

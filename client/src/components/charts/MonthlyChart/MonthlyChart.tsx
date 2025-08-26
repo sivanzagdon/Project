@@ -7,6 +7,7 @@ interface Props {
   monthName: string
 }
 
+// Chart component that displays monthly opening and closing rate trends
 const MonthlyChart: React.FC<Props> = ({ data, monthName }) => {
   return (
     <div className="chart-container-col">

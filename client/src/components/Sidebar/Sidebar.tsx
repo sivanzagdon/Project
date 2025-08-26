@@ -16,6 +16,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import EventIcon from '@mui/icons-material/Event'
 import './Sidebar.css'
 
+// Sidebar navigation component with collapsible functionality and user profile integration
 const Sidebar: React.FC = () => {
   const dispatch = useDispatch()
   const location = useLocation()
@@ -39,6 +40,7 @@ const Sidebar: React.FC = () => {
     }
   }, [empId])
 
+  // Loads user profile data from the backend API
   const loadUserProfile = useCallback(async () => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/get-user-preferences?empId=${empId}`)
@@ -69,22 +71,26 @@ const Sidebar: React.FC = () => {
     console.log('Sidebar - userState:', userState)
   }, [isSidebarOpen, activeItem, userState])
 
+  // Handles user logout by clearing Redux state and redirecting to login page
   const handleLogout = useCallback(() => {
     dispatch(logout())
     localStorage.removeItem('persist:root')
     window.location.href = '/login'
   }, [dispatch])
 
+  // Handles navigation item clicks and updates active state
   const handleItemClick = useCallback((path: string) => {
     setActiveItem(path)
     navigate(path)
     // Remove the setTimeout hack - it's causing performance issues
   }, [navigate])
 
+  // Opens the sidebar by setting the sidebar state to visible
   const openSidebar = useCallback(() => {
     setIsSidebarOpen(true)
   }, [])
 
+  // Closes the sidebar by setting the sidebar state to hidden
   const closeSidebar = useCallback(() => {
     setIsSidebarOpen(false)
   }, [])

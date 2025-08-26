@@ -9,6 +9,7 @@ interface Props {
   color?: string
 }
 
+// Chart component that displays main category breakdown data using bar charts
 const MainCategoryChart: React.FC<Props> = ({
   site,
   data,

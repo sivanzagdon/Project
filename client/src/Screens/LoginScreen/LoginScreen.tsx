@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import { userService } from '../../services/user.service'
 import './LoginScreen.style.css';
 
+// Login screen component that handles user authentication with employee ID and password
 const LoginScreen: React.FC = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -23,6 +24,7 @@ const LoginScreen: React.FC = () => {
     console.log('User State changed:', userState)
   }, [userState])
 
+  // Handles user login by validating credentials and calling the authentication service
   const handleLogin = async () => {
     if (!empId || !password) {
       alert('Please enter both Employee ID and Password.')

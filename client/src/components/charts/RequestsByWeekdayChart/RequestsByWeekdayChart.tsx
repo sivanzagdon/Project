@@ -8,6 +8,7 @@ interface Props {
   title?: string
 }
 
+// Chart component that displays service request distribution by weekday with gradient bars
 const RequestsByWeekdayChart: React.FC<Props> = ({ site, data, title }) => {
   const weekdayMap: Record<string, string> = {
     Sunday: 'Sun',
