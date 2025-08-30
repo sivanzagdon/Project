@@ -1,6 +1,7 @@
-import pandas as pd
+import os
 import joblib
-from sklearn.model_selection import train_test_split
+import pandas as pd
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import LabelEncoder
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
@@ -22,7 +23,6 @@ ENCODER_PATHS = {
     "Site": os.path.join(ENCODER_DIR, "Site_encoder.pkl")
 }
 
-# Fetches service request data from MongoDB collection for model training
 def fetch_data_from_mongo():
     collection = get_collection(DATABASE_NAME, "service_requests")
     if collection is None:
@@ -30,7 +30,6 @@ def fetch_data_from_mongo():
         return pd.DataFrame()
     return pd.DataFrame(list(collection.find()))
 
-# Preprocesses data by creating time-based features and encoding categorical variables
 def preprocess(df):
     df["Created on"] = pd.to_datetime(df["Created on"], errors="coerce")
     df["Hour"] = df["Created on"].dt.hour
@@ -57,14 +56,12 @@ def preprocess(df):
 
     return X, y
 
-# Prints a formatted confusion matrix for model evaluation
 def print_confusion_matrix(cm, labels):
     print("\nConfusion Matrix:")
     print(f"{'':<12}{labels[0]:<12}{labels[1]:<12}")
     print(f"{labels[0]:<12}{cm[0][0]:<12}{cm[0][1]:<12}")
     print(f"{labels[1]:<12}{cm[1][0]:<12}{cm[1][1]:<12}")
 
-# Trains XGBoost classifier for predicting overdue service requests with hyperparameter optimization
 def train_xgboost_model():
     print("Training XGBoost model...\n")
     df = fetch_data_from_mongo()
@@ -80,23 +77,46 @@ def train_xgboost_model():
 
     pos_weight = (y_train == 0).sum() / (y_train == 1).sum()
 
+    # Define parameter grid for GridSearchCV
+    param_grid = {
+        'max_depth': [3, 6, 10],
+        'learning_rate': [0.01, 0.05, 0.1],
+        'n_estimators': [100, 200, 300],
+        'subsample': [0.8, 0.9, 1.0],
+        'colsample_bytree': [0.8, 0.9, 1.0],
+        'scale_pos_weight': [pos_weight],
+        'gamma': [0, 1, 5],
+        'reg_lambda': [1, 2, 3]
+    }
+
+    # Initialize the XGBoost model
     model = XGBClassifier(
         random_state=42,
         use_label_encoder=False,
-        eval_metric='logloss',
-        max_depth=6,
-        learning_rate=0.05,
-        n_estimators=300,
-        subsample=0.9,
-        colsample_bytree=0.9,
-        scale_pos_weight=pos_weight,
-        gamma=1,
-        reg_lambda=2
+        eval_metric='logloss'
     )
 
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
+    # Perform GridSearchCV
+    grid_search = GridSearchCV(
+        estimator=model,
+        param_grid=param_grid,
+        scoring='accuracy',
+        cv=5,
+        n_jobs=-1,
+        verbose=2
+    )
 
+    grid_search.fit(X_train, y_train)
+
+    best_model = grid_search.best_estimator_
+    best_params = grid_search.best_params_
+    best_score = grid_search.best_score_
+
+    print(f"\nBest parameters found: {best_params}")
+    print(f"Best score: {best_score:.4f}")
+
+    # Evaluate the best model on the test set
+    y_pred = best_model.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
     print(f"\nAccuracy: \033[1m{acc:.4f}\033[0m")
 
@@ -106,7 +126,8 @@ def train_xgboost_model():
     print("\nClassification Report:")
     print(classification_report(y_test, y_pred, target_names=["Not Overdue", "Overdue"]))
 
-    joblib.dump((model, X.columns), MODEL_PATH)
+    # Save the best model
+    joblib.dump((best_model, X.columns), MODEL_PATH)
     print(f"\nModel saved to: {MODEL_PATH}")
 
 if __name__ == "__main__":

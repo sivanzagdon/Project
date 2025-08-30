@@ -7,6 +7,7 @@ from sklearn.preprocessing import LabelEncoder
 from dotenv import load_dotenv
 from datetime import datetime
 from app.db import get_collection
+from sklearn.model_selection import GridSearchCV  
 
 load_dotenv()
 DATABASE_NAME = os.getenv("DATABASE_NAME")
@@ -70,13 +71,36 @@ def train_model():
     df = shuffle(df, random_state=42).reset_index(drop=True)
     X, y = preprocess(df)
 
-    print("\U0001F333 Training Random Forest model with balanced class weights...")
-    model = RandomForestClassifier(random_state=42, class_weight='balanced')
-    model.fit(X, y)
-    print("\u2705 Model training complete.")
+    print("\U0001F333 Starting GridSearchCV...")
 
-    joblib.dump((model, X.columns), MODEL_PATH)
-    print(f"\U0001F4BE Model saved to: {MODEL_PATH}")
+    param_grid = {
+        'n_estimators': [50, 100, 200],
+        'max_depth': [None, 10, 20, 30],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4],
+        'class_weight': ['balanced', None],
+        'max_features': ['auto', 'sqrt', 'log2']  # New parameter added
+    }
+
+    # Create the RandomForest model with class_weight='balanced'
+    model = RandomForestClassifier(
+        random_state=42,
+        class_weight='balanced'  # Set class_weight as 'balanced' directly
+    )
+
+    grid_search = GridSearchCV(estimator=model,
+                               param_grid=param_grid,
+                               cv=5,
+                               n_jobs=-1,
+                               verbose=2)
+
+    grid_search.fit(X, y)
+
+    best_model = grid_search.best_estimator_
+    joblib.dump((best_model, X.columns), MODEL_PATH)
+    print(f"\U0001F4BE Best model saved to: {MODEL_PATH}")
+    print(f"Best parameters: {grid_search.best_params_}")
+    print(f"Best score: {grid_search.best_score_}")
 
 if __name__ == "__main__":
     train_model()
